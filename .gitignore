@@ -1,0 +1,19 @@
+# IDE (IntelliJ, VS Code)
+.idea/
+*.iml
+.vscode/
+
+# Build tools (Maven/Gradle)
+target/
+build/
+.gradle/
+
+# Secrets and configuration
+.env
+
+# Docker data (Local database files)
+clinic_db_data/
+
+# OS generated files
+.DS_Store
+Thumbs.db
