@@ -1,3 +1,6 @@
+-- ============================================================
+-- CLINIC MANAGEMENT SYSTEM - POSTGRESQL DDL
+-- ============================================================
 CREATE TABLE Address
     ( 
      Patient_PatientID INTEGER  NOT NULL , 
@@ -339,13 +342,13 @@ ALTER TABLE Visit
 
 -- --- INITIAL DICTIONARY DATA (ExamDict) ---
 
--- 4 Laboratory Exams (Type 'L')
+-- Laboratory Exams (Type 'L')
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('C55', 'L', 'Morphology (Full Blood Count)');
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('L43', 'L', 'Glucose Level (Serum)');
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('A01', 'L', 'Urinalysis (General)');
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('O17', 'L', 'Lipid Profile (CHOL, LDL, HDL, TG)');
 
--- 4 Physical Exams (Type 'P')
+-- Physical Exams (Type 'P')
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('89.142', 'P', 'Holter EEG');
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('89.383', 'P', 'Spirometry Test');
 INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('81.92', 'P', 'Joint or Ligament Injection');
