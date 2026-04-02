@@ -1,23 +1,25 @@
 package pl.polsl.clinic.dto.requests;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import pl.polsl.clinic.entity.Address;
 
-@Data
-public class AddAddress {
-	@NotNull
-	@Size(min = 1, max = 100)
-	private final String city;
+@NotNull
+public record AddAddress(@NotNull @Size(min = 1, max = 100) String city,
+                         @NotNull @Size(min = 1, max = 100) String street,
+                         @NotNull Integer houseNo,
+                         Integer apartmentNo) {
 
-	@NotNull
-	@Size(min = 1, max = 100)
-	private final String street;
+	public Address mapToEntity() {
+		Address address = new Address();
+		populateAddressFields(address);
+		return address;
+	}
 
-	@NotNull
-	private final Integer houseNo;
-
-	@Null
-	private final Integer apartmentNo;
+	public void populateAddressFields(Address address) {
+		address.setCity(city);
+		address.setStreet(street);
+		address.setHouseNo(houseNo);
+		address.setApartmentNo(apartmentNo);
+	}
 }
