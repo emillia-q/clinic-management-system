@@ -19,7 +19,7 @@ public record AddAddress(@NotNull @Size(min = 1, max = 100) String city,
 	public void populateAddressFields(Address address) {
 		address.setCity(city);
 		address.setStreet(street);
-		address.setHouseNo(houseNo);
-		address.setApartmentNo(apartmentNo);
+		address.setHouseNo(houseNo.toString());
+		address.setApartmentNo(apartmentNo.toString());
 	}
 }

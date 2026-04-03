@@ -17,7 +17,7 @@ public record PatientDto(
 	public static PatientDto fromEntity(Patient patient) {
 		if (patient == null) return null;
 		return new PatientDto(
-			patient.getPatientID(),
+			patient.getPatientId(),
 			patient.getFirstName(),
 			patient.getLastName(),
 			patient.getSocialSecurityNo(),

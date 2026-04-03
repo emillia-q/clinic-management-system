@@ -13,8 +13,8 @@ public record AddressDto(
 		return new AddressDto(
 			address.getCity(),
 			address.getStreet(),
-			address.getHouseNo(),
-			address.getApartmentNo()
+			Integer.parseInt(address.getHouseNo()),
+			Integer.parseInt(address.getApartmentNo())
 		);
 	}
 }
