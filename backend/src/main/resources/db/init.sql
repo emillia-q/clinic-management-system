@@ -1,355 +1,355 @@
 -- ============================================================
 -- CLINIC MANAGEMENT SYSTEM - POSTGRESQL DDL
 -- ============================================================
-CREATE TABLE Address
+CREATE TABLE address
     ( 
-     Patient_PatientID INTEGER  NOT NULL , 
-     City              VARCHAR (100)  NOT NULL , 
-     Street            VARCHAR (100)  NOT NULL , 
-     HouseNo           VARCHAR (10)  NOT NULL , 
-     ApartmentNo       VARCHAR (10) 
+     patient_patient_id BIGINT  NOT NULL ,
+     city              VARCHAR (100)  NOT NULL ,
+     street            VARCHAR (100)  NOT NULL ,
+     house_no           VARCHAR (10)  NOT NULL ,
+     apartment_no       VARCHAR (10)
     ) 
 ;
 
-ALTER TABLE Address 
-    ADD CONSTRAINT Address_PK PRIMARY KEY ( Patient_PatientID ) ;
+ALTER TABLE address
+    ADD CONSTRAINT address_pk PRIMARY KEY ( patient_patient_id ) ;
 
-CREATE TABLE Doctor 
+CREATE TABLE doctor 
     ( 
-     LicenseNo    CHAR (7)  NOT NULL , 
-     Staff_UserID INTEGER  NOT NULL 
+     license_no    VARCHAR (7)  NOT NULL , 
+     staff_user_id BIGINT  NOT NULL 
     ) 
 ;
 
-ALTER TABLE Doctor 
-    ADD CONSTRAINT Doctor_PK PRIMARY KEY ( Staff_UserID ) ;
+ALTER TABLE doctor 
+    ADD CONSTRAINT doctor_pk PRIMARY KEY ( staff_user_id ) ;
 
-ALTER TABLE Doctor 
-    ADD CONSTRAINT Doctor_LicenseNo_UN UNIQUE ( LicenseNo ) ;
+ALTER TABLE doctor 
+    ADD CONSTRAINT doctor_license_no_un UNIQUE ( license_no ) ;
 
-CREATE TABLE ExamDict 
+CREATE TABLE exam_dict 
     ( 
-     ExamCode VARCHAR (20)  NOT NULL , 
-     ExamType CHAR (1)  NOT NULL , 
-     ExamName VARCHAR (255)  NOT NULL 
+     exam_code VARCHAR (20)  NOT NULL , 
+     exam_type VARCHAR (1)  NOT NULL , 
+     exam_name VARCHAR (255)  NOT NULL 
     ) 
 ;
 
-ALTER TABLE ExamDict 
+ALTER TABLE exam_dict 
     ADD 
-    CHECK (ExamType IN ('L', 'P')) 
+    CHECK (exam_type IN ('L', 'P')) 
 ;
 
-ALTER TABLE ExamDict 
-    ADD CONSTRAINT ExamDict_PK PRIMARY KEY ( ExamCode ) ;
+ALTER TABLE exam_dict 
+    ADD CONSTRAINT exam_dict_PK PRIMARY KEY ( exam_code ) ;
 
-CREATE TABLE LabExam 
+CREATE TABLE lab_exam 
     ( 
-     LabExamID               INTEGER  NOT NULL , 
-     Visit_VisitID           INTEGER  NOT NULL , 
-     ExamDict_ExamCode       VARCHAR (20)  NOT NULL , 
-     DoctorNotes             TEXT , 
-     OrderDate               TIMESTAMP  NOT NULL , 
-     Result                  TEXT , 
-     Execution_Cancel_Date   TIMESTAMP , 
-     ManagerNotes            TEXT , 
-     Approval_Rejection_Date TIMESTAMP , 
-     Status                  VARCHAR (50) DEFAULT 'Ordered'  NOT NULL , 
-     LabTechnician_UserID    INTEGER , 
-     LabManager_UserID       INTEGER 
+     lab_exam_id               BIGINT  NOT NULL , 
+     visit_visit_id           BIGINT  NOT NULL , 
+     exam_dict_exam_code       VARCHAR (20)  NOT NULL , 
+     doctor_notes             TEXT , 
+     order_date               TIMESTAMP  NOT NULL , 
+     result                  TEXT , 
+     execution_cancel_date   TIMESTAMP , 
+     manager_notes            TEXT , 
+     approval_rejection_date TIMESTAMP , 
+     status                  VARCHAR (50) DEFAULT 'Ordered'  NOT NULL , 
+     lab_technician_user_id    BIGINT , 
+     lab_manager_user_id       BIGINT 
     ) 
 ;
 
-ALTER TABLE LabExam 
+ALTER TABLE lab_exam 
     ADD 
-    CHECK (Status IN ('Completed', 'Ordered', 'Rejected', 'Validated')) 
+    CHECK (status IN ('Completed', 'Ordered', 'Rejected', 'Validated')) 
 ;
 
-ALTER TABLE LabExam 
-    ADD CONSTRAINT LabExam_PK PRIMARY KEY ( LabExamID ) ;
+ALTER TABLE lab_exam 
+    ADD CONSTRAINT lab_exam_pk PRIMARY KEY ( lab_exam_id ) ;
 
-CREATE TABLE LabManager 
+CREATE TABLE lab_manager 
     ( 
-     Staff_UserID INTEGER  NOT NULL 
+     staff_user_id BIGINT  NOT NULL 
     ) 
 ;
 
-ALTER TABLE LabManager 
-    ADD CONSTRAINT LabManager_PK PRIMARY KEY ( Staff_UserID ) ;
+ALTER TABLE lab_manager 
+    ADD CONSTRAINT lab_manager_pk PRIMARY KEY ( staff_user_id ) ;
 
-CREATE TABLE LabTechnician 
+CREATE TABLE lab_technician 
     ( 
-     Staff_UserID INTEGER  NOT NULL 
+     staff_user_id BIGINT  NOT NULL 
     ) 
 ;
 
-ALTER TABLE LabTechnician 
-    ADD CONSTRAINT LabTechnician_PK PRIMARY KEY ( Staff_UserID ) ;
+ALTER TABLE lab_technician 
+    ADD CONSTRAINT lab_technician_pk PRIMARY KEY ( staff_user_id ) ;
 
-CREATE TABLE Patient 
+CREATE TABLE patient 
     ( 
-     PatientID        INTEGER  NOT NULL , 
-     FirstName        VARCHAR (100)  NOT NULL , 
-     LastName         VARCHAR (100)  NOT NULL , 
-     SocialSecurityNo CHAR (11)  NOT NULL , 
-     DateOfBirth      DATE  NOT NULL , 
-     Email            VARCHAR (100) , 
-     PhoneNumber      VARCHAR (15)  NOT NULL 
+     patient_id        BIGINT  NOT NULL , 
+     first_name        VARCHAR (100)  NOT NULL , 
+     last_name         VARCHAR (100)  NOT NULL , 
+     social_security_no VARCHAR (11)  NOT NULL , 
+     date_of_birth      DATE  NOT NULL , 
+     email            VARCHAR (100) , 
+     phone_number      VARCHAR (15)  NOT NULL 
     ) 
 ;
 
-ALTER TABLE Patient 
-    ADD CONSTRAINT Patient_PK PRIMARY KEY ( PatientID ) ;
+ALTER TABLE patient 
+    ADD CONSTRAINT patient_pk PRIMARY KEY ( patient_id ) ;
 
-ALTER TABLE Patient 
-    ADD CONSTRAINT Patient_SocialSecurityNo_UN UNIQUE ( SocialSecurityNo ) ;
+ALTER TABLE patient 
+    ADD CONSTRAINT patient_social_security_no_un UNIQUE ( social_security_no ) ;
 
-CREATE TABLE PhysicalExam 
+CREATE TABLE physical_exam 
     ( 
-     PhysicalExamID    INTEGER  NOT NULL , 
-     Visit_VisitID     INTEGER  NOT NULL , 
-     ExamDict_ExamCode VARCHAR (20)  NOT NULL , 
-     Result            TEXT 
+     physical_exam_id    BIGINT  NOT NULL , 
+     visit_visit_id     BIGINT  NOT NULL , 
+     exam_dict_exam_code VARCHAR (20)  NOT NULL , 
+     result            TEXT 
     ) 
 ;
 
-ALTER TABLE PhysicalExam 
-    ADD CONSTRAINT PhysicalExam_PK PRIMARY KEY ( PhysicalExamID ) ;
+ALTER TABLE physical_exam 
+    ADD CONSTRAINT physical_exam_pk PRIMARY KEY ( physical_exam_id ) ;
 
-CREATE TABLE Receptionist 
+CREATE TABLE receptionist 
     ( 
-     Staff_UserID INTEGER  NOT NULL 
+     staff_user_id BIGINT  NOT NULL 
     ) 
 ;
 
-ALTER TABLE Receptionist 
-    ADD CONSTRAINT Receptionist_PK PRIMARY KEY ( Staff_UserID ) ;
+ALTER TABLE receptionist 
+    ADD CONSTRAINT receptionist_pk PRIMARY KEY ( staff_user_id ) ;
 
-CREATE TABLE Staff 
+CREATE TABLE staff 
     ( 
-     UserID    INTEGER  NOT NULL , 
-     FirstName VARCHAR (100)  NOT NULL , 
-     LastName  VARCHAR (100)  NOT NULL , 
-     Login     VARCHAR (100)  NOT NULL , 
-     Password  VARCHAR (100)  NOT NULL , 
-     IsActive  CHAR (1) DEFAULT 'Y'  NOT NULL , 
-     UserType  VARCHAR (50)  NOT NULL 
+     user_id    BIGINT  NOT NULL , 
+     first_name VARCHAR (100)  NOT NULL , 
+     last_name  VARCHAR (100)  NOT NULL , 
+     login     VARCHAR (100)  NOT NULL , 
+     password  VARCHAR (100)  NOT NULL , 
+     is_active  VARCHAR (1) DEFAULT 'Y'  NOT NULL , 
+     user_type  VARCHAR (50)  NOT NULL 
     ) 
 ;
 
-ALTER TABLE Staff 
+ALTER TABLE staff 
     ADD 
-    CHECK (IsActive IN ('N', 'Y')) 
+    CHECK (is_active IN ('N', 'Y')) 
 ;
 
-ALTER TABLE Staff 
+ALTER TABLE staff 
     ADD 
-    CHECK (UserType IN ('Administrator', 'Doctor', 'LabManager', 'LabTechnician', 'Receptionist')) 
+    CHECK (user_type IN ('Administrator', 'Doctor', 'LabManager', 'LabTechnician', 'Receptionist'))
 ;
 
-ALTER TABLE Staff 
-    ADD CONSTRAINT Staff_PK PRIMARY KEY ( UserID ) ;
+ALTER TABLE staff 
+    ADD CONSTRAINT staff_pk PRIMARY KEY ( user_id ) ;
 
-ALTER TABLE Staff 
-    ADD CONSTRAINT Staff_Login_UN UNIQUE ( Login ) ;
+ALTER TABLE staff 
+    ADD CONSTRAINT staff_login_un UNIQUE ( login ) ;
 
-CREATE TABLE Visit 
+CREATE TABLE visit 
     ( 
-     VisitID                INTEGER  NOT NULL , 
-     Patient_PatientID      INTEGER  NOT NULL , 
-     Description            TEXT  NOT NULL , 
-     Diagnosis              TEXT , 
-     Status                 VARCHAR (50) DEFAULT 'Registered'  NOT NULL , 
-     RegistrationDate       TIMESTAMP  NOT NULL , 
-     Completion_Cancel_Date TIMESTAMP , 
-     Doctor_UserID          INTEGER  NOT NULL , 
-     Receptionist_UserID    INTEGER  NOT NULL , 
-     AppointmentDate        TIMESTAMP  NOT NULL 
+     visit_id                BIGINT  NOT NULL , 
+     patient_patient_id      BIGINT  NOT NULL , 
+     description            TEXT  NOT NULL , 
+     diagnosis              TEXT , 
+     status                 VARCHAR (50) DEFAULT 'Registered'  NOT NULL , 
+     registration_date       TIMESTAMP  NOT NULL , 
+     completion_cancel_date TIMESTAMP , 
+     doctor_user_id          BIGINT  NOT NULL , 
+     receptionist_user_id    BIGINT  NOT NULL , 
+     appointment_date        TIMESTAMP  NOT NULL 
     ) 
 ;
 
-ALTER TABLE Visit 
+ALTER TABLE visit 
     ADD 
-    CHECK (Status IN ('Cancelled', 'Finished', 'Registered')) 
+    CHECK (status IN ('Cancelled', 'Finished', 'Registered')) 
 ;
 
-ALTER TABLE Visit 
-    ADD CONSTRAINT Visit_PK PRIMARY KEY ( VisitID ) ;
+ALTER TABLE visit 
+    ADD CONSTRAINT visit_pk PRIMARY KEY ( visit_id ) ;
 
-ALTER TABLE Address 
-    ADD CONSTRAINT Address_Patient_FK FOREIGN KEY 
+ALTER TABLE address 
+    ADD CONSTRAINT address_patient_fk FOREIGN KEY 
     ( 
-     Patient_PatientID
+     patient_patient_id
     ) 
-    REFERENCES Patient 
+    REFERENCES patient 
     ( 
-     PatientID
+     patient_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE Doctor 
-    ADD CONSTRAINT Doctor_Staff_FK FOREIGN KEY 
+ALTER TABLE doctor 
+    ADD CONSTRAINT doctor_staff_fk FOREIGN KEY 
     ( 
-     Staff_UserID
+     staff_user_id
     ) 
-    REFERENCES Staff 
+    REFERENCES staff 
     ( 
-     UserID
-    ) 
-    ON DELETE CASCADE 
-;
-
-ALTER TABLE LabExam 
-    ADD CONSTRAINT LabExam_ExamDict_FK FOREIGN KEY 
-    ( 
-     ExamDict_ExamCode
-    ) 
-    REFERENCES ExamDict 
-    ( 
-     ExamCode
-    ) 
-;
-
-ALTER TABLE LabExam 
-    ADD CONSTRAINT LabExam_LabManager_FK FOREIGN KEY 
-    ( 
-     LabManager_UserID
-    ) 
-    REFERENCES LabManager 
-    ( 
-     Staff_UserID
-    ) 
-;
-
-ALTER TABLE LabExam 
-    ADD CONSTRAINT LabExam_LabTechnician_FK FOREIGN KEY 
-    ( 
-     LabTechnician_UserID
-    ) 
-    REFERENCES LabTechnician 
-    ( 
-     Staff_UserID
-    ) 
-;
-
-ALTER TABLE LabExam 
-    ADD CONSTRAINT LabExam_Visit_FK FOREIGN KEY 
-    ( 
-     Visit_VisitID
-    ) 
-    REFERENCES Visit 
-    ( 
-     VisitID
+     user_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE LabManager 
-    ADD CONSTRAINT LabManager_Staff_FK FOREIGN KEY 
+ALTER TABLE lab_exam 
+    ADD CONSTRAINT lab_exam_exam_dict_fk FOREIGN KEY 
     ( 
-     Staff_UserID
+     exam_dict_exam_code
     ) 
-    REFERENCES Staff 
+    REFERENCES exam_dict 
     ( 
-     UserID
+     exam_code
+    ) 
+;
+
+ALTER TABLE lab_exam 
+    ADD CONSTRAINT lab_exam_lab_manager_fk FOREIGN KEY 
+    ( 
+     lab_manager_user_id
+    ) 
+    REFERENCES lab_manager 
+    ( 
+     staff_user_id
+    ) 
+;
+
+ALTER TABLE lab_exam 
+    ADD CONSTRAINT lab_exam_lab_technician_fk FOREIGN KEY 
+    ( 
+     lab_technician_user_id
+    ) 
+    REFERENCES lab_technician 
+    ( 
+     staff_user_id
+    ) 
+;
+
+ALTER TABLE lab_exam 
+    ADD CONSTRAINT lab_exam_visit_fk FOREIGN KEY 
+    ( 
+     visit_visit_id
+    ) 
+    REFERENCES visit 
+    ( 
+     visit_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE LabTechnician 
-    ADD CONSTRAINT LabTechnician_Staff_FK FOREIGN KEY 
+ALTER TABLE lab_manager 
+    ADD CONSTRAINT lab_manager_staff_fk FOREIGN KEY 
     ( 
-     Staff_UserID
+     staff_user_id
     ) 
-    REFERENCES Staff 
+    REFERENCES staff 
     ( 
-     UserID
-    ) 
-    ON DELETE CASCADE 
-;
-
-ALTER TABLE PhysicalExam 
-    ADD CONSTRAINT PhysicalExam_ExamDict_FK FOREIGN KEY 
-    ( 
-     ExamDict_ExamCode
-    ) 
-    REFERENCES ExamDict 
-    ( 
-     ExamCode
-    ) 
-;
-
-ALTER TABLE PhysicalExam 
-    ADD CONSTRAINT PhysicalExam_Visit_FK FOREIGN KEY 
-    ( 
-     Visit_VisitID
-    ) 
-    REFERENCES Visit 
-    ( 
-     VisitID
+     user_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE Receptionist 
-    ADD CONSTRAINT Receptionist_Staff_FK FOREIGN KEY 
+ALTER TABLE lab_technician 
+    ADD CONSTRAINT lab_technician_staff_fk FOREIGN KEY 
     ( 
-     Staff_UserID
+     staff_user_id
     ) 
-    REFERENCES Staff 
+    REFERENCES staff 
     ( 
-     UserID
-    ) 
-    ON DELETE CASCADE 
-;
-
-ALTER TABLE Visit 
-    ADD CONSTRAINT Visit_Doctor_FK FOREIGN KEY 
-    ( 
-     Doctor_UserID
-    ) 
-    REFERENCES Doctor 
-    ( 
-     Staff_UserID
+     user_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE Visit 
-    ADD CONSTRAINT Visit_Patient_FK FOREIGN KEY 
+ALTER TABLE physical_exam 
+    ADD CONSTRAINT physical_exam_exam_dict_fk FOREIGN KEY 
     ( 
-     Patient_PatientID
+     exam_dict_exam_code
     ) 
-    REFERENCES Patient 
+    REFERENCES exam_dict 
     ( 
-     PatientID
+     exam_code
+    ) 
+;
+
+ALTER TABLE physical_exam 
+    ADD CONSTRAINT physical_exam_visit_fk FOREIGN KEY 
+    ( 
+     visit_visit_id
+    ) 
+    REFERENCES visit 
+    ( 
+     visit_id
     ) 
     ON DELETE CASCADE 
 ;
 
-ALTER TABLE Visit 
-    ADD CONSTRAINT Visit_Receptionist_FK FOREIGN KEY 
+ALTER TABLE receptionist 
+    ADD CONSTRAINT receptionist_staff_fk FOREIGN KEY 
     ( 
-     Receptionist_UserID
+     staff_user_id
     ) 
-    REFERENCES Receptionist 
+    REFERENCES staff 
     ( 
-     Staff_UserID
+     user_id
     ) 
     ON DELETE CASCADE 
 ;
 
--- --- INITIAL DICTIONARY DATA (ExamDict) ---
+ALTER TABLE visit 
+    ADD CONSTRAINT visit_doctor_fk FOREIGN KEY 
+    ( 
+     doctor_user_id
+    ) 
+    REFERENCES doctor 
+    ( 
+     staff_user_id
+    ) 
+    ON DELETE CASCADE 
+;
+
+ALTER TABLE visit 
+    ADD CONSTRAINT visit_patient_fk FOREIGN KEY 
+    ( 
+     patient_patient_id
+    ) 
+    REFERENCES patient 
+    ( 
+     patient_id
+    ) 
+    ON DELETE CASCADE 
+;
+
+ALTER TABLE visit 
+    ADD CONSTRAINT visit_receptionist_fk FOREIGN KEY 
+    ( 
+     receptionist_user_id
+    ) 
+    REFERENCES receptionist 
+    ( 
+     staff_user_id
+    ) 
+    ON DELETE CASCADE 
+;
+
+-- --- INITIAL DICTIONARY DATA (exam_dict) ---
 
 -- Laboratory Exams (Type 'L')
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('C55', 'L', 'Morphology (Full Blood Count)');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('L43', 'L', 'Glucose Level (Serum)');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('A01', 'L', 'Urinalysis (General)');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('O17', 'L', 'Lipid Profile (CHOL, LDL, HDL, TG)');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('C55', 'L', 'Morphology (Full Blood Count)');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('L43', 'L', 'Glucose Level (Serum)');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('A01', 'L', 'Urinalysis (General)');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('O17', 'L', 'Lipid Profile (CHOL, LDL, HDL, TG)');
 
 -- Physical Exams (Type 'P')
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('89.142', 'P', 'Holter EEG');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('89.383', 'P', 'Spirometry Test');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('81.92', 'P', 'Joint or Ligament Injection');
-INSERT INTO ExamDict (ExamCode, ExamType, ExamName) VALUES ('95.1901', 'P', 'Visual Acuity Test');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('89.142', 'P', 'Holter EEG');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('89.383', 'P', 'Spirometry Test');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('81.92', 'P', 'Joint or Ligament Injection');
+INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('95.1901', 'P', 'Visual Acuity Test');
