@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.validator.PESEL;
 
 import java.time.LocalDate;
 
@@ -26,6 +27,7 @@ public class AddPatient {
 
 	@NotNull
 	@Size(min = 11, max = 11)
+	@PESEL
 	private String socialSecurityNo;
 
 	@NotNull
