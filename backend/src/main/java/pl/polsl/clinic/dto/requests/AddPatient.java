@@ -37,7 +37,7 @@ public class AddPatient {
 	private String email;
 
 	@NotNull
-	@Pattern(regexp = "^(\\+48)?\\d{9}$")
+	@Pattern(regexp = "^(\\+)?[0-9 -]{9,20}$")
 	private String phoneNumber;
 
 	@NotNull
@@ -56,6 +56,8 @@ public class AddPatient {
 		patient.setSocialSecurityNo(socialSecurityNo);
 		patient.setDateOfBirth(dateOfBirth);
 		patient.setEmail(email);
+		phoneNumber = phoneNumber.replace(" ", "");
+		phoneNumber = phoneNumber.replace("-", "");
 		patient.setPhoneNumber(phoneNumber);
 
 		var patientsAddress = patient.getAddress();
