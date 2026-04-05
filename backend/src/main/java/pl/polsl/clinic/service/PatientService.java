@@ -11,9 +11,9 @@ import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.PatientRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +35,18 @@ public class PatientService {
 
 	public List<Patient> findAll() {
 		return patientRepository.findAll();
+	}
+
+	public List<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
+		List<@NotNull Patient> patients;
+		if (socialSecurityNo != null && !socialSecurityNo.trim().isEmpty()) {
+			patients = new ArrayList<>();
+			patients.add(patientRepository.findBySocialSecurityNo(socialSecurityNo).orElseThrow(() -> new ItemNotFoundException(Patient.class, socialSecurityNo)));
+		} else {
+			patients = patientRepository.findByFirstNameAndLastName(firstName, lastName);
+			if (patients.isEmpty()) throw new ItemNotFoundException(Patient.class, firstName + " " + lastName);
+		}
+		return patients;
 	}
 
 	public Optional<Patient> findById(Long id) {

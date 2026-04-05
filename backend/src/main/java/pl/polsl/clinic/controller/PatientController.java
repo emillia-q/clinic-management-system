@@ -43,6 +43,15 @@ public class PatientController {
 		return patientService.findAll().stream().map(PatientDto::fromEntity).toList();
 	}
 
+	@GetMapping("/search")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Find matching patients")
+	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientDto.class)))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public Iterable<PatientDto> getMatchingBy(@RequestParam(required = false) String name, @RequestParam(required = false) String surname, @RequestParam(required = false) String pesel) {
+		return patientService.findMatchingBy(name, surname, pesel).stream().map(PatientDto::fromEntity).toList();
+	}
+
 	@GetMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get patient by id")
