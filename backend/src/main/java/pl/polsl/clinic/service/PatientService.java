@@ -26,12 +26,10 @@ public class PatientService {
 	public Patient add(@NotNull @Valid AddPatient addPatient) {
 		Patient patient = addPatient.mapToEntity();
 
-		patient.setPatientId(new Random().nextLong());  //auto keyent, this is a terrible idea ...
+		var address = addPatient.getAddress().mapToEntity();
+		address.setPatient(patient);
+		patient.setAddress(address);
 
-		patient = patientRepository.save(patient);
-		patient.setAddress(addPatient.getAddress().mapToEntity());
-		patient.getAddress().setPatientPatientId(patient.getPatientId());
-		patient.getAddress().setPatient(patient);
 		return patientRepository.save(patient);
 	}
 

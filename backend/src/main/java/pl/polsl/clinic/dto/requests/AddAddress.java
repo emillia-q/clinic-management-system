@@ -7,8 +7,8 @@ import pl.polsl.clinic.entity.Address;
 @NotNull
 public record AddAddress(@NotNull @Size(min = 1, max = 100) String city,
                          @NotNull @Size(min = 1, max = 100) String street,
-                         @NotNull Integer houseNo,
-                         Integer apartmentNo) {
+                         @NotNull String houseNo,
+						 String apartmentNo) {
 
 	public Address mapToEntity() {
 		Address address = new Address();
@@ -19,7 +19,7 @@ public record AddAddress(@NotNull @Size(min = 1, max = 100) String city,
 	public void populateAddressFields(Address address) {
 		address.setCity(city);
 		address.setStreet(street);
-		address.setHouseNo(houseNo.toString());
-		address.setApartmentNo(apartmentNo.toString());
+		address.setHouseNo(houseNo);
+		address.setApartmentNo(apartmentNo);
 	}
 }

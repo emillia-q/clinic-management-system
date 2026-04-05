@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class Patient {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_id")
 	private Long patientId;
 
