@@ -1,5 +1,7 @@
 package pl.polsl.clinic.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -8,12 +10,13 @@ import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.entity.QPatient;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.PatientRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +41,28 @@ public class PatientService {
 	}
 
 	public List<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
-		List<@NotNull Patient> patients;
-		if (socialSecurityNo != null && !socialSecurityNo.trim().isEmpty()) {
-			patients = new ArrayList<>();
-			patients.add(patientRepository.findBySocialSecurityNo(socialSecurityNo).orElseThrow(() -> new ItemNotFoundException(Patient.class, socialSecurityNo)));
-		} else {
-			patients = patientRepository.findByFirstNameAndLastName(firstName, lastName);
-			if (patients.isEmpty()) throw new ItemNotFoundException(Patient.class, firstName + " " + lastName);
+		QPatient patient = QPatient.patient;
+
+		// (firstName AND lastName)
+		BooleanExpression namePart = (firstName != null && lastName != null)
+			? patient.firstName.equalsIgnoreCase(firstName).and(patient.lastName.equalsIgnoreCase(lastName))
+			: Expressions.asBoolean(true).isFalse(); // Force 'false' if names missing
+
+		// (socialSecurityNo)
+		BooleanExpression ssnPart = (socialSecurityNo != null && !socialSecurityNo.isBlank())
+			? patient.socialSecurityNo.eq(socialSecurityNo)
+			: Expressions.asBoolean(true).isFalse(); // Force 'false' if PESEL missing
+
+		// 1 OR 2
+		BooleanExpression finalFilter = namePart.or(ssnPart);
+
+		List<Patient> patients = StreamSupport
+			.stream(patientRepository.findAll(finalFilter).spliterator(), false)
+			.toList();
+
+		if (patients.isEmpty()) {
+			String identifier = (socialSecurityNo != null) ? socialSecurityNo : (firstName + " " + lastName);
+			throw new ItemNotFoundException(Patient.class, identifier);
 		}
 		return patients;
 	}
