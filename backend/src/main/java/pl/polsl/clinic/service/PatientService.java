@@ -6,17 +6,18 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.entity.QPatient;
+import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.PatientRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,9 @@ public class PatientService {
 		return patientRepository.findAll();
 	}
 
-	public List<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
+	public Iterable<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
+		if ((StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) && StringUtils.isBlank(socialSecurityNo))
+			throw new InvalidParametersException("name and surname or PESEL must be provided");
 		QPatient patient = QPatient.patient;
 
 		// (firstName AND lastName)
@@ -55,12 +58,9 @@ public class PatientService {
 
 		// 1 OR 2
 		BooleanExpression finalFilter = namePart.or(ssnPart);
+		var patients = patientRepository.findAll(finalFilter);
 
-		List<Patient> patients = StreamSupport
-			.stream(patientRepository.findAll(finalFilter).spliterator(), false)
-			.toList();
-
-		if (patients.isEmpty()) {
+		if (!patients.iterator().hasNext()) {
 			String identifier = (socialSecurityNo != null) ? socialSecurityNo : (firstName + " " + lastName);
 			throw new ItemNotFoundException(Patient.class, identifier);
 		}
