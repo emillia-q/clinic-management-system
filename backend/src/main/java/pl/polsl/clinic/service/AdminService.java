@@ -3,9 +3,13 @@ package pl.polsl.clinic.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.polsl.clinic.dto.StaffListDto;
 import pl.polsl.clinic.dto.requests.AddStaff;
 import pl.polsl.clinic.entity.*;
+import pl.polsl.clinic.enums.UserType;
 import pl.polsl.clinic.repository.*;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +63,30 @@ public class AdminService {
 		staff.setPasswdChangeRequired("Y");
 
 		return staffRepository.save(staff);
+	}
+
+	public List<StaffListDto> getStaffList(UserType type, String query) {
+		// for LIKE to work properly when teh query is null
+		String searchPhrase = (query == null) ? "" : query;
+
+		return staffRepository.findByRoleAndQuery(type, searchPhrase)
+			.stream()
+			.map(StaffListDto::fromEntity)
+			.toList();
+	}
+
+	@Transactional
+	public void toggleStaffActive(Long id) {
+		Staff staff = staffRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Staff member not found with id: " + id));
+
+		// Toggle
+		String newStatus = "Y".equals(staff.getIsActive()) ? "N" : "Y";
+		staff.setIsActive(newStatus);
+	}
+
+	public Staff getStaffById(Long id) {
+		return staffRepository.findById(id)
+			.orElseThrow(() -> new RuntimeException("Staff member not found with id: " + id));
 	}
 }
