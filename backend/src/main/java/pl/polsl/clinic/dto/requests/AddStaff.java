@@ -4,9 +4,10 @@ package pl.polsl.clinic.dto.requests;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import pl.polsl.clinic.enums.UserType;
 
 @Data
-public abstract class AddStaff {
+public class AddStaff {
 	@NotNull
 	@Size(min = 1, max = 100)
 	private String firstName;
@@ -16,13 +17,8 @@ public abstract class AddStaff {
 	private String lastName;
 
 	@NotNull
-	@Size(min = 3, max = 100)
-	private String login;
+	private UserType userType;
 
-	@NotNull
-	@Size(min = 6, max = 100)
-	private String password;
-
-	@NotNull
-	private Boolean isActive;
+	@Size(max = 7)
+	private String licenseNo;
 }

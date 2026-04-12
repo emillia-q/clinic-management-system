@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.polsl.clinic.enums.UserType;
 
 @Entity
 @Table(name = "staff")
@@ -33,6 +34,10 @@ public class Staff {
     @Column(name = "is_active", nullable = false, length = 1)
     private String isActive = "Y";
 
+	@Enumerated(EnumType.STRING)
     @Column(name = "user_type", nullable = false, length = 50)
-    private String userType;
+    private UserType userType;
+
+	@Column(name="passwd_change_required",length = 1)
+	private String passwdChangeRequired="Y";
 }
