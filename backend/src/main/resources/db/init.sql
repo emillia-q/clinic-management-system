@@ -133,7 +133,8 @@ CREATE TABLE staff
      login     VARCHAR (100)  NOT NULL ,
      password  VARCHAR (100)  NOT NULL ,
      is_active  VARCHAR (1) DEFAULT 'Y'  NOT NULL ,
-     user_type  VARCHAR (50)  NOT NULL
+     user_type  VARCHAR (50)  NOT NULL ,
+     passwd_change_required VARCHAR (1) DEFAULT 'Y' NOT NULL
     )
 ;
 
@@ -360,20 +361,20 @@ INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('95.1901', 'P', 
 -- ============================================================
 
 -- 1. STAFF & USERS (Passwords are 'pass123' for simplicity)
-INSERT INTO staff (first_name, last_name, login, password, is_active, user_type)
-VALUES ('System', 'Admin', 'admin', 'pass123', 'Y', 'Administrator');
+INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
+VALUES ('System', 'Admin', 'admin', 'pass123', 'Y', 'Administrator', 'N');
 
-INSERT INTO staff (first_name, last_name, login, password, is_active, user_type)
-VALUES ('Gregory', 'House', 'drhouse', 'pass123', 'Y', 'Doctor');
+INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
+VALUES ('Gregory', 'House', 'drhouse', 'pass123', 'Y', 'Doctor', 'N');
 
-INSERT INTO staff (first_name, last_name, login, password, is_active, user_type)
-VALUES ('Pam', 'Beesly', 'pam_reception', 'pass123', 'Y', 'Receptionist');
+INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
+VALUES ('Pam', 'Beesly', 'pam_reception', 'pass123', 'Y', 'Receptionist', 'N');
 
-INSERT INTO staff (first_name, last_name, login, password, is_active, user_type)
-VALUES ('Dexter', 'Morgan', 'dexter_lab', 'pass123', 'Y', 'LabTechnician');
+INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
+VALUES ('Dexter', 'Morgan', 'dexter_lab', 'pass123', 'Y', 'LabTechnician', 'N');
 
-INSERT INTO staff (first_name, last_name, login, password, is_active, user_type)
-VALUES ('Walter', 'White', 'heisenberg_mgr', 'pass123', 'Y', 'LabManager');
+INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
+VALUES ('Walter', 'White', 'heisenberg_mgr', 'pass123', 'Y', 'LabManager', 'N');
 
 -- 2. STAFF ROLES (Linking staff to specific roles)
 INSERT INTO doctor (license_no, staff_user_id)
