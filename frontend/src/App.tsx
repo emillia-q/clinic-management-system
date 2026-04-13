@@ -1,8 +1,11 @@
 import './App.css'
+import {AdminDashboard} from "./pages/AdminDashboard/AdminDashboard.tsx";
 
 function App() {
   return (
-    <div>Hello</div>
+    <div className="App">
+      <AdminDashboard />
+    </div>
   )
 }
 
