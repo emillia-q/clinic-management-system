@@ -14,30 +14,30 @@ import pl.polsl.clinic.enums.UserType;
 @NoArgsConstructor
 public class Staff {
 
-    @Id
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+	@Column(name = "user_id")
+	private Long userId;
 
-    @Column(name = "first_name", nullable = false, length = 100)
-    private String firstName;
+	@Column(name = "first_name", nullable = false, length = 100)
+	private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 100)
-    private String lastName;
+	@Column(name = "last_name", nullable = false, length = 100)
+	private String lastName;
 
-    @Column(name = "login", nullable = false, unique = true, length = 100)
-    private String login;
+	@Column(name = "login", nullable = false, unique = true, length = 100)
+	private String login;
 
-    @Column(name = "password", nullable = false, length = 100)
-    private String password;
+	@Column(name = "password", nullable = false, length = 100)
+	private String password;
 
-    @Column(name = "is_active", nullable = false, length = 1)
-    private String isActive = "Y";
+	@Column(name = "is_active", nullable = false, length = 1)
+	private String isActive = "Y";
 
 	@Enumerated(EnumType.STRING)
-    @Column(name = "user_type", nullable = false, length = 50)
-    private UserType userType;
+	@Column(name = "user_type", nullable = false, length = 50)
+	private UserType userType;
 
-	@Column(name="passwd_change_required",length = 1)
-	private String passwdChangeRequired="Y";
+	@Column(name = "passwd_change_required", length = 1)
+	private String passwdChangeRequired = "Y";
 }
