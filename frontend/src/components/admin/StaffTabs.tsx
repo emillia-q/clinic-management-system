@@ -8,6 +8,7 @@ const ROLES = ["All", "Doctor", "Receptionist", "LabTechnician", "LabManager"];
 export const StaffTabs = ({ activeTab, onChangeTab }: StaffTabsProps) => {
     return (
         <div className="tabs">
+            {/* Role tabs: All, Doctor, Receptionist, LabTechnician, LabManager */}
             {ROLES.map((role) => (
                 <button
                     key={role}

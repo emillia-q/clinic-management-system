@@ -10,6 +10,7 @@ interface StaffListProps {
 export const StaffList = ({ staffList, selectedStaffId, onSelectStaff }: StaffListProps) => {
     return (
         <div style={{ flex: 1, border: "1px solid #ccc", padding: "10px", minHeight: "400px" }}>
+            {/* Staff list (bordered column) */}
             <ul style={{ listStyle: "none", padding: 0 }}>
                 {staffList.map((staff) => (
                     <StaffListItem

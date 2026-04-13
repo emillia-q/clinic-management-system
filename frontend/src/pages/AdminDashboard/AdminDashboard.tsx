@@ -22,6 +22,7 @@ export const AdminDashboard = () => {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "20px" }}>
+            {/* Search section */}
             <div style={{ display: "flex", gap: "10px" }}>
                 <input
                     type="text"
@@ -33,20 +34,24 @@ export const AdminDashboard = () => {
                 <button onClick={handleSearch}>Search</button>
             </div>
 
+            {/* Tabs section: filter by role */}
             <StaffTabs activeTab={activeTab} onChangeTab={setActiveTab} />
 
             <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+                {/* Staff list */}
                 <StaffList
                     staffList={staffList}
                     selectedStaffId={selectedStaff?.id}
                     onSelectStaff={handleSelectStaff}
                 />
+                {/* Detail panel */}
                 <StaffDetailsPanel
                     selectedStaff={selectedStaff}
                     onRequestStatusChange={openStatusChangeConfirmation}
                 />
             </div>
 
+            {/* Confirmation before changing account status */}
             <ConfirmationModal
                 isOpen={showConfirm}
                 title="Confirm account status change"

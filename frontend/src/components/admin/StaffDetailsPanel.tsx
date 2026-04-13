@@ -11,6 +11,7 @@ export const StaffDetailsPanel = ({ selectedStaff, onRequestStatusChange }: Staf
             {selectedStaff ? (
                 <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px" }}>
+                        {/* Placeholder for user image / avatar */}
                         <div
                             style={{
                                 width: "60px",
@@ -42,6 +43,7 @@ export const StaffDetailsPanel = ({ selectedStaff, onRequestStatusChange }: Staf
                         <strong>Password:</strong> ********
                     </p>
 
+                    {/* Change account status (opens confirmation in parent) */}
                     <div style={{ marginTop: "40px" }}>
                         <button onClick={onRequestStatusChange} style={{ padding: "10px 20px", cursor: "pointer" }}>
                             {selectedStaff.isActive === "Y" ? "Deactivate Account" : "Activate Account"}
