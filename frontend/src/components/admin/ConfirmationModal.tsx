@@ -7,38 +7,48 @@ interface ConfirmationModalProps {
 }
 
 export const ConfirmationModal = ({
-    isOpen,
-    title,
-    message,
-    onConfirm,
-    onCancel
-}: ConfirmationModalProps) => {
+                                      isOpen,
+                                      title,
+                                      message,
+                                      onConfirm,
+                                      onCancel
+                                  }: ConfirmationModalProps) => {
     if (!isOpen) {
         return null;
     }
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                inset: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.4)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 1000
-            }}
-        >
-            <div style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", minWidth: "320px" }}>
-                <h3 style={{ marginTop: 0 }}>{title}</h3>
-                <p>{message}</p>
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "20px" }}>
-                    <button onClick={onCancel} style={{ padding: "8px 16px" }}>
-                        Cancel
-                    </button>
-                    <button onClick={onConfirm} style={{ padding: "8px 16px" }}>
-                        Confirm
-                    </button>
+        <div className="modal d-block" tabIndex={-1} style={{backgroundColor: "rgba(0, 0, 0, 0.5)"}}>
+            <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content border-0 shadow-lg">
+                    <div className="modal-header bg-light">
+                        <h5 className="modal-title fw-bold text-primary">
+                            <i className="fa-solid fa-circle-question me-2"></i>
+                            {title}
+                        </h5>
+                        <button type="button" className="btn-close" onClick={onCancel} aria-label="Close"></button>
+                    </div>
+
+                    <div className="modal-body py-4">
+                        <p className="mb-0 fs-5 text-secondary">{message}</p>
+                    </div>
+
+                    <div className="modal-footer border-0 pb-4">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary px-4"
+                            onClick={onCancel}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-primary px-4 shadow-sm"
+                            onClick={onConfirm}
+                        >
+                            Confirm
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
