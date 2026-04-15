@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pl.polsl.clinic.dto.InvalidParametersErrorDetails;
 import pl.polsl.clinic.dto.ItemNotFoundErrorDetails;
 import pl.polsl.clinic.dto.PatientDto;
 import pl.polsl.clinic.dto.ValidationErrorDetails;
@@ -17,6 +18,8 @@ import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.service.PatientService;
+
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +44,17 @@ public class PatientController {
 	@ApiResponse(responseCode = "200", description = "List of patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientDto.class)))})
 	public Iterable<PatientDto> getAll() {
 		return patientService.findAll().stream().map(PatientDto::fromEntity).toList();
+	}
+
+	@GetMapping("/search")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Find matching patients")
+	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientDto.class)))})
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public Iterable<PatientDto> getMatchingBy(@RequestParam(required = false) String name, @RequestParam(required = false) String surname, @RequestParam(required = false) String pesel) {
+		return StreamSupport.stream(patientService.findMatchingBy(name, surname, pesel).spliterator(), false)
+			.map(PatientDto::fromEntity).toList();
 	}
 
 	@GetMapping("{id}")
