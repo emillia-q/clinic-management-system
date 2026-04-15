@@ -1,5 +1,5 @@
-import type { StaffListDto } from "../../services/types.ts";
-import { StaffListItem } from "./StaffListItems.tsx";
+import type {StaffListDto} from "../../services/types.ts";
+import {StaffListItem} from "./StaffListItems.tsx";
 
 interface StaffListProps {
     staffList: StaffListDto[];
@@ -7,20 +7,25 @@ interface StaffListProps {
     onSelectStaff: (id: number) => void;
 }
 
-export const StaffList = ({ staffList, selectedStaffId, onSelectStaff }: StaffListProps) => {
+export const StaffList = ({staffList, selectedStaffId, onSelectStaff}: StaffListProps) => {
     return (
-        <div style={{ flex: 1, border: "1px solid #ccc", padding: "10px", minHeight: "400px" }}>
-            {/* Staff list (bordered column) */}
-            <ul style={{ listStyle: "none", padding: 0 }}>
-                {staffList.map((staff) => (
-                    <StaffListItem
-                        key={staff.id}
-                        staff={staff}
-                        isSelected={selectedStaffId === staff.id}
-                        onSelect={onSelectStaff}
-                    />
-                ))}
-            </ul>
+        <div className="card shadow-sm mb-4" style={{minHeight: "400px"}}>
+            <div className="card-body p-0">
+                {staffList && staffList.length > 0 ? (
+                    <ul className="list-group list-group-flush">
+                        {staffList.map((staff) => (
+                            <StaffListItem
+                                key={staff.id}
+                                staff={staff}
+                                isSelected={selectedStaffId === staff.id}
+                                onSelect={onSelectStaff}
+                            />
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-muted text-center mt-5">No users to display.</p>
+                )}
+            </div>
         </div>
     );
 };
