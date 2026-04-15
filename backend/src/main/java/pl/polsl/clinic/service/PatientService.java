@@ -44,6 +44,8 @@ public class PatientService {
 	public Iterable<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
 		if ((StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) && StringUtils.isBlank(socialSecurityNo))
 			throw new InvalidParametersException("name and surname or PESEL must be provided");
+		if (!StringUtils.isBlank(firstName) && !StringUtils.isBlank(lastName) && !StringUtils.isBlank(socialSecurityNo))
+			throw new InvalidParametersException("name and surname or PESEL must be provided but not all of them");
 		QPatient patient = QPatient.patient;
 
 		// (firstName AND lastName)

@@ -3,6 +3,7 @@ package pl.polsl.clinic.exception;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,26 @@ public class ValidationExceptionHandler {
 				"Validation failed for one or more fields.",
 				errors
 		);
+		return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ValidationErrorDetails> handleConstraintViolationException(ConstraintViolationException ex) {
+		Map<String, String> errors = new HashMap<>();
+
+		ex.getConstraintViolations().forEach(violation -> {
+			String propertyPath = violation.getPropertyPath().toString();
+			String fieldName = propertyPath.substring(propertyPath.lastIndexOf('.') + 1);
+			errors.put(fieldName, violation.getMessage());
+		});
+
+		ValidationErrorDetails details = new ValidationErrorDetails(
+			OffsetDateTime.now(ZoneOffset.UTC),
+			"Validation failed for one or more parameters.",
+			errors
+		);
+
 		return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
 	}
 }
