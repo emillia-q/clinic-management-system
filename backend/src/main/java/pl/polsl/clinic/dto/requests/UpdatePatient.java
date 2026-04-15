@@ -9,7 +9,7 @@ import pl.polsl.clinic.entity.Patient;
 @Data
 public class UpdatePatient extends AddPatient {
 	@NotNull
-	private final Long id;
+	private Long id;
 
 	public void populatePatientFields(Patient patient) {
 		super.populatePatientFields(patient);
