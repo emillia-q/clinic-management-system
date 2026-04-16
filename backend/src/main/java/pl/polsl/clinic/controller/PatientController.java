@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.clinic.dto.ItemNotFoundErrorDetails;
 import pl.polsl.clinic.dto.PatientDto;
+import pl.polsl.clinic.dto.PatientGeneralDto;
 import pl.polsl.clinic.dto.ValidationErrorDetails;
 import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
@@ -21,35 +22,38 @@ import pl.polsl.clinic.service.PatientService;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@RequestMapping(path = "/api/v1/patient")
+@RequestMapping(path = "/api/v1/patients")
 public class PatientController {
 	private final PatientService patientService;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "Add patient")
-	@ApiResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = PatientDto.class))})
+	@ApiResponse(responseCode = "201", content = {@Content(schema = @Schema(implementation = PatientGeneralDto.class))})
 	@ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(schema = @Schema(implementation = ValidationErrorDetails.class)))
 	@ApiResponse(responseCode = "409", content = @Content)
-	public PatientDto add(@RequestBody @Valid AddPatient addPatient) {
-		return PatientDto.fromEntity(patientService.add(addPatient));
+	public PatientGeneralDto add(@RequestBody @Valid AddPatient addPatient) {
+		return PatientGeneralDto.fromEntity(patientService.add(addPatient));
 	}
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get a list of all patients")
-	@ApiResponse(responseCode = "200", description = "List of patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientDto.class)))})
-	public Iterable<PatientDto> getAll() {
-		return patientService.findAll().stream().map(PatientDto::fromEntity).toList();
+	@ApiResponse(responseCode = "200", description = "List of patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
+	public Iterable<PatientGeneralDto> getAll() {
+		return patientService.findAll().stream().map(PatientGeneralDto::fromEntity).toList();
 	}
 
 	@GetMapping("/search")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(summary = "Find matching patients")
-	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientDto.class)))})
+	@Operation(summary = "Search for matching patients")
+	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public Iterable<PatientDto> getMatchingBy(@RequestParam(required = false) String name, @RequestParam(required = false) String surname, @RequestParam(required = false) String pesel) {
-		return patientService.findMatchingBy(name, surname, pesel).stream().map(PatientDto::fromEntity).toList();
+	public Iterable<PatientGeneralDto> getMatchingBy(
+		@RequestParam(required = false) String name,
+		@RequestParam(required = false) String surname,
+		@RequestParam(required = false) String pesel) {
+		return patientService.findMatchingBy(name, surname, pesel).stream().map(PatientGeneralDto::fromEntity).toList();
 	}
 
 	@GetMapping("{id}")
@@ -64,12 +68,12 @@ public class PatientController {
 	@PutMapping
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Update patient")
-	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientDto.class))})
+	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientGeneralDto.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	@ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(schema = @Schema(implementation = ValidationErrorDetails.class)))
 	@ApiResponse(responseCode = "409", content = @Content)
-	public PatientDto update(@RequestBody @Valid UpdatePatient patient) {
-		return PatientDto.fromEntity(patientService.update(patient));
+	public PatientGeneralDto update(@RequestBody @Valid UpdatePatient patient) {
+		return PatientGeneralDto.fromEntity(patientService.update(patient));
 	}
 
 }

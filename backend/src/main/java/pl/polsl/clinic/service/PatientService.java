@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.PatientRepository;
 
@@ -38,6 +40,11 @@ public class PatientService {
 	}
 
 	public List<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
+		if ((StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) && StringUtils.isBlank(socialSecurityNo))
+			throw new InvalidParametersException("(name and surname) or PESEL must be provided");
+		if (!StringUtils.isBlank(socialSecurityNo) && (!StringUtils.isBlank(firstName) || !StringUtils.isBlank(lastName)))
+			throw new InvalidParametersException("(name and surname) or PESEL must be provided not both");
+
 		Specification<Patient> nameSpec = (root, query, cb) -> {
 			if (firstName == null || lastName == null)
 				return cb.disjunction(); // Returns 'false' if names are missing
@@ -53,7 +60,10 @@ public class PatientService {
 		};
 		Specification<Patient> filter = Specification.where(nameSpec).or(ssnSpec);
 		var patients = patientRepository.findAll(filter);
-		if (patients.isEmpty()) throw new ItemNotFoundException(Patient.class, firstName + " " + lastName);
+		if (patients.isEmpty()) {
+			String identifier = (socialSecurityNo != null) ? "PESEL: " + socialSecurityNo : "Name: " + (firstName + " " + lastName);
+			throw new ItemNotFoundException(Patient.class, identifier);
+		}
 		return patients;
 	}
 
