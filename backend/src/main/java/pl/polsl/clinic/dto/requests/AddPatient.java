@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.validator.PESEL;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,7 @@ public class AddPatient {
 
 	@NotNull
 	@Size(min = 11, max = 11)
+	@PESEL
 	private String socialSecurityNo;
 
 	@NotNull
@@ -38,7 +40,7 @@ public class AddPatient {
 	private String email;
 
 	@NotNull
-	@Pattern(regexp = "^(\\+48)?\\d{9}$")
+	@Pattern(regexp = "^(\\+)?[0-9 -]{9,20}$")
 	private String phoneNumber;
 
 	@NotNull
@@ -60,6 +62,9 @@ public class AddPatient {
 			patient.setEmail(null);
 		else
 			patient.setEmail(email);
+		patient.setEmail(email);
+		phoneNumber = phoneNumber.replace(" ", "");
+		phoneNumber = phoneNumber.replace("-", "");
 		patient.setPhoneNumber(phoneNumber);
 
 		var patientsAddress = patient.getAddress();
