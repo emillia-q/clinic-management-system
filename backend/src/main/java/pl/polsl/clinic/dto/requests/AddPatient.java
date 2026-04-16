@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.validator.PESEL;
 
@@ -57,7 +58,10 @@ public class AddPatient {
 		patient.setLastName(lastName);
 		patient.setSocialSecurityNo(socialSecurityNo);
 		patient.setDateOfBirth(dateOfBirth);
-		patient.setEmail(email);
+		if (email == null || StringUtils.isBlank(email))
+			patient.setEmail(null);
+		else
+			patient.setEmail(email);
 		phoneNumber = phoneNumber.replace(" ", "");
 		phoneNumber = phoneNumber.replace("-", "");
 		patient.setPhoneNumber(phoneNumber);
