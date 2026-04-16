@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.clinic.dto.ItemNotFoundErrorDetails;
-import pl.polsl.clinic.dto.PatientDto;
-import pl.polsl.clinic.dto.PatientGeneralDto;
-import pl.polsl.clinic.dto.ValidationErrorDetails;
+import pl.polsl.clinic.dto.*;
 import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.exception.ItemNotFoundException;
@@ -48,6 +45,7 @@ public class PatientController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Search for matching patients")
 	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public Iterable<PatientGeneralDto> getMatchingBy(
 		@RequestParam(required = false) String name,

@@ -24,8 +24,8 @@ import java.util.Map;
 public class ValidationExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ApiResponse(responseCode = "400", description = "Validation failed", content = {@Content(schema = @Schema(implementation = ValidationErrorDetails.class))})
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@ApiResponse(responseCode = "400", description = "Validation failed", content = {@Content(schema = @Schema(implementation = ValidationErrorDetails.class))})
 	public ResponseEntity<@NonNull ValidationErrorDetails> handleValidationException(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();
 		ex.getBindingResult().getFieldErrors().forEach(error -> {
@@ -40,7 +40,7 @@ public class ValidationExceptionHandler {
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ValidationErrorDetails> handleConstraintViolationException(ConstraintViolationException ex) {
 		Map<String, String> errors = new HashMap<>();
 

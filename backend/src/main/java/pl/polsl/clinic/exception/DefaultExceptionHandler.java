@@ -15,13 +15,13 @@ import pl.polsl.clinic.dto.ItemNotFoundErrorDetails;
 public class DefaultExceptionHandler {
 
 	@ExceptionHandler(ItemNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+//	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ResponseEntity<@NotNull ItemNotFoundErrorDetails> handleItemNotFound(ItemNotFoundException ex) {
 		return new ResponseEntity<@NotNull ItemNotFoundErrorDetails>(new ItemNotFoundErrorDetails(ex.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(InvalidParametersException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<@NotNull InvalidParametersErrorDetails> handleInvalidParameters(InvalidParametersException ex) {
 		return new ResponseEntity<@NotNull InvalidParametersErrorDetails>(new InvalidParametersErrorDetails(ex.getMessage()), HttpStatus.BAD_REQUEST);
 	}
