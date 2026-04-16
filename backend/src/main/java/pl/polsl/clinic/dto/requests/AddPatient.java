@@ -62,7 +62,6 @@ public class AddPatient {
 			patient.setEmail(null);
 		else
 			patient.setEmail(email);
-		patient.setEmail(email);
 		phoneNumber = phoneNumber.replace(" ", "");
 		phoneNumber = phoneNumber.replace("-", "");
 		patient.setPhoneNumber(phoneNumber);

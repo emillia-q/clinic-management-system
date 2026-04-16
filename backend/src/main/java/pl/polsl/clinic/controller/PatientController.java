@@ -15,6 +15,7 @@ import pl.polsl.clinic.dto.requests.AddPatient;
 import pl.polsl.clinic.dto.requests.UpdatePatient;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.service.PatientService;
+import pl.polsl.clinic.validator.PESEL;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,7 +51,7 @@ public class PatientController {
 	public Iterable<PatientGeneralDto> getMatchingBy(
 		@RequestParam(required = false) String name,
 		@RequestParam(required = false) String surname,
-		@RequestParam(required = false) String pesel) {
+		@RequestParam(required = false) @Valid @PESEL String pesel) {
 		return patientService.findMatchingBy(name, surname, pesel).stream().map(PatientGeneralDto::fromEntity).toList();
 	}
 
