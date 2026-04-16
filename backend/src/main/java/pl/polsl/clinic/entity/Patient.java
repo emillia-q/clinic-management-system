@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "patient")
@@ -38,4 +39,7 @@ public class Patient {
 
 	@OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
 	private Address address;
+
+	@OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+	private List<Visit> visits;
 }
