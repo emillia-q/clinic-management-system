@@ -3,6 +3,8 @@ package pl.polsl.clinic.dto;
 import lombok.Data;
 import pl.polsl.clinic.entity.Patient;
 
+import java.time.LocalDate;
+
 /// Hateoas requires not sealed/final classes.
 @Data
 public class PatientGeneralDto {
@@ -10,17 +12,21 @@ public class PatientGeneralDto {
 	private final String firstName;
 	private final String lastName;
 	private final String socialSecurityNo;
+	private final LocalDate dateOfBirth;
+
 
 	public PatientGeneralDto(
 		Long id,
 		String firstName,
 		String lastName,
-		String socialSecurityNo
+		String socialSecurityNo,
+		LocalDate dateOfBirth
 	) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.socialSecurityNo = socialSecurityNo;
+		this.dateOfBirth = dateOfBirth;
 	}
 
 	public static PatientGeneralDto fromEntity(Patient patient) {
@@ -29,7 +35,8 @@ public class PatientGeneralDto {
 			patient.getPatientId(),
 			patient.getFirstName(),
 			patient.getLastName(),
-			patient.getSocialSecurityNo()
+			patient.getSocialSecurityNo(),
+			patient.getDateOfBirth()
 		);
 	}
 }
