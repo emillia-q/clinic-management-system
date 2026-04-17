@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @NoRepositoryBean
-public interface StaffBaseRepository<T extends Staff> extends JpaRepository<T, Long> {
+public interface StaffBaseRepository<T extends Staff> extends SpecificationJpaRepository<T, Long> {
 	// common queries that will be available to all subclasses
 
 	Optional<T> findByLogin(String login);
