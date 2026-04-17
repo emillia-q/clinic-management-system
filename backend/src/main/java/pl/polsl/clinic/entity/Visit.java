@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "visit")
@@ -46,4 +47,11 @@ public class Visit {
 
 	@Column(name = "completion_cancel_date")
 	private LocalDateTime completionCancelDate;
+
+
+	@OneToMany(mappedBy = "visit")
+	private List<LabExam> labExams;
+
+	@OneToMany(mappedBy = "visit")
+	private List<PhysicalExam> physicalExams;
 }
