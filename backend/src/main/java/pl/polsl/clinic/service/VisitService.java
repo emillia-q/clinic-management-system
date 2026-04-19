@@ -1,12 +1,11 @@
 package pl.polsl.clinic.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
@@ -28,6 +27,10 @@ public class VisitService {
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
 	private final ReceptionistRepository receptionistRepository;
+
+
+	/// max amount of fetched rows
+	static private final Integer maxFetchLimit = 1_000;
 
 	@Transactional
 	public VisitDto createVisit(CreateVisitRequest req) {
@@ -53,6 +56,7 @@ public class VisitService {
 		return VisitDto.fromEntity(savedVisit);
 	}
 
+	//TODO: remove this method, use getMatchingVisits() instead
 	public List<VisitDto> getAllVisits(VisitStatus status) {
 		List<Visit> visits;
 		if (status != null) {
@@ -109,10 +113,22 @@ public class VisitService {
 	}
 
 	public record VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate,
-	                          VisitStatus status, Integer limit) {
+	                          VisitStatus status, Integer limit, Sort.Direction sortOrder) {
+		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status) {
+			this(doctorId, patientId, fromDate, toDate, status, maxFetchLimit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status, Integer limit) {
+			this(doctorId, patientId, fromDate, toDate, status, limit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long patientId, Sort.Direction direction) {
+			this(null, patientId, null, null, null, maxFetchLimit, direction);
+		}
 	}
 
-	public Iterable<Visit> getMatchingVisits(VisitParams params) {
+	/// @param params the limit field is used to fetch \[1, maxLimit\] of rows, any value outside that range will become maxLimit.
+	public Iterable<Visit> getMatchingVisits(@NonNull VisitParams params) {
 		Specification<Visit> doctorFilter = (root, query, cb) -> {
 			if (params.doctorId == null)
 				return cb.conjunction(); // Returns 'true' if no doctorId is provided
@@ -150,8 +166,10 @@ public class VisitService {
 		};
 
 		Specification<Visit> filter = Specification.where(doctorFilter).and(patientFilter).and(dateFilter).and(statusFilter);
-		var sortOrder = Sort.by(Sort.Direction.ASC, "appointmentDate");
-		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 ? 10_000 : params.limit, sortOrder);
+		var sortOrder = Sort.by(params.sortOrder, "appointmentDate");
+
+		///limit the query to maxLimit, starting at offset 0. limit of <= 0 is invalid and assumes maxLimit.
+		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 || params.limit > maxFetchLimit ? maxFetchLimit : params.limit, sortOrder);
 
 		return visitRepository.findAll(filter, sortedLimit).getContent();
 	}

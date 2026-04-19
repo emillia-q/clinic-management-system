@@ -27,6 +27,7 @@ public class VisitController {
 	}
 
 	@GetMapping
+	//TODO: change to use getMatchingVisits() instead to reduce redundancy
 	public List<VisitDto> getAll(@RequestParam(required = false) VisitStatus status) {
 		return visitService.getAllVisits(status);
 	}
