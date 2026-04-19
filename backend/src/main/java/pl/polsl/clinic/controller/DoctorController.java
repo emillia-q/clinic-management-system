@@ -11,11 +11,15 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.clinic.dto.*;
 import pl.polsl.clinic.entity.Doctor;
+import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.service.PatientService;
@@ -23,6 +27,7 @@ import pl.polsl.clinic.service.StaffService;
 import pl.polsl.clinic.service.VisitService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -68,9 +73,9 @@ public class DoctorController {
 	}
 
 	@Data
-	public class PatientWithUpcomingVisitDateDto {
-//		private final PatientDto patientDto;
-//		private final List<VisitGeneralDto> upcomingVisits; //max 5
+	public static class PatientWithUpcomingVisitDateDto {
+		private final PatientDto patient;
+		private final LocalDateTime upcomingVisit;
 	}
 
 	@GetMapping("patients/{patientId}")
@@ -79,23 +84,35 @@ public class DoctorController {
 	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientWithUpcomingVisitDateDto.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public PatientWithUpcomingVisitDateDto PatientInfo(Long patientId) {
-		//get patient info by id
+		var params = new VisitService.VisitParams(null, patientId, LocalDate.now(), null, VisitStatus.Registered, 1);
 
-		//patientService.findById(patientId);
-		// show upcoming visits
-		return new PatientWithUpcomingVisitDateDto();
+		return new PatientWithUpcomingVisitDateDto(
+			PatientDto.fromEntity(
+				patientService.findById(patientId).orElseThrow(() -> new ItemNotFoundException(Patient.class, patientId))
+			),
+			StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(), false).findFirst()
+				.map(Visit::getAppointmentDate).orElse(null)
+		);
 	}
 
 	@Data
 	public class PatientHistoryDto {
-		// visit history, physical exams, lab exams
+		Iterable<VisitExamDateTypeDto> visits;
+		Iterable<VisitExamDateTypeDto> physicalExams;
+		Iterable<VisitExamDateTypeDto> labExams;
 	}
 
 	@GetMapping("patients/{patientId}/history")
+	@Operation(summary = "WIP (not implemented)")
+	@Tag(name = "WIP Doctor-Visits")
 	public PatientHistoryDto ViewPatientVisitHistory(Long patientId) {
+		throw new NotImplementedException("ViewPatientVisitHistory is not implemented yet.");
 		//get patient visit history, physical exams, lab exams
 		//sorted in desc order
-		return new PatientHistoryDto();
+//		var params= new VisitService.VisitParams(patientId, Sort.Direction.DESC)
+//		return new PatientHistoryDto(
+//			StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(),false).map(VisitExamDateTypeDto::fromEntity),
+//		);
 	}
 
 	@Data
@@ -134,7 +151,7 @@ public class DoctorController {
 		@RequestParam(required = false) LocalDate toDate,
 		@RequestParam(required = false) VisitStatus status) {
 		return StreamSupport.stream(visitService.getMatchingVisits(
-				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status, 0)
+				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status)
 			).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
