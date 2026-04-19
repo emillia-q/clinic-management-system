@@ -12,7 +12,6 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -96,7 +95,7 @@ public class DoctorController {
 	}
 
 	@Data
-	public class PatientHistoryDto {
+	public static class PatientHistoryDto {
 		Iterable<VisitExamDateTypeDto> visits;
 		Iterable<VisitExamDateTypeDto> physicalExams;
 		Iterable<VisitExamDateTypeDto> labExams;
@@ -114,30 +113,50 @@ public class DoctorController {
 //			StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(),false).map(VisitExamDateTypeDto::fromEntity),
 //		);
 	}
-
-	@Data
-	public class ScheduleExamRequest {
-		@NonNull
-		@NotEmpty
-		private String ExamType;
-		@NonNull
-		@NotEmpty
-		private String ExamName;
-		private String Notes;
-		//fill in from context
-		private Long patientId;
-		private Long doctorId;
-		private Long visitId;
-	}
 	//</editor-fold>
 
-	@PostMapping("patients/{patientId}/exam")
-	public void Exam(
-		@PathVariable Long patientId,
-		@RequestBody @NonNull @Valid ScheduleExamRequest request
-	) {
-		//add a new exam(ExamType(L|P)) to patient with id
+
+	//<editor-fold desc="Add exam(request) to patient">
+	@Data
+	public static class ScheduleLabExam {
+		@NonNull
+		@NotEmpty
+		private String examCode;
+		private String doctorNotes;
+		//fill in from context
+		private Long patientId;
+		private Long visitId;
 	}
+
+	@Data
+	public static class AddPhysicalExam {
+		@NonNull
+		@NotEmpty
+		private String examCode;
+		private String result;
+		//fill in from context
+		private Long patientId;
+		private Long visitId;
+	}
+
+	@PostMapping("lab-exam")
+	@Operation(summary = "WIP (not implemented)")
+	public void LabExam(
+		@PathVariable Long patientId,
+		@RequestBody @NonNull @Valid ScheduleLabExam request
+	) {
+		//add a new lab exam(ExamType = L) to patient with id
+	}
+
+	@PostMapping("physical-exam")
+	@Operation(summary = "WIP (not implemented)")
+	public void PhysicalExam(
+		@PathVariable Long patientId,
+		@RequestBody @NonNull @Valid DoctorController.AddPhysicalExam request
+	) {
+		//add a new PhysicalExam (ExamType = P) to patient with id
+	}
+	//</editor-fold>
 
 
 	@GetMapping("visits")
@@ -156,16 +175,28 @@ public class DoctorController {
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 
+	@GetMapping("my-visits")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Get a list of today's visits to handle. Ordered by appointment date ascending.")
+	@ApiResponse(responseCode = "200", description = "List of today's visits", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitGeneralDto.class)))})
+	public Iterable<VisitGeneralDto> MyVisits(
+		@RequestParam(required = false) Long doctorId) {
+		return StreamSupport.stream(visitService.getMatchingVisits(
+				new VisitService.VisitParams(doctorId, null, LocalDate.now())
+			).spliterator(), false)
+			.map(VisitGeneralDto::fromEntity).toList();
+	}
+
 	@PatchMapping("visits/{visitId}/start")
 	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Visits")
+	@Tag(name = "WIP Doctor-Visits")
 	public void StartVisit(Long visitId) {
 		//
 	}
 
 	@PatchMapping("visits/{visitId}/cancel")
 	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Visits")
+	@Tag(name = "WIP Doctor-Visits")
 	public void CancelVisit(Long visitId) {
 		//
 	}

@@ -101,6 +101,7 @@ public class VisitService {
 		return VisitDto.fromEntity(visitRepository.save(visit));
 	}
 
+	//TODO: remove this method, use getMatchingVisits() instead
 	public List<VisitDto> getPatientVisitHistory(Long patientId) {
 		if (!patientRepository.existsById(patientId)) {
 			throw new ItemNotFoundException(Patient.class, patientId);
@@ -122,8 +123,12 @@ public class VisitService {
 			this(doctorId, patientId, fromDate, toDate, status, limit, Sort.Direction.ASC);
 		}
 
-		public VisitParams(Long patientId, Sort.Direction direction) {
-			this(null, patientId, null, null, null, maxFetchLimit, direction);
+		public VisitParams(Long doctorId, Long patientId, LocalDate date) {
+			this(doctorId, patientId, date, date, null, maxFetchLimit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long doctorId, Long patientId, Sort.Direction direction) {
+			this(doctorId, patientId, null, null, null, maxFetchLimit, direction);
 		}
 	}
 
