@@ -20,15 +20,15 @@ public class Visit {
 	@Column(name = "visit_id")
 	private Long visitId;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_patient_id", nullable = false)
 	private Patient patient;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "doctor_user_id", nullable = false)
 	private Doctor doctor;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "receptionist_user_id", nullable = false)
 	private Receptionist receptionist;
 
