@@ -20,15 +20,15 @@ public class Visit {
 	@Column(name = "visit_id")
 	private Long visitId;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne  // 50/50 wanted now vs never
 	@JoinColumn(name = "patient_patient_id", nullable = false)
 	private Patient patient;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne  // 50/50 wanted now vs never
 	@JoinColumn(name = "doctor_user_id", nullable = false)
 	private Doctor doctor;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)  //never wanted
 	@JoinColumn(name = "receptionist_user_id", nullable = false)
 	private Receptionist receptionist;
 
