@@ -16,7 +16,7 @@ import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
 @RequiredArgsConstructor
 @Validated
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping(path = "/api/v1/visit")
+@RequestMapping(path = "/api/v1/visits")
 public class VisitController {
 	private final VisitService visitService;
 
