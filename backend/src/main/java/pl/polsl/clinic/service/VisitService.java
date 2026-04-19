@@ -2,6 +2,8 @@ package pl.polsl.clinic.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
@@ -11,7 +13,9 @@ import pl.polsl.clinic.repository.*;
 import pl.polsl.clinic.dto.VisitDto;
 import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -99,5 +103,48 @@ public class VisitService {
 			.stream()
 			.map(VisitDto::fromEntity)
 			.toList();
+	}
+
+	public Iterable<Visit> getMatchingVisits(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status) {
+		Specification<Visit> doctorFilter = (root, query, cb) -> {
+			if (doctorId == null)
+				return cb.conjunction(); // Returns 'true' if no doctorId is provided
+			return cb.equal(root.get("doctor").get("userId"), doctorId);
+		};
+
+		Specification<Visit> patientFilter = (root, query, cb) -> {
+			if (patientId == null)
+				return cb.conjunction(); // Returns 'true' if no patientId is provided
+			return cb.equal(root.get("patient").get("patientId"), patientId);
+		};
+
+		Specification<Visit> dateFilter = (root, query, cb) -> {
+			if (fromDate == null && toDate == null)
+				return cb.conjunction(); // Returns 'true' if no dates are provided
+			if (fromDate == null) {
+				//all up to ...
+				LocalDateTime endOfDate = toDate.atTime(LocalTime.MAX);
+				return cb.lessThanOrEqualTo(root.get("appointmentDate"), endOfDate);
+			} else if (toDate == null) {
+				//all before ...
+				LocalDateTime startOfDate = fromDate.atStartOfDay();
+				return cb.greaterThanOrEqualTo(root.get("appointmentDate"), startOfDate);
+			}
+			LocalDateTime startOfDate = fromDate.atStartOfDay();
+			LocalDateTime endOfDate = toDate.atTime(LocalTime.MAX);
+			//compare in between 00:00:00 and 23:59:59.999
+			return cb.between(root.get("appointmentDate"), startOfDate, endOfDate);
+		};
+
+		Specification<Visit> statusFilter = (root, query, cb) -> {
+			if (status == null)
+				return cb.conjunction(); // Returns 'true' if no status is provided
+			return cb.equal(root.get("status"), status);
+		};
+
+		Specification<Visit> filter = Specification.where(doctorFilter).and(patientFilter).and(dateFilter).and(statusFilter);
+		var sortOrder = Sort.by(Sort.Direction.ASC, "appointmentDate");
+
+		return visitRepository.findAll(filter, sortOrder);
 	}
 }
