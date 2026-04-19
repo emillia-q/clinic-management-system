@@ -9,6 +9,7 @@ import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.*;
 import pl.polsl.clinic.dto.VisitDto;
+import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,7 +65,8 @@ public class VisitService {
 			.orElseThrow(() -> new ItemNotFoundException(Visit.class, id));
 
 		visit.setStatus(newStatus);
-		if (newStatus == VisitStatus.Cancelled) {
+
+		if (newStatus == VisitStatus.Cancelled || newStatus == VisitStatus.Finished) {
 			visit.setCompletionCancelDate(LocalDateTime.now());
 		}
 
@@ -72,7 +74,7 @@ public class VisitService {
 	}
 
 	@Transactional
-	public VisitDto updateVisit(Long id, CreateVisitRequest req) {
+	public VisitDto updateVisit(Long id, UpdateVisitRequest req) {
 		Visit visit = visitRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(Visit.class, id));
 

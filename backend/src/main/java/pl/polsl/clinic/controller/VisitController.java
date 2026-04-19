@@ -10,6 +10,7 @@ import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.service.VisitService;
 import pl.polsl.clinic.enums.VisitStatus;
 import java.util.List;
+import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class VisitController {
 	}
 
 	@PutMapping("/{id}")
-	public VisitDto update(@PathVariable Long id, @RequestBody @Valid CreateVisitRequest req) {
+	public VisitDto update(@PathVariable Long id, @RequestBody @Valid UpdateVisitRequest req) {
 		return visitService.updateVisit(id, req);
 	}
 
