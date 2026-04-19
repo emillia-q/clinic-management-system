@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import pl.polsl.clinic.enums.VisitStatus;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class Visit {
+
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "visit_id")
 	private Long visitId;
 
@@ -35,8 +37,9 @@ public class Visit {
 	@Column(name = "diagnosis", columnDefinition = "TEXT")
 	private String diagnosis;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false, length = 50)
-	private String status;
+	private VisitStatus status = VisitStatus.Registered;
 
 	@Column(name = "registration_date", nullable = false)
 	private LocalDateTime registrationDate;
