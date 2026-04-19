@@ -2,8 +2,11 @@ package pl.polsl.clinic.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
@@ -105,46 +108,51 @@ public class VisitService {
 			.toList();
 	}
 
-	public Iterable<Visit> getMatchingVisits(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status) {
+	public record VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate,
+	                          VisitStatus status, Integer limit) {
+	}
+
+	public Iterable<Visit> getMatchingVisits(VisitParams params) {
 		Specification<Visit> doctorFilter = (root, query, cb) -> {
-			if (doctorId == null)
+			if (params.doctorId == null)
 				return cb.conjunction(); // Returns 'true' if no doctorId is provided
-			return cb.equal(root.get("doctor").get("userId"), doctorId);
+			return cb.equal(root.get("doctor").get("userId"), params.doctorId);
 		};
 
 		Specification<Visit> patientFilter = (root, query, cb) -> {
-			if (patientId == null)
+			if (params.patientId == null)
 				return cb.conjunction(); // Returns 'true' if no patientId is provided
-			return cb.equal(root.get("patient").get("patientId"), patientId);
+			return cb.equal(root.get("patient").get("patientId"), params.patientId);
 		};
 
 		Specification<Visit> dateFilter = (root, query, cb) -> {
-			if (fromDate == null && toDate == null)
+			if (params.fromDate == null && params.toDate == null)
 				return cb.conjunction(); // Returns 'true' if no dates are provided
-			if (fromDate == null) {
+			if (params.fromDate == null) {
 				//all up to ...
-				LocalDateTime endOfDate = toDate.atTime(LocalTime.MAX);
+				LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
 				return cb.lessThanOrEqualTo(root.get("appointmentDate"), endOfDate);
-			} else if (toDate == null) {
+			} else if (params.toDate == null) {
 				//all before ...
-				LocalDateTime startOfDate = fromDate.atStartOfDay();
+				LocalDateTime startOfDate = params.fromDate.atStartOfDay();
 				return cb.greaterThanOrEqualTo(root.get("appointmentDate"), startOfDate);
 			}
-			LocalDateTime startOfDate = fromDate.atStartOfDay();
-			LocalDateTime endOfDate = toDate.atTime(LocalTime.MAX);
+			LocalDateTime startOfDate = params.fromDate.atStartOfDay();
+			LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
 			//compare in between 00:00:00 and 23:59:59.999
 			return cb.between(root.get("appointmentDate"), startOfDate, endOfDate);
 		};
 
 		Specification<Visit> statusFilter = (root, query, cb) -> {
-			if (status == null)
+			if (params.status == null)
 				return cb.conjunction(); // Returns 'true' if no status is provided
-			return cb.equal(root.get("status"), status);
+			return cb.equal(root.get("status"), params.status);
 		};
 
 		Specification<Visit> filter = Specification.where(doctorFilter).and(patientFilter).and(dateFilter).and(statusFilter);
 		var sortOrder = Sort.by(Sort.Direction.ASC, "appointmentDate");
+		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 ? 10_000 : params.limit, sortOrder);
 
-		return visitRepository.findAll(filter, sortOrder);
+		return visitRepository.findAll(filter, sortedLimit).getContent();
 	}
 }
