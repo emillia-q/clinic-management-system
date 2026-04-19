@@ -133,7 +133,9 @@ public class DoctorController {
 		@RequestParam(required = false) LocalDate fromDate, //on date (fromDate===toDate)
 		@RequestParam(required = false) LocalDate toDate,
 		@RequestParam(required = false) VisitStatus status) {
-		return StreamSupport.stream(visitService.getMatchingVisits(doctorId, patientId, fromDate, toDate, status).spliterator(), false)
+		return StreamSupport.stream(visitService.getMatchingVisits(
+				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status, 0)
+			).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 
