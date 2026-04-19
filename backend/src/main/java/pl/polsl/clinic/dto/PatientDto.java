@@ -17,26 +17,6 @@ public class PatientDto {
 	private final String phoneNumber;
 	private final AddressDto address;
 
-	public PatientDto(
-		Long id,
-		String firstName,
-		String lastName,
-		String socialSecurityNo,
-		LocalDate dateOfBirth,
-		String email,
-		String phoneNumber,
-		AddressDto address
-	) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.socialSecurityNo = socialSecurityNo;
-		this.dateOfBirth = dateOfBirth;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.address = address;
-	}
-
 	public static PatientDto fromEntity(Patient patient) {
 		if (patient == null) return null;
 		return new PatientDto(
