@@ -2,6 +2,7 @@ import type {PatientDto} from "../../services/types";
 
 interface PatientListProps {
     patients: PatientDto[];
+    isLoading: boolean;
     onSelectPatient: (patient: PatientDto) => void;
     selectedPatientId?: number;
 }

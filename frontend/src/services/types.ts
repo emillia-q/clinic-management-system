@@ -40,6 +40,14 @@ export interface PatientDto {
     address: AddressDto;
 }
 
+export interface PatientGeneralDto {
+    id: number;
+    firstName: string;
+    lastName: string;
+    socialSecurityNo: string;
+    dateOfBirth: string;
+}
+
 export interface AddPatientRequest {
     firstName: string;
     lastName: string;
@@ -48,4 +56,15 @@ export interface AddPatientRequest {
     email: string;
     phoneNumber: string;
     address: AddressDto;
+}
+
+export interface VisitDto {
+    id: number;
+    patientName: string;
+    socialSecurityNo: string;
+    doctorName: string;
+    status: string; // "Registered", "Cancelled", itd.
+    appointmentDate: string; // LocalDateTime przychodzi jako ISO String
+    description: string;
+    diagnosis: string;
 }
