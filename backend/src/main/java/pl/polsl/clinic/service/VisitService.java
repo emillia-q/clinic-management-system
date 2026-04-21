@@ -137,13 +137,13 @@ public class VisitService {
 		Specification<Visit> doctorFilter = (root, query, cb) -> {
 			if (params.doctorId == null)
 				return cb.conjunction(); // Returns 'true' if no doctorId is provided
-			return cb.equal(root.get("doctor").get("userId"), params.doctorId);
+			return cb.equal(root.get(Visit.doctor_).get(Doctor.userId_), params.doctorId);
 		};
 
 		Specification<Visit> patientFilter = (root, query, cb) -> {
 			if (params.patientId == null)
 				return cb.conjunction(); // Returns 'true' if no patientId is provided
-			return cb.equal(root.get("patient").get("patientId"), params.patientId);
+			return cb.equal(root.get(Visit.patient_).get(Patient.patientId_), params.patientId);
 		};
 
 		Specification<Visit> dateFilter = (root, query, cb) -> {
@@ -152,26 +152,26 @@ public class VisitService {
 			if (params.fromDate == null) {
 				//all up to ...
 				LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
-				return cb.lessThanOrEqualTo(root.get("appointmentDate"), endOfDate);
+				return cb.lessThanOrEqualTo(root.get(Visit.appointmentDate_), endOfDate);
 			} else if (params.toDate == null) {
 				//all before ...
 				LocalDateTime startOfDate = params.fromDate.atStartOfDay();
-				return cb.greaterThanOrEqualTo(root.get("appointmentDate"), startOfDate);
+				return cb.greaterThanOrEqualTo(root.get(Visit.appointmentDate_), startOfDate);
 			}
 			LocalDateTime startOfDate = params.fromDate.atStartOfDay();
 			LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
 			//compare in between 00:00:00 and 23:59:59.999
-			return cb.between(root.get("appointmentDate"), startOfDate, endOfDate);
+			return cb.between(root.get(Visit.appointmentDate_), startOfDate, endOfDate);
 		};
 
 		Specification<Visit> statusFilter = (root, query, cb) -> {
 			if (params.status == null)
 				return cb.conjunction(); // Returns 'true' if no status is provided
-			return cb.equal(root.get("status"), params.status);
+			return cb.equal(root.get(Visit.status_), params.status);
 		};
 
 		Specification<Visit> filter = Specification.where(doctorFilter).and(patientFilter).and(dateFilter).and(statusFilter);
-		var sortOrder = Sort.by(params.sortOrder, "appointmentDate");
+		var sortOrder = Sort.by(params.sortOrder, Visit.appointmentDate_);
 
 		///limit the query to maxLimit, starting at offset 0. limit of <= 0 is invalid and assumes maxLimit.
 		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 || params.limit > maxFetchLimit ? maxFetchLimit : params.limit, sortOrder);
