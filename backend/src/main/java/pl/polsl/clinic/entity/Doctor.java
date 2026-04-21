@@ -16,9 +16,11 @@ import java.util.List;
 public class Doctor extends Staff {
 	@Column(name = "license_no", unique = true, nullable = false, length = 7)
 	private String licenseNo;
+	static public final String licenseNo_ = "licenseNo";
 
 	@OneToMany(mappedBy = "doctor")
 	private List<Visit> visits;
+	static public final String visits_ = "visits";
 }
 
 
