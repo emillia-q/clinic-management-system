@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.clinic.dto.*;
+import pl.polsl.clinic.dto.requests.AddLabExamRequest;
+import pl.polsl.clinic.dto.requests.AddPhysicalExamRequest;
 import pl.polsl.clinic.entity.Doctor;
 import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.entity.Visit;
@@ -103,7 +103,7 @@ public class DoctorController {
 
 	@GetMapping("patients/{patientId}/history")
 	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Doctor-Visits")
+	///TODO: ViewPatientVisitHistory
 	public PatientHistoryDto ViewPatientVisitHistory(Long patientId) {
 		throw new NotImplementedException("ViewPatientVisitHistory is not implemented yet.");
 		//get patient visit history, physical exams, lab exams
@@ -117,42 +117,20 @@ public class DoctorController {
 
 
 	//<editor-fold desc="Add exam(request) to patient">
-	@Data
-	public static class ScheduleLabExam {
-		@NonNull
-		@NotEmpty
-		private String examCode;
-		private String doctorNotes;
-		//fill in from context
-		private Long patientId;
-		private Long visitId;
-	}
-
-	@Data
-	public static class AddPhysicalExam {
-		@NonNull
-		@NotEmpty
-		private String examCode;
-		private String result;
-		//fill in from context
-		private Long patientId;
-		private Long visitId;
-	}
-
 	@PostMapping("lab-exam")
 	@Operation(summary = "WIP (not implemented)")
+	///TODO: add LabExam
 	public void LabExam(
-		@PathVariable Long patientId,
-		@RequestBody @NonNull @Valid ScheduleLabExam request
+		@RequestBody @NonNull @Valid AddLabExamRequest request
 	) {
 		//add a new lab exam(ExamType = L) to patient with id
 	}
 
 	@PostMapping("physical-exam")
 	@Operation(summary = "WIP (not implemented)")
+	///TODO: add PhysicalExam
 	public void PhysicalExam(
-		@PathVariable Long patientId,
-		@RequestBody @NonNull @Valid DoctorController.AddPhysicalExam request
+		@RequestBody @NonNull @Valid AddPhysicalExamRequest request
 	) {
 		//add a new PhysicalExam (ExamType = P) to patient with id
 	}
@@ -180,6 +158,7 @@ public class DoctorController {
 	@Operation(summary = "Get a list of today's visits to handle. Ordered by appointment date ascending.")
 	@ApiResponse(responseCode = "200", description = "List of today's visits", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitGeneralDto.class)))})
 	public Iterable<VisitGeneralDto> MyVisits(
+		///TODO: auto fetch this from Auth header later
 		@RequestParam(required = false) Long doctorId) {
 		return StreamSupport.stream(visitService.getMatchingVisits(
 				new VisitService.VisitParams(doctorId, null, LocalDate.now())
@@ -187,26 +166,35 @@ public class DoctorController {
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 
-	@PatchMapping("visits/{visitId}/start")
-	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Doctor-Visits")
-	public void StartVisit(Long visitId) {
-		//
+
+	//<editor-fold desc="Modify visit status with details">
+	@PatchMapping("visits/start")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(summary = "Start a visit")
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public void StartVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+		visitService.ModifyVisitDoctor(request, VisitStatus.In_Progress);
 	}
 
-	@PatchMapping("visits/{visitId}/cancel")
-	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Doctor-Visits")
-	public void CancelVisit(Long visitId) {
-		//
+	@PatchMapping("visits/cancel")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(summary = "Cancel a visit due to reasons")
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public void CancelVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+		visitService.ModifyVisitDoctor(request, VisitStatus.Cancelled);
 	}
 
-	@PatchMapping("visits/{visitId}/finish")
-	@Operation(summary = "WIP (not implemented)")
-	@Tag(name = "WIP Doctor-Visits")
-	public void FinishVisit(Long visitId) {
-		//adds Diagnosis and Description to finish a visit
+	@PatchMapping("visits/finish")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(summary = "Finish a visit")
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public void FinishVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+		visitService.ModifyVisitDoctor(request, VisitStatus.Finished);
 	}
+	//</editor-fold>
 
 
 }

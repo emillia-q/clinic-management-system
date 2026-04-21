@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.VisitStatus;
+import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.*;
 import pl.polsl.clinic.dto.VisitDto;
@@ -177,5 +178,24 @@ public class VisitService {
 		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 || params.limit > maxFetchLimit ? maxFetchLimit : params.limit, sortOrder);
 
 		return visitRepository.findAll(filter, sortedLimit).getContent();
+	}
+
+	public record ModifyVisitDoctorRequest(Long visitId, String description, String diagnosis) {
+		public Visit updateEntity(Visit visit) {
+			visit.setDescription(description);
+			visit.setDiagnosis(diagnosis);
+			return visit;
+		}
+	}
+
+	public void ModifyVisitDoctor(ModifyVisitDoctorRequest request, VisitStatus newStatus) {
+		Visit visit = visitRepository.findById(request.visitId()).orElseThrow(() -> new ItemNotFoundException(Visit.class, request.visitId()));
+		var currentStatus = visit.getStatus();
+		if ((newStatus.equals(VisitStatus.In_Progress) || newStatus.equals(VisitStatus.Registered)) &&
+			(currentStatus.equals(VisitStatus.Finished) || currentStatus.equals(VisitStatus.Cancelled))) {
+			throw new InvalidParametersException("Can not move to an earlier visit state.");
+		}
+		visit.setStatus(newStatus);
+		visitRepository.save(request.updateEntity(visit));
 	}
 }
