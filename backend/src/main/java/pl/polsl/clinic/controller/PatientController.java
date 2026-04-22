@@ -20,7 +20,7 @@ import pl.polsl.clinic.validator.PESEL;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@RequestMapping(path = "/api/v1/patient")
+@RequestMapping(path = "/api/v1/patients")
 public class PatientController {
 	private final PatientService patientService;
 

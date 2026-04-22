@@ -48,7 +48,7 @@ export const AddPatientPanel = ({onClose, onRefresh}: AddPatientPanelProps) => {
 
     const handleAdd = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/v1/patient", {
+            const response = await fetch("http://localhost:8080/api/v1/patients", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(formData),
