@@ -5,9 +5,10 @@ interface PatientDetailsProps {
     patient: PatientDto | null;
     onClose: () => void;
     onRefresh: () => void;
+    onSchedule: (id: number) => void;
 }
 
-export const PatientDetails = ({patient, onClose, onRefresh}: PatientDetailsProps) => {
+export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: PatientDetailsProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<PatientDto | null>(null);
 
@@ -21,27 +22,34 @@ export const PatientDetails = ({patient, onClose, onRefresh}: PatientDetailsProp
     if (!patient || !editData) return null;
 
     const handleSave = async () => {
+        if (!editData) return;
+
         const payload = {
             id: editData.id,
             firstName: editData.firstName,
             lastName: editData.lastName,
-            dateOfBirth: editData.dateOfBirth,
             socialSecurityNo: editData.socialSecurityNo,
+            dateOfBirth: editData.dateOfBirth, //YYYY-MM-DD
             email: editData.email,
             phoneNumber: editData.phoneNumber,
-            street: editData.address.street,
-            houseNo: editData.address.houseNo,
-            city: editData.address.city,
-            postalCode: editData.address.postalCode,
-            flatNumber: editData.address.flatNumber
+            address: {
+                city: editData.address.city,
+                street: editData.address.street,
+                houseNo: editData.address.houseNo,
+                postalCode: editData.address.postalCode || "00-000",
+                flatNumber: editData.address.flatNumber || ""
+            }
         };
 
-        console.log("Payload sent to PUT:", payload);
+        console.log("Sending payload to backend:", payload);
 
         try {
-            const response = await fetch("http://localhost:8080/api/v1/patient", {
+            const response = await fetch("http://localhost:8080/api/v1/patients", {
                 method: "PUT",
-                headers: {"Content-Type": "application/json"},
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
                 body: JSON.stringify(payload),
             });
 
@@ -50,13 +58,13 @@ export const PatientDetails = ({patient, onClose, onRefresh}: PatientDetailsProp
                 onRefresh();
                 alert("Patient updated successfully!");
             } else {
-                const errData = await response.json();
-                console.error("Error details:", errData);
-                alert("Update failed: " + JSON.stringify(errData));
+                const errorData = await response.text();
+                console.error("Backend error response:", errorData);
+                alert(`Update failed: ${response.status}. Check console for details.`);
             }
         } catch (error) {
-            console.error("Network error:", error);
-            alert("Connection error.");
+            console.error("Network/Connection error:", error);
+            alert("Could not connect to the server.");
         }
     };
     return (
@@ -187,7 +195,10 @@ export const PatientDetails = ({patient, onClose, onRefresh}: PatientDetailsProp
                         </div>
                     ) : (
                         <div className="d-grid">
-                            <button className="btn btn-outline-dark fw-bold py-2 shadow-sm mb-2">
+                            <button
+                                className="btn btn-outline-dark fw-bold py-2 shadow-sm mb-2"
+                                onClick={() => onSchedule(patient.id)}
+                            >
                                 Schedule a New Visit
                             </button>
                             <div className="text-end">
