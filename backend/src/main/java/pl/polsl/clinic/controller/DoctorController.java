@@ -22,6 +22,7 @@ import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.service.PatientService;
+import pl.polsl.clinic.service.PhysicalExamService;
 import pl.polsl.clinic.service.StaffService;
 import pl.polsl.clinic.service.VisitService;
 
@@ -37,6 +38,7 @@ public class DoctorController {
 	private final PatientService patientService;
 	private final StaffService staffService;
 	private final VisitService visitService;
+	private final PhysicalExamService physicalExamService;
 
 
 	//<editor-fold desc="Get doctor(s)">
@@ -127,12 +129,13 @@ public class DoctorController {
 	}
 
 	@PostMapping("physical-exam")
-	@Operation(summary = "WIP (not implemented)")
-	///TODO: add PhysicalExam
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(summary = "Add the performed physical exam results on this visit")
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public void PhysicalExam(
 		@RequestBody @NonNull @Valid AddPhysicalExamRequest request
 	) {
-		//add a new PhysicalExam (ExamType = P) to patient with id
+		physicalExamService.add(request);
 	}
 	//</editor-fold>
 

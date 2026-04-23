@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PhysicalExam {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "physical_exam_id")
 	private Long physicalExamId;
 
