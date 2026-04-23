@@ -1,17 +1,24 @@
 package pl.polsl.clinic.service;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.requests.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.VisitStatus;
+import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.*;
 import pl.polsl.clinic.dto.VisitDto;
 import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -21,6 +28,10 @@ public class VisitService {
 	private final PatientRepository patientRepository;
 	private final DoctorRepository doctorRepository;
 	private final ReceptionistRepository receptionistRepository;
+
+
+	/// max amount of fetched rows
+	static private final Integer maxFetchLimit = 1_000;
 
 	@Transactional
 	public VisitDto createVisit(CreateVisitRequest req) {
@@ -46,6 +57,7 @@ public class VisitService {
 		return VisitDto.fromEntity(savedVisit);
 	}
 
+	//TODO: remove this method, use getMatchingVisits() instead
 	public List<VisitDto> getAllVisits(VisitStatus status) {
 		List<Visit> visits;
 		if (status != null) {
@@ -90,6 +102,7 @@ public class VisitService {
 		return VisitDto.fromEntity(visitRepository.save(visit));
 	}
 
+	//TODO: remove this method, use getMatchingVisits() instead
 	public List<VisitDto> getPatientVisitHistory(Long patientId) {
 		if (!patientRepository.existsById(patientId)) {
 			throw new ItemNotFoundException(Patient.class, patientId);
@@ -99,5 +112,90 @@ public class VisitService {
 			.stream()
 			.map(VisitDto::fromEntity)
 			.toList();
+	}
+
+	public record VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate,
+	                          VisitStatus status, Integer limit, Sort.Direction sortOrder) {
+		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status) {
+			this(doctorId, patientId, fromDate, toDate, status, maxFetchLimit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status, Integer limit) {
+			this(doctorId, patientId, fromDate, toDate, status, limit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long doctorId, Long patientId, LocalDate date) {
+			this(doctorId, patientId, date, date, null, maxFetchLimit, Sort.Direction.ASC);
+		}
+
+		public VisitParams(Long doctorId, Long patientId, Sort.Direction direction) {
+			this(doctorId, patientId, null, null, null, maxFetchLimit, direction);
+		}
+	}
+
+	/// @param params the limit field is used to fetch \[1, maxLimit\] of rows, any value outside that range will become maxLimit.
+	public Iterable<Visit> getMatchingVisits(@NonNull VisitParams params) {
+		Specification<Visit> doctorFilter = (root, query, cb) -> {
+			if (params.doctorId == null)
+				return cb.conjunction(); // Returns 'true' if no doctorId is provided
+			return cb.equal(root.get(Visit.doctor_).get(Doctor.userId_), params.doctorId);
+		};
+
+		Specification<Visit> patientFilter = (root, query, cb) -> {
+			if (params.patientId == null)
+				return cb.conjunction(); // Returns 'true' if no patientId is provided
+			return cb.equal(root.get(Visit.patient_).get(Patient.patientId_), params.patientId);
+		};
+
+		Specification<Visit> dateFilter = (root, query, cb) -> {
+			if (params.fromDate == null && params.toDate == null)
+				return cb.conjunction(); // Returns 'true' if no dates are provided
+			if (params.fromDate == null) {
+				//all up to ...
+				LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
+				return cb.lessThanOrEqualTo(root.get(Visit.appointmentDate_), endOfDate);
+			} else if (params.toDate == null) {
+				//all before ...
+				LocalDateTime startOfDate = params.fromDate.atStartOfDay();
+				return cb.greaterThanOrEqualTo(root.get(Visit.appointmentDate_), startOfDate);
+			}
+			LocalDateTime startOfDate = params.fromDate.atStartOfDay();
+			LocalDateTime endOfDate = params.toDate.atTime(LocalTime.MAX);
+			//compare in between 00:00:00 and 23:59:59.999
+			return cb.between(root.get(Visit.appointmentDate_), startOfDate, endOfDate);
+		};
+
+		Specification<Visit> statusFilter = (root, query, cb) -> {
+			if (params.status == null)
+				return cb.conjunction(); // Returns 'true' if no status is provided
+			return cb.equal(root.get(Visit.status_), params.status);
+		};
+
+		Specification<Visit> filter = Specification.where(doctorFilter).and(patientFilter).and(dateFilter).and(statusFilter);
+		var sortOrder = Sort.by(params.sortOrder, Visit.appointmentDate_);
+
+		///limit the query to maxLimit, starting at offset 0. limit of <= 0 is invalid and assumes maxLimit.
+		Pageable sortedLimit = PageRequest.of(0, params.limit <= 0 || params.limit > maxFetchLimit ? maxFetchLimit : params.limit, sortOrder);
+
+		return visitRepository.findAll(filter, sortedLimit).getContent();
+	}
+
+	public record ModifyVisitDoctorRequest(Long visitId, String description, String diagnosis) {
+		public Visit updateEntity(Visit visit) {
+			visit.setDescription(description);
+			visit.setDiagnosis(diagnosis);
+			return visit;
+		}
+	}
+
+	public void ModifyVisitDoctor(ModifyVisitDoctorRequest request, VisitStatus newStatus) {
+		Visit visit = visitRepository.findById(request.visitId()).orElseThrow(() -> new ItemNotFoundException(Visit.class, request.visitId()));
+		var currentStatus = visit.getStatus();
+		if ((newStatus.equals(VisitStatus.In_Progress) || newStatus.equals(VisitStatus.Registered)) &&
+			(currentStatus.equals(VisitStatus.Finished) || currentStatus.equals(VisitStatus.Cancelled))) {
+			throw new InvalidParametersException("Can not move to an earlier visit state.");
+		}
+		visit.setStatus(newStatus);
+		visitRepository.save(request.updateEntity(visit));
 	}
 }

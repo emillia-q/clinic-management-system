@@ -14,21 +14,6 @@ public class PatientGeneralDto {
 	private final String socialSecurityNo;
 	private final LocalDate dateOfBirth;
 
-
-	public PatientGeneralDto(
-		Long id,
-		String firstName,
-		String lastName,
-		String socialSecurityNo,
-		LocalDate dateOfBirth
-	) {
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.socialSecurityNo = socialSecurityNo;
-		this.dateOfBirth = dateOfBirth;
-	}
-
 	public static PatientGeneralDto fromEntity(Patient patient) {
 		if (patient == null) return null;
 		return new PatientGeneralDto(

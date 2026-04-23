@@ -49,14 +49,14 @@ public class PatientService {
 			if (firstName == null || lastName == null)
 				return cb.disjunction(); // Returns 'false' if names are missing
 			return cb.and(
-				cb.equal(cb.lower(root.get("firstName")), firstName.toLowerCase()),
-				cb.equal(cb.lower(root.get("lastName")), lastName.toLowerCase())
+				cb.equal(cb.lower(root.get(Patient.firstName_)), firstName.toLowerCase()),
+				cb.equal(cb.lower(root.get(Patient.lastName_)), lastName.toLowerCase())
 			);
 		};
 		Specification<Patient> ssnSpec = (root, query, cb) -> {
 			if (socialSecurityNo == null || socialSecurityNo.isBlank())
 				return cb.disjunction(); // Returns 'false' if SSN is missing
-			return cb.equal(root.get("socialSecurityNo"), socialSecurityNo);
+			return cb.equal(root.get(Patient.socialSecurityNo_), socialSecurityNo);
 		};
 		Specification<Patient> filter = Specification.where(nameSpec).or(ssnSpec);
 		var patients = patientRepository.findAll(filter);
