@@ -3,7 +3,10 @@ package pl.polsl.clinic.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import pl.polsl.clinic.enums.LabExamStatus;
 
 import java.time.LocalDateTime;
 
@@ -18,10 +21,12 @@ public class LabExam {
 	@Column(name = "lab_exam_id")
 	private Long labExamId;
 
+	@NonNull
 	@ManyToOne
 	@JoinColumn(name = "visit_visit_id", nullable = false)
 	private Visit visit;
 
+	@NonNull
 	@ManyToOne
 	@JoinColumn(name = "exam_dict_exam_code", nullable = false)
 	private ExamDict examDict;
@@ -29,7 +34,8 @@ public class LabExam {
 	@Column(name = "doctor_notes", columnDefinition = "TEXT")
 	private String doctorNotes;
 
-	@Column(name = "order_date", nullable = false)
+	@CreationTimestamp // auto set LocalDateTime.now()
+	@Column(name = "order_date", nullable = false, updatable = false)
 	private LocalDateTime orderDate;
 
 	@Column(name = "result", columnDefinition = "TEXT")
@@ -44,8 +50,9 @@ public class LabExam {
 	@Column(name = "approval_rejection_date")
 	private LocalDateTime approvalRejectionDate;
 
+	@NonNull
 	@Column(name = "status", nullable = false, length = 50)
-	private String status;
+	private String status = LabExamStatus.Ordered.name();
 
 	@ManyToOne
 	@JoinColumn(name = "lab_technician_user_id")
