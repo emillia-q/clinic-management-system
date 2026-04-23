@@ -17,7 +17,9 @@ public class ExamDict {
 	@Id
 	@Column(name = "exam_code", length = 20)
 	private String examCode;
+	static public final String examCode_ = "examCode";
 
 	@Column(name = "exam_name", nullable = false, length = 255)
 	private String examName;
+	static public final String examName_ = "examName";
 }

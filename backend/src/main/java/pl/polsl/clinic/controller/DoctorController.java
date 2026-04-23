@@ -139,6 +139,7 @@ public class DoctorController {
 	//</editor-fold>
 
 
+	//<editor-fold desc="Get Visits">
 	@GetMapping("visits")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get a list of visits(appointments) that match the parameters. Ordered by appointment date ascending.")
@@ -167,6 +168,7 @@ public class DoctorController {
 			).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
+	//</editor-fold>
 
 
 	//<editor-fold desc="Modify visit status with details">
