@@ -6,11 +6,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +27,6 @@ import pl.polsl.clinic.service.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -99,18 +96,11 @@ public class DoctorController {
 		);
 	}
 
-	@Data
-	@AllArgsConstructor
-	public static class PatientHistoryDto {
-		Iterable<VisitExamDateTypeDto> visits;
-		Iterable<VisitExamDateTypeDto> physicalExams;
-		Iterable<VisitExamDateTypeDto> labExams;
-	}
-
 	@GetMapping("patients/{patientId}/history")
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get patient visit history, physical exams, lab exams (sorted in desc order)")
-	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history")
+	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientHistoryDto.class))})
+	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history", content = {@Content()})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
 		var params = new VisitService.VisitParams(null, patientId, Sort.Direction.DESC);
