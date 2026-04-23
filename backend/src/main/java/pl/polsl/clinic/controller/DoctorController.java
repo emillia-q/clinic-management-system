@@ -103,7 +103,7 @@ public class DoctorController {
 	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history", content = {@Content()})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
-		var params = new VisitService.VisitParams(null, patientId, Sort.Direction.DESC);
+		var params = new VisitService.VisitParams(null, patientId, null, LocalDate.now(), Sort.Direction.DESC);
 		var resultingVisitsList = StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(), false).toList();
 		if (resultingVisitsList.isEmpty())
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -156,6 +156,7 @@ public class DoctorController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get a list of visits(appointments) that match the parameters. Ordered by appointment date ascending.")
 	@ApiResponse(responseCode = "200", description = "List of matching visits", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitGeneralDto.class)))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public Iterable<VisitGeneralDto> Visits(
 		@RequestParam(required = false) Long doctorId,
 		@RequestParam(required = false) Long patientId,

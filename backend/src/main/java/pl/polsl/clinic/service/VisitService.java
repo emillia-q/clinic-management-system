@@ -128,7 +128,7 @@ public class VisitService {
 			this(doctorId, patientId, date, date, null, maxFetchLimit, Sort.Direction.ASC);
 		}
 
-		public VisitParams(Long doctorId, Long patientId, Sort.Direction direction) {
+		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, Sort.Direction direction) {
 			this(doctorId, patientId, null, null, null, maxFetchLimit, direction);
 		}
 	}
