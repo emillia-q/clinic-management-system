@@ -135,6 +135,12 @@ public class VisitService {
 
 	/// @param params the limit field is used to fetch \[1, maxLimit\] of rows, any value outside that range will become maxLimit.
 	public Iterable<Visit> getMatchingVisits(@NonNull VisitParams params) {
+		//confirm requested parameters entities  exist
+		if (params.doctorId != null && !doctorRepository.existsById(params.doctorId))
+			throw new ItemNotFoundException(Doctor.class, params.doctorId);
+		if (params.patientId != null && !patientRepository.existsById(params.patientId))
+			throw new ItemNotFoundException(Patient.class, params.patientId);
+
 		Specification<Visit> doctorFilter = (root, query, cb) -> {
 			if (params.doctorId == null)
 				return cb.conjunction(); // Returns 'true' if no doctorId is provided

@@ -6,11 +6,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.polsl.clinic.dto.*;
@@ -25,6 +28,8 @@ import pl.polsl.clinic.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 @RestController
@@ -95,6 +100,7 @@ public class DoctorController {
 	}
 
 	@Data
+	@AllArgsConstructor
 	public static class PatientHistoryDto {
 		Iterable<VisitExamDateTypeDto> visits;
 		Iterable<VisitExamDateTypeDto> physicalExams;
@@ -102,16 +108,32 @@ public class DoctorController {
 	}
 
 	@GetMapping("patients/{patientId}/history")
-	@Operation(summary = "WIP (not implemented)")
-	///TODO: ViewPatientVisitHistory
-	public PatientHistoryDto ViewPatientVisitHistory(Long patientId) {
-		throw new NotImplementedException("ViewPatientVisitHistory is not implemented yet.");
-		//get patient visit history, physical exams, lab exams
-		//sorted in desc order
-//		var params= new VisitService.VisitParams(patientId, Sort.Direction.DESC)
-//		return new PatientHistoryDto(
-//			StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(),false).map(VisitExamDateTypeDto::fromEntity),
-//		);
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Get patient visit history, physical exams, lab exams (sorted in desc order)")
+	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history")
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
+		var params = new VisitService.VisitParams(null, patientId, Sort.Direction.DESC);
+		var resultingVisitsList = StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(), false).toList();
+		if (resultingVisitsList.isEmpty())
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		//at this point all the data is present(including patient's exams histories)
+		// but is in format [Visit{LabExams[...], PhysicalExams[...], ...}]
+		// we want {[Visits], [LabExams], [PhysicalExams]}
+		// so we flatten it and remap
+		return new ResponseEntity<>(new PatientHistoryDto(
+			resultingVisitsList.stream().map(VisitExamDateTypeDto::fromEntity).toList(),
+			resultingVisitsList.stream()
+				.flatMap(visit -> visit.getPhysicalExams().stream()) // Flattens List<List<P>> to Stream<P>
+				.map(VisitExamDateTypeDto::fromEntity)
+				.sorted(Comparator.comparing(VisitExamDateTypeDto::getDate).reversed()) // desc order
+				.toList(),
+			resultingVisitsList.stream()
+				.flatMap(visit -> visit.getLabExams().stream()) // Flattens List<List<L>> to Stream<L>
+				.map(VisitExamDateTypeDto::fromEntity)
+				.sorted(Comparator.comparing(VisitExamDateTypeDto::getDate).reversed()) // desc order
+				.toList()
+		), HttpStatus.OK);
 	}
 	//</editor-fold>
 
