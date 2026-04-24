@@ -3,6 +3,7 @@ package pl.polsl.clinic.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.polsl.clinic.dto.StaffCreatedDto;
 import pl.polsl.clinic.dto.StaffListDto;
 import pl.polsl.clinic.dto.requests.AddStaff;
 import pl.polsl.clinic.entity.*;
@@ -33,7 +34,7 @@ public class AdminService {
 	}
 
 	@Transactional
-	public Staff addStaffMember(AddStaff dto) {
+	public StaffCreatedDto addStaffMember(AddStaff dto) {
 		// Auto generated login: firstName_lastName
 		String baseLogin = (dto.getFirstName() + "_" + dto.getLastName()).toLowerCase();
 		String finalLogin = generateUniqueLogin(baseLogin);
@@ -68,7 +69,8 @@ public class AdminService {
 		staff.setIsActive("Y");
 		staff.setPasswdChangeRequired("Y");
 
-		return staffRepository.save(staff);
+		Staff savedStaff = staffRepository.save(staff);
+		return StaffCreatedDto.fromEntity(savedStaff, tempPasswd);
 	}
 
 	public List<StaffListDto> getStaffList(UserType type, String query) {

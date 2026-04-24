@@ -30,7 +30,7 @@ public class StaffController {
 	@ApiResponse(responseCode = "201", description = "Staff created")
 	@ApiResponse(responseCode = "400", description = "Validation failed", content = @Content(schema = @Schema(implementation = ValidationErrorDetails.class)))
 	public StaffCreatedDto add(@RequestBody @Valid AddStaff addStaff) {
-		return StaffCreatedDto.fromEntity(adminService.addStaffMember(addStaff));
+		return adminService.addStaffMember(addStaff);
 	}
 
 	@GetMapping
