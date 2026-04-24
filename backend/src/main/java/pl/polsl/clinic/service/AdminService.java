@@ -20,6 +20,8 @@ public class AdminService {
 	private final LabTechnicianRepository labTechnicianRepository;
 	private final LabManagerRepository labManagerRepository;
 
+	private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
 	private String generateUniqueLogin(String base) {
 		String candidate = base;
 		int counter = 1;
@@ -57,7 +59,11 @@ public class AdminService {
 		staff.setFirstName(dto.getFirstName());
 		staff.setLastName(dto.getLastName());
 		staff.setLogin(finalLogin);
-		staff.setPassword(tempPasswd);
+
+		// Make hashed password
+		String hashedPasswd=passwordEncoder.encode(tempPasswd);
+		staff.setPassword(hashedPasswd);
+
 		staff.setUserType(dto.getUserType());
 		staff.setIsActive("Y");
 		staff.setPasswdChangeRequired("Y");
