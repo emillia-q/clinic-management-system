@@ -13,7 +13,6 @@ import pl.polsl.clinic.dto.StaffDto;
 import pl.polsl.clinic.dto.StaffListDto;
 import pl.polsl.clinic.dto.ValidationErrorDetails;
 import pl.polsl.clinic.dto.requests.AddStaff;
-import pl.polsl.clinic.entity.Staff;
 import pl.polsl.clinic.enums.UserType;
 import pl.polsl.clinic.service.AdminService;
 
@@ -21,8 +20,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin")
-public class AdminController {
+@RequestMapping("/api/v1/staff")
+public class StaffController {
 	private final AdminService adminService;
 
 	@PostMapping
@@ -34,7 +33,7 @@ public class AdminController {
 		return StaffCreatedDto.fromEntity(adminService.addStaffMember(addStaff));
 	}
 
-	@GetMapping("/list")
+	@GetMapping
 	@Operation(summary = "Get staff list for tabs with optional search")
 	public List<StaffListDto> getList(
 		@RequestParam(required = false) UserType type,
