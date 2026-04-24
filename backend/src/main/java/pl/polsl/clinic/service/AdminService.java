@@ -20,32 +20,32 @@ public class AdminService {
 	private final LabTechnicianRepository labTechnicianRepository;
 	private final LabManagerRepository labManagerRepository;
 
-	private String generateUniqueLogin(String base){
-		String candidate= base;
-		int counter=1;
-		while(staffRepository.existsByLogin(candidate)){
-			candidate=base+counter;
+	private String generateUniqueLogin(String base) {
+		String candidate = base;
+		int counter = 1;
+		while (staffRepository.existsByLogin(candidate)) {
+			candidate = base + counter;
 			counter++;
 		}
 		return candidate;
 	}
 
 	@Transactional
-	public Staff addStaffMember(AddStaff dto){
+	public Staff addStaffMember(AddStaff dto) {
 		// Auto generated login: firstName_lastName
-		String baseLogin = (dto.getFirstName()+"_"+dto.getLastName()).toLowerCase();
-		String finalLogin=generateUniqueLogin(baseLogin);
+		String baseLogin = (dto.getFirstName() + "_" + dto.getLastName()).toLowerCase();
+		String finalLogin = generateUniqueLogin(baseLogin);
 
 		// Random password
-		String tempPasswd=java.util.UUID.randomUUID().toString().substring(0,8);
+		String tempPasswd = java.util.UUID.randomUUID().toString().substring(0, 8);
 		Staff staff;
 
 		// Create an object based on type from dto
-		switch(dto.getUserType()){
+		switch (dto.getUserType()) {
 			case Doctor -> {
 				Doctor doctor = new Doctor();
 				doctor.setLicenseNo(dto.getLicenseNo());
-				staff=doctor;
+				staff = doctor;
 			}
 			case Receptionist -> staff = new Receptionist();
 			case LabTechnician -> staff = new LabTechnician();

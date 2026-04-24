@@ -9,7 +9,7 @@ import pl.polsl.clinic.enums.UserType;
 import java.util.List;
 
 @Repository
-public interface StaffRepository extends StaffBaseRepository<Staff>{
+public interface StaffRepository extends StaffBaseRepository<Staff> {
 	boolean existsByLogin(String login);
 
 	@Query("SELECT s FROM Staff s WHERE " +

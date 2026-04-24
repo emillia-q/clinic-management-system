@@ -14,11 +14,11 @@ public record StaffDto(
 	String passwdChangeRequired,
 	String licenseNo
 ) {
-	public static StaffDto fromEntity(Staff staff){
-		if (staff==null) return null;
+	public static StaffDto fromEntity(Staff staff) {
+		if (staff == null) return null;
 
-		String license=null;
-		if(staff.getUserType()==UserType.Doctor){
+		String license = null;
+		if (staff.getUserType() == UserType.Doctor) {
 			Doctor d = (Doctor) staff;
 			license = d.getLicenseNo();
 		}
