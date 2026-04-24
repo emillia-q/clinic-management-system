@@ -3,7 +3,7 @@ interface StaffTabsProps {
     onChangeTab: (tab: string) => void;
 }
 
-const ROLES = ["All", "Doctor", "Receptionist", "LabTechnician", "LabManager"];
+const ROLES = ["All", "Administrator", "Doctor", "Receptionist", "LabTechnician", "LabManager"];
 
 export const StaffTabs = ({ activeTab, onChangeTab }: StaffTabsProps) => {
     return (
