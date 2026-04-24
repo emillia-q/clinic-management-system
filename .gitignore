@@ -11,6 +11,11 @@ build/
 # Secrets and configuration
 .env
 
+
+# Frontend dependencies
+node_modules/
+dist/
+
 # Docker data (Local database files)
 clinic_db_data/
 
