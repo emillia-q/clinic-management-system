@@ -34,7 +34,7 @@ export const NewVisitPage = ({onBack, initialPatientId}: NewVisitPageProps) => {
             try {
                 const [patRes, docRes] = await Promise.all([
                     fetch("http://localhost:8080/api/v1/patients"),
-                    fetch("http://localhost:8080/api/v1/admin/list?type=Doctor")
+                    fetch("http://localhost:8080/api/v1/staff?type=Doctor")
                 ]);
 
                 if (patRes.ok) {
