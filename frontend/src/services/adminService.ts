@@ -16,7 +16,7 @@ export const adminService = {
             params.append('type', type);
         }
         const response = await API.get<StaffListDto[]>(`/list?${params.toString()}`);
-        return response.data;
+        return Array.isArray(response.data) ? response.data : [];
     },
 
     toggleActive: async (id: number): Promise<void> => {

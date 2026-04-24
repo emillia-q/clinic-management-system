@@ -3,21 +3,23 @@ interface StaffTabsProps {
     onChangeTab: (tab: string) => void;
 }
 
-const ROLES = ["All", "Administrator", "Doctor", "Receptionist", "LabTechnician", "LabManager"];
 
-export const StaffTabs = ({ activeTab, onChangeTab }: StaffTabsProps) => {
+const ROLES = ["All", "Administrators", "Doctors", "Receptionists", "Lab Technicians", "Lab Managers"];
+
+export const StaffTabs = ({activeTab, onChangeTab}: StaffTabsProps) => {
     return (
-        <div className="tabs">
-            {/* Role tabs: All, Doctor, Receptionist, LabTechnician, LabManager */}
+        <ul className="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
             {ROLES.map((role) => (
-                <button
-                    key={role}
-                    onClick={() => onChangeTab(role)}
-                    style={{ fontWeight: activeTab === role ? "bold" : "normal" }}
-                >
-                    {role}
-                </button>
+                <li key={role} className="nav-item">
+                    <button
+                        className={`nav-link border-0 ${activeTab === role ? "active fw-bold" : "text-muted"}`}
+                        onClick={() => onChangeTab(role)}
+                        style={{transition: "all 0.3s ease"}}
+                    >
+                        {role}
+                    </button>
+                </li>
             ))}
-        </div>
+        </ul>
     );
 };

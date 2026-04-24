@@ -1,58 +1,72 @@
-import type { StaffDto } from "../../services/types.ts";
+import type {StaffDto} from "../../services/types.ts";
 
 interface StaffDetailsPanelProps {
     selectedStaff: StaffDto | null;
     onRequestStatusChange: () => void;
 }
 
-export const StaffDetailsPanel = ({ selectedStaff, onRequestStatusChange }: StaffDetailsPanelProps) => {
+export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffDetailsPanelProps) => {
     return (
-        <div style={{ flex: 1, border: "1px solid #eee", padding: "10px", minHeight: "400px" }}>
-            {selectedStaff ? (
-                <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "20px" }}>
-                        {/* Placeholder for user image / avatar */}
-                        <div
-                            style={{
-                                width: "60px",
-                                height: "60px",
-                                borderRadius: "50%",
-                                backgroundColor: "#ddd"
-                            }}
-                        ></div>
-                        <h2>
-                            {selectedStaff.firstName} {selectedStaff.lastName}
-                        </h2>
-                    </div>
+        <div className="card shadow-sm border-light" style={{flex: 1, minHeight: "400px"}}>
+            <div className="card-body p-4">
+                {selectedStaff ? (
+                    <div>
+                        <div className="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+                            <div
+                                className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm"
+                                style={{width: "70px", height: "70px"}}
+                            >
+                                <i className="fa-solid fa-user-md fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h2 className="mb-0 fw-bold">{selectedStaff.firstName} {selectedStaff.lastName}</h2>
+                                <span
+                                    className={`badge ${selectedStaff.isActive === "Y" ? 'bg-success' : 'bg-danger'}`}>
+                                    {selectedStaff.isActive === "Y" ? "Active Account" : "Inactive Account"}
+                                </span>
+                            </div>
+                        </div>
 
-                    <p>
-                        <strong>Username:</strong> {selectedStaff.login}
-                    </p>
-                    <p>
-                        <strong>ID:</strong> {selectedStaff.id}
-                    </p>
-                    <p>
-                        <strong>Role:</strong> {selectedStaff.userType}
-                    </p>
-                    {selectedStaff.licenseNo && (
-                        <p>
-                            <strong>License Number:</strong> {selectedStaff.licenseNo}
-                        </p>
-                    )}
-                    <p>
-                        <strong>Password:</strong> ********
-                    </p>
+                        <div className="row g-3">
+                            <div className="col-sm-6">
+                                <label className="text-muted small d-block">Username</label>
+                                <p className="fw-medium text-dark">{selectedStaff.login}</p>
+                            </div>
+                            <div className="col-sm-6">
+                                <label className="text-muted small d-block">ID Number</label>
+                                <p className="fw-medium text-dark">#{selectedStaff.id}</p>
+                            </div>
+                            <div className="col-sm-6">
+                                <label className="text-muted small d-block">Role</label>
+                                <p className="fw-medium text-dark">
+                                    <span className="badge bg-info text-dark">{selectedStaff.userType}</span>
+                                </p>
+                            </div>
+                            {selectedStaff.licenseNo && (
+                                <div className="col-sm-6">
+                                    <label className="text-muted small d-block">License Number</label>
+                                    <p className="fw-medium text-dark">{selectedStaff.licenseNo}</p>
+                                </div>
+                            )}
+                        </div>
 
-                    {/* Change account status (opens confirmation in parent) */}
-                    <div style={{ marginTop: "40px" }}>
-                        <button onClick={onRequestStatusChange} style={{ padding: "10px 20px", cursor: "pointer" }}>
-                            {selectedStaff.isActive === "Y" ? "Deactivate Account" : "Activate Account"}
-                        </button>
+                        <div className="mt-5 border-top pt-4 text-end">
+                            <button
+                                onClick={onRequestStatusChange}
+                                className={`btn btn-lg ${selectedStaff.isActive === "Y" ? "btn-outline-danger" : "btn-success"}`}
+                            >
+                                <i className={`fa-solid ${selectedStaff.isActive === "Y" ? "fa-user-slash" : "fa-user-check"} me-2`}></i>
+                                {selectedStaff.isActive === "Y" ? "Deactivate Account" : "Activate Account"}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            ) : (
-                <p style={{ color: "#888" }}>Select a staff member to see details.</p>
-            )}
+                ) : (
+                    <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                        <i className="fa-solid fa-address-card fa-4x mb-3 opacity-25"></i>
+                        <p>Select a staff member to see details.</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
