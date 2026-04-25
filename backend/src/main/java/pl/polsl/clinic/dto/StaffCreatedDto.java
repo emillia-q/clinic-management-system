@@ -15,7 +15,7 @@ public record StaffCreatedDto(
 	String passwdChangeRequired,
 	String licenseNo
 ) {
-	public static StaffCreatedDto fromEntity(Staff staff) {
+	public static StaffCreatedDto fromEntity(Staff staff, String temporaryPassword) {
 		if (staff == null) return null;
 
 		String license = null;
@@ -29,7 +29,7 @@ public record StaffCreatedDto(
 			staff.getFirstName(),
 			staff.getLastName(),
 			staff.getLogin(),
-			staff.getPassword(),
+			temporaryPassword,
 			staff.getUserType(),
 			staff.getIsActive(),
 			staff.getPasswdChangeRequired(),
