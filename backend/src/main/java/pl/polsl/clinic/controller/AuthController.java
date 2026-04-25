@@ -1,5 +1,6 @@
 package pl.polsl.clinic.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/login")
+	@SecurityRequirements
 	public LoginResponse login(@RequestBody @Valid LoginRequest request){
 		return authService.authenticate(request);
 	}
