@@ -40,7 +40,8 @@ public class AuthService {
 		return new LoginResponse(
 			token,
 			staff.getLogin(),
-			staff.getUserType()
+			staff.getUserType(),
+			staff.getUserId()
 		);
 	}
 }

@@ -6,9 +6,10 @@ public record LoginResponse(
 	String token,
 	String login,
 	UserType role,
+	Long userId,
 	String type
 ) {
-	public LoginResponse(String token,String login, UserType role){
-		this(token,login,role,"Bearer");
+	public LoginResponse(String token,String login, UserType role, Long userId){
+		this(token,login,role,userId,"Bearer");
 	}
 }
