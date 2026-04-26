@@ -8,6 +8,10 @@ target/
 build/
 .gradle/
 
+# Frontend dependencies
+node_modules/
+dist/
+
 # Secrets and configuration
 .env
 

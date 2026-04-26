@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pl.polsl.clinic.dto.InvalidParametersErrorDetails;
-import pl.polsl.clinic.dto.ItemNotFoundErrorDetails;
+import pl.polsl.clinic.dto.common.error.InvalidParametersErrorDetails;
+import pl.polsl.clinic.dto.common.error.ItemNotFoundErrorDetails;
 
 @RestControllerAdvice
 @Slf4j

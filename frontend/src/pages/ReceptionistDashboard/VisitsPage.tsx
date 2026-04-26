@@ -1,5 +1,5 @@
 import {useEffect, useState, useCallback} from 'react';
-import type {VisitDto} from "../../services/types.ts";
+import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {VisitTabs} from "../../components/receptionist/VisitTabs";
 import {VisitList} from "../../components/receptionist/VisitList";
 import {DateStripline} from "../../components/receptionist/DateStripline";

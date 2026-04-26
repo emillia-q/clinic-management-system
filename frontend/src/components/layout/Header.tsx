@@ -1,5 +1,5 @@
 interface HeaderProps {
-    userRole?: 'ADMIN' | 'RECEPTIONIST' | 'DOCTOR';
+    userRole?: "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
     onLogout: () => void;
     onViewChange: (view: 'PATIENTS' | 'VISITS' | 'ADMIN') => void;
     currentView: string;
@@ -16,7 +16,7 @@ export const Header = ({userRole, onLogout, onViewChange, currentView}: HeaderPr
 
                 <div className="collapse navbar-collapse">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
-                        {userRole === 'RECEPTIONIST' && (
+                        {userRole === 'Receptionist' && (
                             <>
                                 <li className="nav-item">
                                     <button
@@ -37,7 +37,7 @@ export const Header = ({userRole, onLogout, onViewChange, currentView}: HeaderPr
                             </>
                         )}
 
-                        {userRole === 'ADMIN' && (
+                        {userRole === 'Administrator' && (
                             <li className="nav-item">
                                 <button
                                     className={`nav-link btn btn-link border-0 text-white ${currentView === 'ADMIN' ? 'active fw-bold border-bottom' : 'opacity-75'}`}

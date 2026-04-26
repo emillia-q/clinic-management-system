@@ -1,8 +1,8 @@
-import {ConfirmationModal} from "../../components/admin/ConfirmationModal.tsx";
-import {StaffDetailsPanel} from "../../components/admin/StaffDetailsPanel.tsx";
-import {StaffList} from "../../components/admin/StaffList.tsx";
-import {StaffTabs} from "../../components/admin/StaffTabs.tsx";
-import {useAdminDashboard} from "./useAdminDashboard.ts";
+import {ConfirmationModal} from "../../features/staff/ui/ConfirmationModal.tsx";
+import {StaffDetailsPanel} from "../../features/staff/ui/StaffDetailsPanel.tsx";
+import {StaffList} from "../../features/staff/ui/StaffList.tsx";
+import {StaffTabs} from "../../features/staff/ui/StaffTabs.tsx";
+import {useStaffDashboard} from "../../features/staff/model/useStaffDashboard.ts";
 
 export const AdminDashboard = () => {
     const {
@@ -18,7 +18,7 @@ export const AdminDashboard = () => {
         openStatusChangeConfirmation,
         closeStatusChangeConfirmation,
         toggleAccountStatus
-    } = useAdminDashboard();
+    } = useStaffDashboard();
 
     return (
         <div className="container-fluid py-4">

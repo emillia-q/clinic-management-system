@@ -360,34 +360,37 @@ INSERT INTO exam_dict (exam_code, exam_type, exam_name) VALUES ('95.1901', 'P', 
 -- INITIAL TEST DATA (SEED DATA)
 -- ============================================================
 
--- 1. STAFF & USERS (Passwords are 'pass123' for simplicity)
+-- Required for hashing seed passwords in SQL (bcrypt via crypt)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- 1. STAFF & USERS (plaintext password is 'pass123'; stored as bcrypt hash)
 INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
-VALUES ('System', 'Admin', 'admin', 'pass123', 'Y', 'Administrator', 'N');
+VALUES ('System', 'Admin', 'system_admin', crypt('pass123', gen_salt('bf')), 'Y', 'Administrator', 'N');
 
 INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
-VALUES ('Gregory', 'House', 'drhouse', 'pass123', 'Y', 'Doctor', 'N');
+VALUES ('Gregory', 'House', 'gregory_house', crypt('pass123', gen_salt('bf')), 'Y', 'Doctor', 'N');
 
 INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
-VALUES ('Pam', 'Beesly', 'pam_reception', 'pass123', 'Y', 'Receptionist', 'N');
+VALUES ('Pam', 'Beesly', 'pam_beesly', crypt('pass123', gen_salt('bf')), 'Y', 'Receptionist', 'N');
 
 INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
-VALUES ('Dexter', 'Morgan', 'dexter_lab', 'pass123', 'Y', 'LabTechnician', 'N');
+VALUES ('Dexter', 'Morgan', 'dexter_morgan', crypt('pass123', gen_salt('bf')), 'Y', 'LabTechnician', 'N');
 
 INSERT INTO staff (first_name, last_name, login, password, is_active, user_type, passwd_change_required)
-VALUES ('Walter', 'White', 'heisenberg_mgr', 'pass123', 'Y', 'LabManager', 'N');
+VALUES ('Walter', 'White', 'walter_white', crypt('pass123', gen_salt('bf')), 'Y', 'LabManager', 'N');
 
 -- 2. STAFF ROLES (Linking staff to specific roles)
 INSERT INTO doctor (license_no, staff_user_id)
-SELECT 'MD12345', user_id FROM staff WHERE login = 'drhouse';
+SELECT 'MD12345', user_id FROM staff WHERE login = 'gregory_house';
 
 INSERT INTO receptionist (staff_user_id)
-SELECT user_id FROM staff WHERE login = 'pam_reception';
+SELECT user_id FROM staff WHERE login = 'pam_beesly';
 
 INSERT INTO lab_technician (staff_user_id)
-SELECT user_id FROM staff WHERE login = 'dexter_lab';
+SELECT user_id FROM staff WHERE login = 'dexter_morgan';
 
 INSERT INTO lab_manager (staff_user_id)
-SELECT user_id FROM staff WHERE login = 'heisenberg_mgr';
+SELECT user_id FROM staff WHERE login = 'walter_white';
 
 -- 3. PATIENTS
 INSERT INTO patient (first_name, last_name, social_security_no, date_of_birth, email, phone_number)

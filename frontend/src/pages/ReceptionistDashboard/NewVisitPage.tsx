@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import type {PatientGeneralDto, StaffListDto} from "../../services/types.ts";
+import type {PatientGeneralDto} from "../../features/patients/types/patient.types.ts";
+import type {StaffListDto} from "../../features/staff/types/staff.types.ts";
 
 interface NewVisitPageProps {
     initialPatientId: number | null;
@@ -34,7 +35,7 @@ export const NewVisitPage = ({onBack, initialPatientId}: NewVisitPageProps) => {
             try {
                 const [patRes, docRes] = await Promise.all([
                     fetch("http://localhost:8080/api/v1/patients"),
-                    fetch("http://localhost:8080/api/v1/admin/list?type=Doctor")
+                    fetch("http://localhost:8080/api/v1/staff?type=Doctor")
                 ]);
 
                 if (patRes.ok) {

@@ -1,11 +1,19 @@
 import React, {useState} from 'react';
 
+type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
+
 interface LoginResponse {
     token: string;
-    role: 'ADMIN' | 'RECEPTIONIST';
+    role: UserRole;
+    userId: number;
+    login: string;
 }
 
-export const LoginPage = () => {
+interface LoginPageProps {
+    onLoginSuccess: (role: UserRole) => void;
+}
+
+export const LoginPage = ({onLoginSuccess}: LoginPageProps) => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -28,9 +36,11 @@ export const LoginPage = () => {
 
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userId', data.userId.toString());
+                localStorage.setItem('login', data.login);
                 localStorage.setItem('isAuthenticated', 'true');
 
-                window.location.href = '/';
+                onLoginSuccess(data.role);
             } else {
                 setError("Invalid username or password");
             }

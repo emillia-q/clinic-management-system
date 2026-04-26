@@ -3,8 +3,9 @@ package pl.polsl.clinic.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.dto.StaffListDto;
-import pl.polsl.clinic.dto.requests.AddStaff;
+import pl.polsl.clinic.dto.staff.request.AddStaff;
+import pl.polsl.clinic.dto.staff.response.StaffCreatedDto;
+import pl.polsl.clinic.dto.staff.response.StaffListDto;
 import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.UserType;
 import pl.polsl.clinic.repository.*;
@@ -20,6 +21,8 @@ public class AdminService {
 	private final LabTechnicianRepository labTechnicianRepository;
 	private final LabManagerRepository labManagerRepository;
 
+	private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
 	private String generateUniqueLogin(String base) {
 		String candidate = base;
 		int counter = 1;
@@ -31,7 +34,7 @@ public class AdminService {
 	}
 
 	@Transactional
-	public Staff addStaffMember(AddStaff dto) {
+	public StaffCreatedDto addStaffMember(AddStaff dto) {
 		// Auto generated login: firstName_lastName
 		String baseLogin = (dto.getFirstName() + "_" + dto.getLastName()).toLowerCase();
 		String finalLogin = generateUniqueLogin(baseLogin);
@@ -57,12 +60,17 @@ public class AdminService {
 		staff.setFirstName(dto.getFirstName());
 		staff.setLastName(dto.getLastName());
 		staff.setLogin(finalLogin);
-		staff.setPassword(tempPasswd);
+
+		// Make hashed password
+		String hashedPasswd=passwordEncoder.encode(tempPasswd);
+		staff.setPassword(hashedPasswd);
+
 		staff.setUserType(dto.getUserType());
 		staff.setIsActive("Y");
 		staff.setPasswdChangeRequired("Y");
 
-		return staffRepository.save(staff);
+		Staff savedStaff = staffRepository.save(staff);
+		return StaffCreatedDto.fromEntity(savedStaff, tempPasswd);
 	}
 
 	public List<StaffListDto> getStaffList(UserType type, String query) {

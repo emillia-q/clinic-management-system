@@ -1,4 +1,4 @@
-import type {VisitDto} from "../../services/types.ts";
+import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 
 interface CancelVisitModalProps {
     visit: VisitDto;

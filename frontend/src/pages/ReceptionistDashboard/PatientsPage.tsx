@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import type {PatientDto} from "../../services/types";
+import type {PatientDto} from "../../features/patients/types/patient.types.ts";
 import {PatientSearch} from "../../components/receptionist/PatientSearch";
 import {PatientList} from "../../components/receptionist/PatientList";
 import {PatientDetails} from "../../components/receptionist/PatientDetails";
