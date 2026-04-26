@@ -2,8 +2,7 @@ package pl.polsl.clinic.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.dto.requests.AddPhysicalExamRequest;
-import pl.polsl.clinic.entity.ExamDict;
+import pl.polsl.clinic.dto.doctor.request.AddPhysicalExamRequest;
 import pl.polsl.clinic.entity.PhysicalExam;
 import pl.polsl.clinic.entity.PhysicalExamDict;
 import pl.polsl.clinic.entity.Visit;

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pl.polsl.clinic.dto.PatientHistoryDto;
 import pl.polsl.clinic.dto.common.error.InvalidParametersErrorDetails;
 import pl.polsl.clinic.dto.common.error.ItemNotFoundErrorDetails;
 import pl.polsl.clinic.dto.doctor.request.AddLabExamRequest;
