@@ -1,4 +1,4 @@
-import type {PatientDto} from "../../services/types";
+import type {PatientDto} from "../../features/patients/types/patient.types.ts";
 
 interface PatientListProps {
     patients: PatientDto[];

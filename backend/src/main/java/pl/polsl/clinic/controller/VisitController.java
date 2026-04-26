@@ -5,17 +5,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.clinic.dto.VisitDto;
-import pl.polsl.clinic.dto.requests.CreateVisitRequest;
+import pl.polsl.clinic.dto.visit.request.CreateVisitRequest;
+import pl.polsl.clinic.dto.visit.response.VisitDto;
 import pl.polsl.clinic.service.VisitService;
 import pl.polsl.clinic.enums.VisitStatus;
 import java.util.List;
-import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
+import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
 
 @RestController
 @RequiredArgsConstructor
 @Validated
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping(path = "/api/v1/visits")
 public class VisitController {
 	private final VisitService visitService;

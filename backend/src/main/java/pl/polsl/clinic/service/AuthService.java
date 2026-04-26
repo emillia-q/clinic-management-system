@@ -35,12 +35,13 @@ public class AuthService {
 		Staff staff = staffRepository.findByLogin(request.login()).orElseThrow();
 
 		// Generate token
-		String token = jwtService.generateToken(userDetails);
+		String token = jwtService.generateToken(userDetails, staff.getUserId());
 
 		return new LoginResponse(
 			token,
 			staff.getLogin(),
-			staff.getUserType()
+			staff.getUserType(),
+			staff.getUserId()
 		);
 	}
 }

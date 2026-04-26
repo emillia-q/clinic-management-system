@@ -25,8 +25,17 @@ To maintain high code quality and scalability, we follow a **Strict Layered Arch
 
 ### 4. `.dto` (Data Transfer Objects)
 * **Purpose:** Objects used for API communication. We **never** return Entities directly to the frontend for security and decoupling.
-* **Naming:** `[EntityName]DTO` (e.g., `PatientDTO.java`).
-* **Note:** Use Java `record` for clean, immutable data carriers.
+* **Current Rule (feature-first):** DTOs are grouped by domain and direction (request/response), not in one flat folder.
+* **Main DTO packages currently used:**
+  * `dto/auth` - auth payloads (`LoginRequest`, `LoginResponse`)
+  * `dto/common` - shared DTOs
+  * `dto/common/error` - error response payloads from exception handlers
+  * `dto/staff/request`, `dto/staff/response`
+  * `dto/patient/request`, `dto/patient/response`
+  * `dto/doctor/request`, `dto/doctor/response`
+  * `dto/visit/request`, `dto/visit/response`
+  * `dto/lab/response`
+* **Placement rule:** new DTO should go to the matching domain package first; use `dto/common` only when reused across multiple domains.
 
 ### 5. `.controller` (REST Controllers)
 * **Purpose:** Exposes API endpoints for the React frontend.
@@ -55,6 +64,7 @@ Contains DDL and initial dictionary data.
 2. **Standard Workflow:** For every new feature:
     * Create a new branch: `feature/your-task-name`.
     * Implement: Entity -> Repository -> DTO -> Service -> Controller.
+    * Keep DTO placement consistent with the feature-first structure above.
     * Open a **Pull Request (PR)** to `main` for review.
 3. **No Direct Push:** Pushing directly to `main` is disabled. Every change requires a code review.
 4. **Code Style:** Use `Ctrl + Alt + L` (IntelliJ) to format your code before every commit.

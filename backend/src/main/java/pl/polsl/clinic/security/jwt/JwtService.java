@@ -37,10 +37,11 @@ public class JwtService {
 		this.expirationSeconds = expirationSeconds;
 	}
 
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(UserDetails userDetails, Long userId) {
 		Map<String, Object> claims = new HashMap<>();
 		// Add role to token so front knows who the user is
 		claims.put("role", userDetails.getAuthorities());
+		claims.put("userId", userId);
 		Instant now = Instant.now();
 		Instant expiresAt = now.plusSeconds(expirationSeconds);
 
@@ -61,5 +62,13 @@ public class JwtService {
 	public boolean isTokenValid(String token, UserDetails userDetails) {
 		String username = extractUsername(token);
 		return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+	}
+
+	public Long extractUserId(String token) {
+		Object userIdClaim = extractClaim(token, claims -> claims.get("userId"));
+		if (userIdClaim instanceof Number number) {
+			return number.longValue();
+		}
+		return null;
 	}
 }

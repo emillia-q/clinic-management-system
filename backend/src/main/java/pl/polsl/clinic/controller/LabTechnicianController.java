@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.clinic.dto.LabExamDto;
+import pl.polsl.clinic.dto.lab.response.LabExamDto;
 import pl.polsl.clinic.enums.LabExamStatus;
 import pl.polsl.clinic.service.LabService;
 

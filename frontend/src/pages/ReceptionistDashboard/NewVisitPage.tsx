@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import type {PatientGeneralDto, StaffListDto} from "../../services/types.ts";
+import type {PatientGeneralDto} from "../../features/patients/types/patient.types.ts";
+import type {StaffListDto} from "../../features/staff/types/staff.types.ts";
 
 interface NewVisitPageProps {
     initialPatientId: number | null;
