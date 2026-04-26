@@ -1,14 +1,21 @@
 package pl.polsl.clinic.service;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.dto.lab.response.LabExamDto;
+import pl.polsl.clinic.dto.LabExamDto;
+import pl.polsl.clinic.dto.requests.AddLabExamRequest;
 import pl.polsl.clinic.entity.LabExam;
+import pl.polsl.clinic.entity.LaboratoryExamDict;
+import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.LabExamStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.repository.LabExamRepository;
+import pl.polsl.clinic.repository.LaboratoryExamDictRepository;
+import pl.polsl.clinic.repository.VisitRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LabService {
 	private final LabExamRepository labExamRepository;
+	private final VisitRepository visitRepository;
+	private final LaboratoryExamDictRepository laboratoryExamDictRepository;
 
 	public List<LabExamDto> getExamsByStatus(LabExamStatus status) {
 		return labExamRepository.findByStatus(status.name()).stream()
@@ -62,5 +71,17 @@ public class LabService {
 		exam.setManagerNotes(managerNotes);
 		exam.setStatus(LabExamStatus.Rejected.name());
 		labExamRepository.save(exam);
+	}
+
+	public LabExam add(@NonNull @Valid AddLabExamRequest request) {
+		var visit = visitRepository.findById(request.getVisitId())
+			.orElseThrow(() -> new ItemNotFoundException(Visit.class, request.getVisitId()));
+		var examType = laboratoryExamDictRepository.findById(request.getExamCode()).
+			orElseThrow(() -> new ItemNotFoundException(LaboratoryExamDict.class, request.getExamCode()));
+		LabExam labExam = new LabExam();
+		labExam.setVisit(visit);
+		labExam.setExamDict(examType);
+		labExam.setDoctorNotes(request.getDoctorNotes());
+		return labExamRepository.save(labExam);
 	}
 }
