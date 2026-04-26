@@ -7,14 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.dto.requests.CreateVisitRequest;
+import pl.polsl.clinic.dto.visit.request.CreateVisitRequest;
 import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.repository.*;
-import pl.polsl.clinic.dto.VisitDto;
-import pl.polsl.clinic.dto.requests.UpdateVisitRequest;
+import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
+import pl.polsl.clinic.dto.visit.response.VisitDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

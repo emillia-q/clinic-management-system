@@ -3,7 +3,7 @@ package pl.polsl.clinic.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.dto.LabExamDto;
+import pl.polsl.clinic.dto.lab.response.LabExamDto;
 import pl.polsl.clinic.entity.LabExam;
 import pl.polsl.clinic.enums.LabExamStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;

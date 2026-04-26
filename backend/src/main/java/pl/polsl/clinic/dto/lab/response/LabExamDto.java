@@ -1,4 +1,4 @@
-package pl.polsl.clinic.dto;
+package pl.polsl.clinic.dto.lab.response;
 
 import pl.polsl.clinic.entity.LabExam;
 

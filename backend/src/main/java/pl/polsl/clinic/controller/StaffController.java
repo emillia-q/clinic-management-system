@@ -8,11 +8,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.clinic.dto.StaffCreatedDto;
-import pl.polsl.clinic.dto.StaffDto;
-import pl.polsl.clinic.dto.StaffListDto;
-import pl.polsl.clinic.dto.ValidationErrorDetails;
-import pl.polsl.clinic.dto.requests.AddStaff;
+import pl.polsl.clinic.dto.common.error.ValidationErrorDetails;
+import pl.polsl.clinic.dto.staff.request.AddStaff;
+import pl.polsl.clinic.dto.staff.response.StaffCreatedDto;
+import pl.polsl.clinic.dto.staff.response.StaffDto;
+import pl.polsl.clinic.dto.staff.response.StaffListDto;
 import pl.polsl.clinic.enums.UserType;
 import pl.polsl.clinic.service.AdminService;
 

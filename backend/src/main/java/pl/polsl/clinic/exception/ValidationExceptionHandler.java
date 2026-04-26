@@ -12,7 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import pl.polsl.clinic.dto.ValidationErrorDetails;
+import pl.polsl.clinic.dto.common.error.ValidationErrorDetails;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

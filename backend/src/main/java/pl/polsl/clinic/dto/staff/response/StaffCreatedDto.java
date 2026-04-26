@@ -1,20 +1,21 @@
-package pl.polsl.clinic.dto;
+package pl.polsl.clinic.dto.staff.response;
 
 import pl.polsl.clinic.entity.Doctor;
 import pl.polsl.clinic.entity.Staff;
 import pl.polsl.clinic.enums.UserType;
 
-public record StaffDto(
+public record StaffCreatedDto(
 	Long id,
 	String firstName,
 	String lastName,
 	String login,
+	String temporaryPassword,
 	UserType userType,
 	String isActive,
 	String passwdChangeRequired,
 	String licenseNo
 ) {
-	public static StaffDto fromEntity(Staff staff) {
+	public static StaffCreatedDto fromEntity(Staff staff, String temporaryPassword) {
 		if (staff == null) return null;
 
 		String license = null;
@@ -23,11 +24,12 @@ public record StaffDto(
 			license = d.getLicenseNo();
 		}
 
-		return new StaffDto(
+		return new StaffCreatedDto(
 			staff.getUserId(),
 			staff.getFirstName(),
 			staff.getLastName(),
 			staff.getLogin(),
+			temporaryPassword,
 			staff.getUserType(),
 			staff.getIsActive(),
 			staff.getPasswdChangeRequired(),

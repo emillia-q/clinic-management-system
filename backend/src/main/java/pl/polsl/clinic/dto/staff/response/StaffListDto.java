@@ -1,4 +1,4 @@
-package pl.polsl.clinic.dto;
+package pl.polsl.clinic.dto.staff.response;
 
 import pl.polsl.clinic.entity.Staff;
 import pl.polsl.clinic.enums.UserType;

@@ -1,4 +1,4 @@
-package pl.polsl.clinic.dto;
+package pl.polsl.clinic.dto.visit.response;
 
 import pl.polsl.clinic.entity.Visit;
 import java.time.LocalDateTime;

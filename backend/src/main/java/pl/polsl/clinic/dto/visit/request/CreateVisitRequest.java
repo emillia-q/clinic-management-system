@@ -1,4 +1,4 @@
-package pl.polsl.clinic.dto.requests;
+package pl.polsl.clinic.dto.visit.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
