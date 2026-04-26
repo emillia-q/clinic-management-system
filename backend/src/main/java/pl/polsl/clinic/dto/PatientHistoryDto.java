@@ -2,6 +2,7 @@ package pl.polsl.clinic.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import pl.polsl.clinic.dto.visit.response.VisitExamDateTypeDto;
 
 import java.util.List;
 
