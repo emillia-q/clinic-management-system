@@ -1,5 +1,5 @@
-import type {StaffListDto} from "../../services/types.ts";
-import {StaffListItem} from "./StaffListItems.tsx";
+import type {StaffListDto} from "../types/staff.types.ts";
+import {StaffListItem} from "./StaffListItem.tsx";
 
 interface StaffListProps {
     staffList: StaffListDto[];
@@ -29,3 +29,4 @@ export const StaffList = ({staffList, selectedStaffId, onSelectStaff}: StaffList
         </div>
     );
 };
+

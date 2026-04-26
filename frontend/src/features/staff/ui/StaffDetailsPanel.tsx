@@ -1,4 +1,4 @@
-import type {StaffDto} from "../../services/types.ts";
+import type {StaffDto} from "../types/staff.types.ts";
 
 interface StaffDetailsPanelProps {
     selectedStaff: StaffDto | null;
@@ -21,7 +21,7 @@ export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffD
                             <div>
                                 <h2 className="mb-0 fw-bold">{selectedStaff.firstName} {selectedStaff.lastName}</h2>
                                 <span
-                                    className={`badge ${selectedStaff.isActive === "Y" ? 'bg-success' : 'bg-danger'}`}>
+                                    className={`badge ${selectedStaff.isActive === "Y" ? "bg-success" : "bg-danger"}`}>
                                     {selectedStaff.isActive === "Y" ? "Active Account" : "Inactive Account"}
                                 </span>
                             </div>
@@ -70,3 +70,4 @@ export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffD
         </div>
     );
 };
+

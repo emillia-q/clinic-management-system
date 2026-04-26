@@ -1,4 +1,4 @@
-import type {StaffListDto} from "../../services/types.ts";
+import type {StaffListDto} from "../types/staff.types.ts";
 
 interface StaffListItemProps {
     staff: StaffListDto;
@@ -10,7 +10,7 @@ export const StaffListItem = ({staff, isSelected, onSelect}: StaffListItemProps)
     return (
         <li
             onClick={() => onSelect(staff.id)}
-            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 ${isSelected ? 'active' : ''}`}
+            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 ${isSelected ? "active" : ""}`}
             style={{cursor: "pointer"}}
         >
             <div>
@@ -24,3 +24,4 @@ export const StaffListItem = ({staff, isSelected, onSelect}: StaffListItemProps)
         </li>
     );
 };
+

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import type {PatientDto} from "../../services/types.ts";
+import type {PatientDto} from "../../features/patients/types/patient.types.ts";
 
 interface PatientDetailsProps {
     patient: PatientDto | null;
