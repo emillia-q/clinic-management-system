@@ -92,8 +92,10 @@ public class DoctorController {
 	@Operation(summary = "Get patient with upcoming visit by id")
 	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientWithUpcomingVisitDateDto.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public PatientWithUpcomingVisitDateDto PatientInfo(Long patientId) {
-		var params = new VisitService.VisitParams(null, patientId, LocalDate.now(), null, VisitStatus.Registered, 1);
+	public PatientWithUpcomingVisitDateDto PatientInfo(@PathVariable Long patientId) {
+		var params = VisitService.VisitParams.builder()
+			.patientId(patientId).date(LocalDate.now()).status(VisitStatus.Registered).limit(1)
+			.build();
 
 		return new PatientWithUpcomingVisitDateDto(
 			PatientDto.fromEntity(
@@ -111,7 +113,9 @@ public class DoctorController {
 	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history", content = {@Content()})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
-		var params = new VisitService.VisitParams(null, patientId, null, LocalDate.now(), Sort.Direction.DESC);
+		var params = VisitService.VisitParams.builder()
+			.patientId(patientId).toDate(LocalDate.now()).sortOrder(Sort.Direction.DESC)
+			.build();
 		var resultingVisitsList = StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(), false).toList();
 		if (resultingVisitsList.isEmpty())
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -171,9 +175,11 @@ public class DoctorController {
 		@RequestParam(required = false) LocalDate fromDate, //on date (fromDate===toDate)
 		@RequestParam(required = false) LocalDate toDate,
 		@RequestParam(required = false) VisitStatus status) {
-		return StreamSupport.stream(visitService.getMatchingVisits(
-				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status)
-			).spliterator(), false)
+		var params = VisitService.VisitParams.builder()
+			.doctorId(doctorId).patientId(patientId).fromDate(fromDate).toDate(toDate).status(status)
+			.build();
+		return StreamSupport
+			.stream(visitService.getMatchingVisits(params).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 
@@ -184,9 +190,11 @@ public class DoctorController {
 	public Iterable<VisitGeneralDto> MyVisits(
 		///TODO: auto fetch this from Auth header later
 		@RequestParam(required = false) Long doctorId) {
-		return StreamSupport.stream(visitService.getMatchingVisits(
-				new VisitService.VisitParams(doctorId, null, LocalDate.now())
-			).spliterator(), false)
+		var params = VisitService.VisitParams.builder()
+			.doctorId(doctorId).date(LocalDate.now())
+			.build();
+		return StreamSupport
+			.stream(visitService.getMatchingVisits(params).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 	//</editor-fold>
