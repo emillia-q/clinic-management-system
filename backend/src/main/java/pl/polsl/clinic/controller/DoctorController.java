@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.NonNull;
@@ -30,6 +32,7 @@ import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
+import pl.polsl.clinic.security.jwt.JwtService;
 import pl.polsl.clinic.service.*;
 
 import java.time.LocalDate;
@@ -47,6 +50,7 @@ public class DoctorController {
 	private final VisitService visitService;
 	private final PhysicalExamService physicalExamService;
 	private final LabService labService;
+	private final JwtService jwtService;
 
 
 	//<editor-fold desc="Get doctor(s)">
@@ -187,11 +191,10 @@ public class DoctorController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get a list of today's visits to handle. Ordered by appointment date ascending.")
 	@ApiResponse(responseCode = "200", description = "List of today's visits", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitGeneralDto.class)))})
-	public Iterable<VisitGeneralDto> MyVisits(
-		///TODO: auto fetch this from Auth header later
-		@RequestParam(required = false) Long doctorId) {
+	public Iterable<VisitGeneralDto> MyVisits(HttpServletRequest request) {
+		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
 		var params = VisitService.VisitParams.builder()
-			.doctorId(doctorId).date(LocalDate.now())
+			.doctorId(jwtService.extractUserId(jwt)).date(LocalDate.now())
 			.build();
 		return StreamSupport
 			.stream(visitService.getMatchingVisits(params).spliterator(), false)

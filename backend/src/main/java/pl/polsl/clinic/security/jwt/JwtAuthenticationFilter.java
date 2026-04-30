@@ -28,25 +28,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		@Nonnull HttpServletResponse response,
 		@Nonnull FilterChain filterChain
 		) throws ServletException, IOException{
-		final String authHeader=request.getHeader("Authorization");
-		final String jwt;
+		final var jwt = jwtService.getTokenFromRequest(request);
 		final String userLogin;
 
 		// If there is no Bearer header, go to the next filter
-		if(authHeader==null||!authHeader.startsWith("Bearer ")){
+		if(jwt.isEmpty()){
 			filterChain.doFilter(request,response);
 			return;
 		}
-
-		jwt=authHeader.substring(7); // Trim token, skip "Bearer "
-		userLogin=jwtService.extractUsername(jwt);
+		userLogin=jwtService.extractUsername(jwt.get());
 
 		// If we have a login and the user is not yet "logged in" to the system
 		if(userLogin!=null&& SecurityContextHolder.getContext().getAuthentication()==null){
 			UserDetails userDetails=this.userDetailsService.loadUserByUsername(userLogin);
 
 			// Check if token didn't expire
-			if(jwtService.isTokenValid(jwt,userDetails)){
+			if(jwtService.isTokenValid(jwt.get(),userDetails)){
 				UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
 					userDetails,
 					null,
