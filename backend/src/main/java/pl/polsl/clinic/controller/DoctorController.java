@@ -23,6 +23,7 @@ import pl.polsl.clinic.dto.doctor.response.DoctorDto;
 import pl.polsl.clinic.dto.doctor.response.DoctorGeneralDto;
 import pl.polsl.clinic.dto.patient.response.PatientDto;
 import pl.polsl.clinic.dto.patient.response.PatientGeneralDto;
+import pl.polsl.clinic.dto.visit.response.VisitDto;
 import pl.polsl.clinic.dto.visit.response.VisitExamDateTypeDto;
 import pl.polsl.clinic.dto.visit.response.VisitGeneralDto;
 import pl.polsl.clinic.entity.Doctor;
@@ -92,7 +93,7 @@ public class DoctorController {
 	@Operation(summary = "Get patient with upcoming visit by id")
 	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientWithUpcomingVisitDateDto.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public PatientWithUpcomingVisitDateDto PatientInfo(Long patientId) {
+	public PatientWithUpcomingVisitDateDto PatientInfo(@PathVariable Long patientId) {
 		var params = new VisitService.VisitParams(null, patientId, LocalDate.now(), null, VisitStatus.Registered, 1);
 
 		return new PatientWithUpcomingVisitDateDto(
@@ -175,6 +176,16 @@ public class DoctorController {
 				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status)
 			).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
+	}
+
+	@GetMapping("visits/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Get the visit details by id")
+	@ApiResponse(responseCode = "200", description = "Visit details", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitDto.class)))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public VisitDto GetVisit(
+		@PathVariable Long id) {
+		return VisitDto.fromEntity(visitService.getById(id).orElseThrow(() -> new ItemNotFoundException(Visit.class, id)));
 	}
 
 	@GetMapping("my-visits")
