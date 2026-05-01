@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +71,10 @@ public class VisitService {
 		return visits.stream()
 			.map(VisitDto::fromEntity)
 			.toList();
+	}
+
+	public Optional<Visit> getById(Long id) {
+		return visitRepository.findById(id);
 	}
 
 	@Transactional
