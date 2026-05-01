@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -93,6 +94,7 @@ public class VisitController {
 	public List<VisitDto> getHistory(@PathVariable Long patientId) {
 		var params = VisitService.VisitParams.builder()
 			.patientId(patientId)
+			.sortOrder(Sort.Direction.DESC)
 			.build();
 		return StreamSupport
 			.stream(visitService.getMatchingVisits(params).spliterator(), false)
