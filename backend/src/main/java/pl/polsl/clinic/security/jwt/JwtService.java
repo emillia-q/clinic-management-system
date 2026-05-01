@@ -3,6 +3,8 @@ package pl.polsl.clinic.security.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -35,6 +38,21 @@ public class JwtService {
 	) {
 		this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 		this.expirationSeconds = expirationSeconds;
+	}
+
+	public Optional<String> getTokenFromRequest(@Nonnull HttpServletRequest request) {
+		final String authHeader = request.getHeader("Authorization");
+		return getTokenFromAuthHeader(authHeader);
+	}
+
+	public Optional<String> getTokenFromAuthHeader(String authHeader) {
+		final String jwt;
+
+		if (authHeader == null || !authHeader.startsWith("Bearer "))
+			return Optional.empty();
+
+		jwt = authHeader.substring(7); // Trim token, skip "Bearer "
+		return Optional.of(jwt);
 	}
 
 	public String generateToken(UserDetails userDetails, Long userId) {

@@ -8,13 +8,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.visit.request.CreateVisitRequest;
-import pl.polsl.clinic.entity.*;
+import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
+import pl.polsl.clinic.dto.visit.response.VisitDto;
+import pl.polsl.clinic.entity.Doctor;
+import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.entity.Receptionist;
+import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
-import pl.polsl.clinic.repository.*;
-import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
-import pl.polsl.clinic.dto.visit.response.VisitDto;
+import pl.polsl.clinic.repository.DoctorRepository;
+import pl.polsl.clinic.repository.PatientRepository;
+import pl.polsl.clinic.repository.ReceptionistRepository;
+import pl.polsl.clinic.repository.VisitRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -119,28 +125,37 @@ public class VisitService {
 			.toList();
 	}
 
-	public record VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate,
-	                          VisitStatus status, Integer limit, Sort.Direction sortOrder) {
-		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status) {
-			this(doctorId, patientId, fromDate, toDate, status, maxFetchLimit, Sort.Direction.ASC);
-		}
+	@Data
+	@Builder
+	@AllArgsConstructor
+	public static final class VisitParams {
+		private final Long doctorId;
+		private final Long patientId;
+		private final LocalDate fromDate;
+		private final LocalDate toDate;
+		private final VisitStatus status;
+		private Integer limit = maxFetchLimit;
+		private Sort.Direction sortOrder = Sort.Direction.ASC;
 
-		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, VisitStatus status, Integer limit) {
-			this(doctorId, patientId, fromDate, toDate, status, limit, Sort.Direction.ASC);
-		}
+		/// Override one build method and default values
+		public static class VisitParamsBuilder {
+			private LocalDate fromDate;
+			private LocalDate toDate;
+			private Sort.Direction sortOrder = Sort.Direction.ASC;
+			private Integer limit = maxFetchLimit;
 
-		public VisitParams(Long doctorId, Long patientId, LocalDate date) {
-			this(doctorId, patientId, date, date, null, maxFetchLimit, Sort.Direction.ASC);
-		}
-
-		public VisitParams(Long doctorId, Long patientId, LocalDate fromDate, LocalDate toDate, Sort.Direction direction) {
-			this(doctorId, patientId, null, null, null, maxFetchLimit, direction);
+			public VisitParamsBuilder date(LocalDate date) {
+				this.fromDate = date;
+				this.toDate = date;
+				return this;
+			}
 		}
 	}
 
+
 	/// @param params the limit field is used to fetch \[1, maxLimit\] of rows, any value outside that range will become maxLimit.
 	public Iterable<Visit> getMatchingVisits(@NonNull VisitParams params) {
-		//confirm requested parameters entities  exist
+		//confirm requested parameters entities exist
 		if (params.doctorId != null && !doctorRepository.existsById(params.doctorId))
 			throw new ItemNotFoundException(Doctor.class, params.doctorId);
 		if (params.patientId != null && !patientRepository.existsById(params.patientId))

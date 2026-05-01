@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.NonNull;
@@ -31,6 +33,7 @@ import pl.polsl.clinic.entity.Patient;
 import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
+import pl.polsl.clinic.security.jwt.JwtService;
 import pl.polsl.clinic.service.*;
 
 import java.time.LocalDate;
@@ -48,6 +51,7 @@ public class DoctorController {
 	private final VisitService visitService;
 	private final PhysicalExamService physicalExamService;
 	private final LabService labService;
+	private final JwtService jwtService;
 
 
 	//<editor-fold desc="Get doctor(s)">
@@ -94,7 +98,9 @@ public class DoctorController {
 	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientWithUpcomingVisitDateDto.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public PatientWithUpcomingVisitDateDto PatientInfo(@PathVariable Long patientId) {
-		var params = new VisitService.VisitParams(null, patientId, LocalDate.now(), null, VisitStatus.Registered, 1);
+		var params = VisitService.VisitParams.builder()
+			.patientId(patientId).date(LocalDate.now()).status(VisitStatus.Registered).limit(1)
+			.build();
 
 		return new PatientWithUpcomingVisitDateDto(
 			PatientDto.fromEntity(
@@ -112,7 +118,9 @@ public class DoctorController {
 	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history", content = {@Content()})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
 	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
-		var params = new VisitService.VisitParams(null, patientId, null, LocalDate.now(), Sort.Direction.DESC);
+		var params = VisitService.VisitParams.builder()
+			.patientId(patientId).toDate(LocalDate.now()).sortOrder(Sort.Direction.DESC)
+			.build();
 		var resultingVisitsList = StreamSupport.stream(visitService.getMatchingVisits(params).spliterator(), false).toList();
 		if (resultingVisitsList.isEmpty())
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -172,9 +180,11 @@ public class DoctorController {
 		@RequestParam(required = false) LocalDate fromDate, //on date (fromDate===toDate)
 		@RequestParam(required = false) LocalDate toDate,
 		@RequestParam(required = false) VisitStatus status) {
-		return StreamSupport.stream(visitService.getMatchingVisits(
-				new VisitService.VisitParams(doctorId, patientId, fromDate, toDate, status)
-			).spliterator(), false)
+		var params = VisitService.VisitParams.builder()
+			.doctorId(doctorId).patientId(patientId).fromDate(fromDate).toDate(toDate).status(status)
+			.build();
+		return StreamSupport
+			.stream(visitService.getMatchingVisits(params).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 
@@ -192,12 +202,13 @@ public class DoctorController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get a list of today's visits to handle. Ordered by appointment date ascending.")
 	@ApiResponse(responseCode = "200", description = "List of today's visits", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitGeneralDto.class)))})
-	public Iterable<VisitGeneralDto> MyVisits(
-		///TODO: auto fetch this from Auth header later
-		@RequestParam(required = false) Long doctorId) {
-		return StreamSupport.stream(visitService.getMatchingVisits(
-				new VisitService.VisitParams(doctorId, null, LocalDate.now())
-			).spliterator(), false)
+	public Iterable<VisitGeneralDto> MyVisits(HttpServletRequest request) {
+		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
+		var params = VisitService.VisitParams.builder()
+			.doctorId(jwtService.extractUserId(jwt)).date(LocalDate.now())
+			.build();
+		return StreamSupport
+			.stream(visitService.getMatchingVisits(params).spliterator(), false)
 			.map(VisitGeneralDto::fromEntity).toList();
 	}
 	//</editor-fold>
