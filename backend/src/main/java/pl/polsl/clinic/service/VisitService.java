@@ -8,19 +8,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.visit.request.CreateVisitRequest;
-import pl.polsl.clinic.entity.*;
+import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
+import pl.polsl.clinic.dto.visit.response.VisitDto;
+import pl.polsl.clinic.entity.Doctor;
+import pl.polsl.clinic.entity.Patient;
+import pl.polsl.clinic.entity.Receptionist;
+import pl.polsl.clinic.entity.Visit;
 import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
-import pl.polsl.clinic.repository.*;
-import pl.polsl.clinic.dto.visit.request.UpdateVisitRequest;
-import pl.polsl.clinic.dto.visit.response.VisitDto;
+import pl.polsl.clinic.repository.DoctorRepository;
+import pl.polsl.clinic.repository.PatientRepository;
+import pl.polsl.clinic.repository.ReceptionistRepository;
+import pl.polsl.clinic.repository.VisitRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -122,6 +127,7 @@ public class VisitService {
 
 	@Data
 	@Builder
+	@AllArgsConstructor
 	public static final class VisitParams {
 		private final Long doctorId;
 		private final Long patientId;
