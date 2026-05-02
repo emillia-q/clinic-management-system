@@ -25,7 +25,6 @@ import pl.polsl.clinic.repository.VisitRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -64,20 +63,6 @@ public class VisitService {
 		return VisitDto.fromEntity(savedVisit);
 	}
 
-	//TODO: remove this method, use getMatchingVisits() instead
-	public List<VisitDto> getAllVisits(VisitStatus status) {
-		List<Visit> visits;
-		if (status != null) {
-			visits = visitRepository.findByStatus(status);
-		} else {
-			visits = visitRepository.findAll();
-		}
-
-		return visits.stream()
-			.map(VisitDto::fromEntity)
-			.toList();
-	}
-
 	public Optional<Visit> getById(Long id) {
 		return visitRepository.findById(id);
 	}
@@ -111,18 +96,6 @@ public class VisitService {
 		}
 
 		return VisitDto.fromEntity(visitRepository.save(visit));
-	}
-
-	//TODO: remove this method, use getMatchingVisits() instead
-	public List<VisitDto> getPatientVisitHistory(Long patientId) {
-		if (!patientRepository.existsById(patientId)) {
-			throw new ItemNotFoundException(Patient.class, patientId);
-		}
-
-		return visitRepository.findByPatientPatientIdOrderByAppointmentDateDesc(patientId)
-			.stream()
-			.map(VisitDto::fromEntity)
-			.toList();
 	}
 
 	@Data
