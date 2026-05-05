@@ -40,19 +40,11 @@ public class PatientController {
 
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(summary = "Get a list of all patients")
+	@Operation(summary = "Get a list of all (matching) patients")
 	@ApiResponse(responseCode = "200", description = "List of patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
-	public Iterable<PatientGeneralDto> getAll() {
-		return patientService.findAll().stream().map(PatientGeneralDto::fromEntity).toList();
-	}
-
-	@GetMapping("/search")
-	@ResponseStatus(HttpStatus.OK)
-	@Operation(summary = "Search for matching patients")
-	@ApiResponse(responseCode = "200", description = "List of matching patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
+	@ApiResponse(responseCode = "204", description = "No matching patients found", content = {@Content()})
 	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
-	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public Iterable<PatientGeneralDto> getMatchingBy(
+	public Iterable<PatientGeneralDto> getAll(
 		@RequestParam(required = false) String name,
 		@RequestParam(required = false) String surname,
 		@RequestParam(required = false) @Valid @PESEL String pesel) {

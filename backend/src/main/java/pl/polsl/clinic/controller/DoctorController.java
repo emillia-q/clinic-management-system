@@ -35,6 +35,7 @@ import pl.polsl.clinic.enums.VisitStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.security.jwt.JwtService;
 import pl.polsl.clinic.service.*;
+import pl.polsl.clinic.validator.PESEL;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,10 +81,15 @@ public class DoctorController {
 	//<editor-fold desc="Get patient(s) info">
 	@GetMapping("patients")
 	@ResponseStatus(HttpStatus.OK)
-	@Operation(summary = "Get a list of all patients")
+	@Operation(summary = "Get a list of all (matching) patients")
 	@ApiResponse(responseCode = "200", description = "List of patients", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = PatientGeneralDto.class)))})
-	public Iterable<PatientGeneralDto> Patients() {
-		return patientService.findAll().stream().map(PatientGeneralDto::fromEntity).toList();
+	@ApiResponse(responseCode = "204", description = "No matching patients found", content = {@Content()})
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	public Iterable<PatientGeneralDto> getAll(
+		@RequestParam(required = false) String name,
+		@RequestParam(required = false) String surname,
+		@RequestParam(required = false) @Valid @PESEL String pesel) {
+		return patientService.findMatchingBy(name, surname, pesel).stream().map(PatientGeneralDto::fromEntity).toList();
 	}
 
 	@Data
