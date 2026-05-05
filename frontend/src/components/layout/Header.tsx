@@ -37,6 +37,27 @@ export const Header = ({userRole, onLogout, onViewChange, currentView}: HeaderPr
                             </>
                         )}
 
+                        {userRole === 'Doctor' && (
+                            <>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link btn btn-link border-0 text-white ${currentView === 'VISITS' ? 'active fw-bold border-bottom' : 'opacity-75'}`}
+                                        onClick={() => onViewChange('VISITS')}
+                                    >
+                                        VISITS
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link btn btn-link border-0 text-white ${currentView === 'PATIENTS' ? 'active fw-bold border-bottom' : 'opacity-75'}`}
+                                        onClick={() => onViewChange('PATIENTS')}
+                                    >
+                                        PATIENTS
+                                    </button>
+                                </li>
+                            </>
+                        )}
+
                         {userRole === 'Administrator' && (
                             <li className="nav-item">
                                 <button

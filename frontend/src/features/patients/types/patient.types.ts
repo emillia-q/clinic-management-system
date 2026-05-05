@@ -17,6 +17,11 @@ export interface PatientDto {
     address: AddressDto;
 }
 
+export interface PatientUpcomingVisitDto {
+    patient: PatientDto;
+    upcomingVisit: string;
+}
+
 export interface PatientGeneralDto {
     id: number;
     firstName: string;
