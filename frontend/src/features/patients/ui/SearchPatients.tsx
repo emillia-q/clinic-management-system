@@ -7,7 +7,7 @@ export interface SearchPatientsData {
 }
 
 interface PatientSearchProps {
-    onSearch: (params: SearchPatientsData) => void;
+    onSearch: (params: SearchPatientsData | null) => void;
 }
 
 export const SearchPatients = ({onSearch}: PatientSearchProps) => {
@@ -38,32 +38,49 @@ export const SearchPatients = ({onSearch}: PatientSearchProps) => {
             handleSearchSubmit();
         }
     };
+    const handleClearSearch = () => {
+        setLocalQuery("");
+        onSearch(null);
+    }
 
 
     return (
-        <div className="row mb-4 align-items-end">
+        <>  {/* Use a Fragment instead of a <div> to avoid layout breaking */}
             <div className="col-md-5">
                 <label className="form-label small fw-bold text-muted text-uppercase">Search Patients</label>
                 <div className="input-group shadow-sm">
                     <input
                         type="text"
                         className="form-control border-end-0"
-                        placeholder="Search by Name or PESEL..."
+                        placeholder="Search by Full Name or PESEL..."
                         value={localQuery}
                         onChange={(e) => setLocalQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                         style={{borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px'}}
                     />
+                    {/* Find Button */}
                     <button
                         className="btn btn-white border border-start-0 text-primary"
                         type="button"
                         onClick={handleSearchSubmit}
-                        style={{borderTopRightRadius: '10px', borderBottomRightRadius: '10px'}}
+                        style={{borderRadius: '0'}} // Square edges to connect to the next button
                     >
                         <i className="fa-solid fa-magnifying-glass"></i>
                     </button>
+                    {/* "X" Clear Button */}
+                    <button
+                        className="btn btn-white border border-start-0 text-danger"
+                        type="button"
+                        onClick={handleClearSearch} // You'll need to define this function
+                        style={{
+                            borderTopRightRadius: '10px',
+                            borderBottomRightRadius: '10px'
+                        }}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
