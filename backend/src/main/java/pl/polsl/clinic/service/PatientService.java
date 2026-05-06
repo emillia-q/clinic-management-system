@@ -4,14 +4,13 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.patient.request.AddPatient;
 import pl.polsl.clinic.dto.patient.request.UpdatePatient;
 import pl.polsl.clinic.entity.Patient;
-import pl.polsl.clinic.exception.InvalidParametersException;
 import pl.polsl.clinic.exception.ItemNotFoundException;
+import pl.polsl.clinic.exception.NoContentFoundException;
 import pl.polsl.clinic.repository.PatientRepository;
 
 import java.util.List;
@@ -35,34 +34,29 @@ public class PatientService {
 		return patientRepository.save(patient);
 	}
 
-	public List<Patient> findAll() {
-		return patientRepository.findAll();
-	}
-
 	public List<Patient> findMatchingBy(String firstName, String lastName, String socialSecurityNo) {
-		if ((StringUtils.isBlank(firstName) || StringUtils.isBlank(lastName)) && StringUtils.isBlank(socialSecurityNo))
-			throw new InvalidParametersException("(name and surname) or PESEL must be provided");
-		if (!StringUtils.isBlank(socialSecurityNo) && (!StringUtils.isBlank(firstName) || !StringUtils.isBlank(lastName)))
-			throw new InvalidParametersException("(name and surname) or PESEL must be provided not both");
-
-		Specification<Patient> nameSpec = (root, query, cb) -> {
-			if (firstName == null || lastName == null)
-				return cb.disjunction(); // Returns 'false' if names are missing
-			return cb.and(
-				cb.equal(cb.lower(root.get(Patient.firstName_)), firstName.toLowerCase()),
-				cb.equal(cb.lower(root.get(Patient.lastName_)), lastName.toLowerCase())
-			);
+		Specification<Patient> fNameSpec = (root, query, cb) -> {
+			if (firstName == null)
+				return cb.conjunction(); // Returns 'true' if names are missing to not change results
+			return cb.equal(cb.lower(root.get(Patient.firstName_)), firstName.toLowerCase());
+		};
+		Specification<Patient> lNameSpec = (root, query, cb) -> {
+			if (lastName == null)
+				return cb.conjunction(); // Returns 'true' if names are missing to not change results
+			return cb.equal(cb.lower(root.get(Patient.lastName_)), lastName.toLowerCase());
 		};
 		Specification<Patient> ssnSpec = (root, query, cb) -> {
 			if (socialSecurityNo == null || socialSecurityNo.isBlank())
-				return cb.disjunction(); // Returns 'false' if SSN is missing
+				return cb.conjunction(); // Returns 'true' if SSN is missing to not change results
 			return cb.equal(root.get(Patient.socialSecurityNo_), socialSecurityNo);
 		};
-		Specification<Patient> filter = Specification.where(nameSpec).or(ssnSpec);
+
+		Specification<Patient> filter = Specification.where(fNameSpec).and(lNameSpec).and(ssnSpec);
 		var patients = patientRepository.findAll(filter);
+
 		if (patients.isEmpty()) {
-			String identifier = (socialSecurityNo != null) ? "PESEL: " + socialSecurityNo : "Name: " + (firstName + " " + lastName);
-			throw new ItemNotFoundException(Patient.class, identifier);
+			String identifier = "PESEL: " + socialSecurityNo + " Name: " + firstName + " Surname: " + lastName;
+			throw new NoContentFoundException(Patient.class, identifier);
 		}
 		return patients;
 	}

@@ -26,4 +26,10 @@ public class DefaultExceptionHandler {
 		return new ResponseEntity<@NotNull InvalidParametersErrorDetails>(new InvalidParametersErrorDetails(ex.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(NoContentFoundException.class)
+//	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public ResponseEntity<@NotNull InvalidParametersErrorDetails> handleInvalidParameters(NoContentFoundException ex) {
+		return new ResponseEntity<@NotNull InvalidParametersErrorDetails>(new InvalidParametersErrorDetails(ex.getMessage()), HttpStatus.NO_CONTENT);
+	}
+
 }
