@@ -2,6 +2,7 @@ import './App.css'
 import {Header} from "./components/layout/Header.tsx";
 import {AdminDashboard} from "./pages/AdminDashboard/AdminDashboard.tsx";
 import {PatientsPage} from "./pages/ReceptionistDashboard/PatientsPage.tsx";
+import {DoctorPatientsPage} from "./pages/DoctorsDashboard/DoctorsPatientsPage.tsx";
 import {NewVisitPage} from "./pages/ReceptionistDashboard/NewVisitPage.tsx";
 import {VisitsPage} from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import {useState} from "react";
@@ -90,6 +91,12 @@ function App() {
                                     setSelectedPatientId(null);
                                 }}
                             />
+                        )}
+                    </>
+                ) : role == "Doctor" ? (
+                    <>
+                        {currentView === 'PATIENTS' && (
+                            <DoctorPatientsPage/>
                         )}
                     </>
                 ) : (
