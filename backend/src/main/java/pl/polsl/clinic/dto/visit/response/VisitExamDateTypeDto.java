@@ -20,7 +20,7 @@ public class VisitExamDateTypeDto {
 		return new VisitExamDateTypeDto(
 			ent.getVisitId(),
 			ent.getAppointmentDate(),
-			Visit.class.getSimpleName()
+			ent.getDescription() == null || ent.getDescription().isBlank() ? "No description" : ent.getDescription()
 		);
 	}
 
@@ -28,7 +28,7 @@ public class VisitExamDateTypeDto {
 		return new VisitExamDateTypeDto(
 			ent.getLabExamId(),
 			ent.getOrderDate(),
-			ent.getExamDict().getExamName()
+			ent.getExamDict().getExamCode()
 		);
 	}
 
@@ -36,7 +36,7 @@ public class VisitExamDateTypeDto {
 		return new VisitExamDateTypeDto(
 			ent.getPhysicalExamId(),
 			ent.getVisit().getAppointmentDate(),
-			ent.getExamDict().getExamName()
+			ent.getExamDict().getExamCode()
 		);
 	}
 }

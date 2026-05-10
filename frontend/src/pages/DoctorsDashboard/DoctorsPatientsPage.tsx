@@ -3,6 +3,7 @@ import type {PatientDto, PatientUpcomingVisitDto} from "../../features/patients/
 import {PatientList} from "../../features/patients/ui/PatientList.tsx";
 import {PatientDetailsForDoctor} from "../../features/doctors/ui/PatientDetailsForDoctor.tsx";
 import {SearchPatients, type SearchPatientsData} from "../../features/patients/ui/SearchPatients.tsx";
+import {DoctorPatientHistoryPage} from "./DoctorPatientHistoryPage.tsx";
 import axios from 'axios';
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
 
@@ -10,6 +11,7 @@ import type {InvalidParametersErrorDetails} from "../../features/errors/types/Er
 export const DoctorPatientsPage = () => {
     const [patients, setPatients] = useState<PatientDto[]>([]);
     const [selectedPatient, setSelectedPatient] = useState<PatientUpcomingVisitDto | null>(null);
+    const [historyPatient, setHistoryPatient] = useState<PatientDto | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const api = axios.create({
@@ -63,6 +65,15 @@ export const DoctorPatientsPage = () => {
         }
     };
 
+    if (historyPatient) {
+        return (
+            <DoctorPatientHistoryPage
+                patient={historyPatient}
+                onBack={() => setHistoryPatient(null)}
+            />
+        );
+    }
+
     return (
         <div className="container-fluid py-4 px-5">
             <div className="row mb-4 align-items-end">
@@ -89,8 +100,7 @@ export const DoctorPatientsPage = () => {
                             patientVisit={selectedPatient}
                             onClose={() => setSelectedPatient(null)}
                             onRefresh={() => fetchPatients()}
-                            //TODO: when the `ViewHistory` panel is done connect it
-                            onViewHistory={null}
+                            onViewHistory={() => setHistoryPatient(selectedPatient.patient)}
                         />
                     )}
                 </div>
