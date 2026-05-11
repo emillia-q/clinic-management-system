@@ -123,7 +123,7 @@ public class DoctorController {
 	@ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = PatientHistoryDto.class))})
 	@ApiResponse(responseCode = "204", description = "Patient does not have any visit history", content = {@Content()})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(Long patientId) {
+	public ResponseEntity<PatientHistoryDto> ViewPatientVisitHistory(@PathVariable("patientId") Long patientId) {
 		var params = VisitService.VisitParams.builder()
 			.patientId(patientId).toDate(LocalDate.now()).sortOrder(Sort.Direction.DESC)
 			.build();
