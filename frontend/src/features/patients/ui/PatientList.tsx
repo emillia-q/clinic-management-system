@@ -1,13 +1,14 @@
-import type {PatientDto} from "../../features/patients/types/patient.types.ts";
+import type {PatientDto} from "../types/patient.types.ts";
 
 interface PatientListProps {
     patients: PatientDto[];
     isLoading: boolean;
     onSelectPatient: (patient: PatientDto) => void;
     selectedPatientId?: number;
+    showDOBColl?: boolean;
 }
 
-export const PatientList = ({patients, onSelectPatient, selectedPatientId}: PatientListProps) => {
+export const PatientList = ({patients, onSelectPatient, selectedPatientId, showDOBColl = true}: PatientListProps) => {
     return (
         <div className="card shadow-sm border-0">
             <div className="card-body p-0">
@@ -18,7 +19,7 @@ export const PatientList = ({patients, onSelectPatient, selectedPatientId}: Pati
                             <th className="px-4 py-3">ID</th>
                             <th className="py-3">Full Name</th>
                             <th className="py-3">PESEL (SSN)</th>
-                            <th className="py-3 px-4">Date of Birth</th>
+                            {showDOBColl ? <th className="py-3">Date of Birth</th> : null}
                         </tr>
                         </thead>
                         <tbody>
@@ -33,7 +34,7 @@ export const PatientList = ({patients, onSelectPatient, selectedPatientId}: Pati
                                     <td className="px-4 text-muted small">#{p.id}</td>
                                     <td className="fw-bold">{p.firstName} {p.lastName}</td>
                                     <td><code className="text-dark">{p.socialSecurityNo}</code></td>
-                                    <td className="px-4">{p.dateOfBirth}</td>
+                                    {showDOBColl ? <td className="px-4">{p.dateOfBirth}</td> : null}
                                 </tr>
                             ))
                         ) : (
