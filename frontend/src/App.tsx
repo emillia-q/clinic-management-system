@@ -5,7 +5,7 @@ import { PatientsPage } from "./pages/ReceptionistDashboard/PatientsPage.tsx";
 import { DoctorPatientsPage } from "./pages/DoctorsDashboard/DoctorsPatientsPage.tsx";
 import { NewVisitPage } from "./pages/ReceptionistDashboard/NewVisitPage.tsx";
 import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
-import { OrderExamPage } from "./pages/DoctorDashboard/OrderExamPage.tsx";
+import { OrderExamPage } from "./pages/DoctorsDashboard/OrderExamPage.tsx";
 import { useState } from "react";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { Toaster } from 'react-hot-toast';
