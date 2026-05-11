@@ -8,6 +8,7 @@ import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import { OrderExamPage } from "./pages/DoctorDashboard/OrderExamPage.tsx";
 import { useState } from "react";
 import { LoginPage } from "./pages/LoginPage.tsx";
+import { Toaster } from 'react-hot-toast';
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
 
@@ -66,6 +67,7 @@ function App() {
 
     return (
         <div className="App">
+            <Toaster position="top-center" />
             <Header
                 userRole={role}
                 onLogout={handleLogout}

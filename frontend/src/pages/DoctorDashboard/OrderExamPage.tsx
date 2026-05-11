@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { orderExam } from '../../features/exams/api/exam.api';
 
 interface OrderExamPageProps {
@@ -25,11 +26,18 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
         setIsLoading(true);
         try {
             await orderExam(examType, { visitId: Number(visitId), examName, notes });
-            alert("Order placed successfully!");
+            toast.success("Order placed successfully!", {
+                duration: 4000,
+                style: {
+                    borderRadius: '0',
+                    border: '1px solid #000',
+                    color: '#000',
+                },
+            });
             onBack();
         } catch (error: any) {
             const serverMessage = error.response?.data?.message || error.message;
-            alert("Error: " + serverMessage);
+            toast.error("Error: " + serverMessage);
             console.error("Full error details:", error.response?.data);
         } finally {
             setIsLoading(false);
