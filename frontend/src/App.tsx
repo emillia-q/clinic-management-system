@@ -2,6 +2,7 @@ import './App.css';
 import { Header } from "./components/layout/Header.tsx";
 import { AdminDashboard } from "./pages/AdminDashboard/AdminDashboard.tsx";
 import { PatientsPage } from "./pages/ReceptionistDashboard/PatientsPage.tsx";
+import { DoctorPatientsPage } from "./pages/DoctorsDashboard/DoctorsPatientsPage.tsx";
 import { NewVisitPage } from "./pages/ReceptionistDashboard/NewVisitPage.tsx";
 import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import { OrderExamPage } from "./pages/DoctorDashboard/OrderExamPage.tsx";
@@ -83,11 +84,9 @@ function App() {
                         {currentView === 'VISITS' && (
                             <VisitsPage onNewVisit={() => setCurrentView('NEW_VISIT')} />
                         )}
-
                         {currentView === 'PATIENTS' && (
                             <PatientsPage onScheduleVisit={handleScheduleVisit} />
                         )}
-
                         {currentView === 'NEW_VISIT' && (
                             <NewVisitPage
                                 initialPatientId={selectedPatientId}
@@ -100,6 +99,10 @@ function App() {
                     </>
                 ) : role === "Doctor" ? (
                     <>
+                        {currentView === 'PATIENTS' && (
+                            <DoctorPatientsPage />
+                        )}
+
                         {currentView === 'VISITS' && (
                             !selectedVisitId ? (
                                 <div className="container py-5">
@@ -124,15 +127,6 @@ function App() {
                                     onBack={() => setSelectedVisitId(null)}
                                 />
                             )
-                        )}
-
-                        {currentView === 'PATIENTS' && (
-                            <div className="container py-5 text-start">
-                                <h2 className="fw-bold mb-4">Patient Records</h2>
-                                <div className="alert alert-secondary">
-                                    Doctor's patient search and history view.
-                                </div>
-                            </div>
                         )}
                     </>
                 ) : (
