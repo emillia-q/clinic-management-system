@@ -91,6 +91,10 @@ export const DoctorPatientHistoryPage = ({patient, onBack}: DoctorPatientHistory
         void fetchHistory();
     }, [api, patient.id]);
 
+    const handleOrderNewExam = () => {
+        // TODO: Attach logic for creating a new exam order.
+    };
+
     return (
         <div className="container py-4">
             <div className="mx-auto bg-white shadow-sm p-4" style={{maxWidth: "780px"}}>
@@ -107,7 +111,7 @@ export const DoctorPatientHistoryPage = ({patient, onBack}: DoctorPatientHistory
                 <div className="bg-light px-3 py-2 mb-3 fw-bold">Previous Appointments</div>
 
                 <div className="d-flex justify-content-end mb-3">
-                    <button className="btn btn-dark">Order a New Exam</button>
+                    <button className="btn btn-dark" onClick={handleOrderNewExam}>Order a New Exam</button>
                 </div>
 
                 {historyUnavailable && (
