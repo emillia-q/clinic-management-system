@@ -42,4 +42,8 @@ public class PhysicalExamService {
 
 		return physicalExamRepository.save(physicalExam1);
 	}
+
+	public PhysicalExam getById(Long id) {
+		return physicalExamRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(PhysicalExam.class, id));
+	}
 }
