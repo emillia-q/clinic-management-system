@@ -84,4 +84,8 @@ public class LabService {
 		labExam.setDoctorNotes(request.getDoctorNotes());
 		return labExamRepository.save(labExam);
 	}
+
+	public LabExam getById(Long id) {
+		return labExamRepository.findById(id).orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
+	}
 }

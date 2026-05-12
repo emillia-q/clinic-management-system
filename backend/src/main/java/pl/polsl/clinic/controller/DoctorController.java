@@ -23,6 +23,8 @@ import pl.polsl.clinic.dto.doctor.request.AddLabExamRequest;
 import pl.polsl.clinic.dto.doctor.request.AddPhysicalExamRequest;
 import pl.polsl.clinic.dto.doctor.response.DoctorDto;
 import pl.polsl.clinic.dto.doctor.response.DoctorGeneralDto;
+import pl.polsl.clinic.dto.doctor.response.PhysicalExamDetailsDto;
+import pl.polsl.clinic.dto.lab.response.LabExamDto;
 import pl.polsl.clinic.dto.patient.response.PatientDto;
 import pl.polsl.clinic.dto.patient.response.PatientGeneralDto;
 import pl.polsl.clinic.dto.visit.response.VisitDto;
@@ -170,6 +172,32 @@ public class DoctorController {
 		@RequestBody @NonNull @Valid AddPhysicalExamRequest request
 	) {
 		physicalExamService.add(request);
+	}
+	//</editor-fold>
+
+	//<editor-fold desc="get exam (of patient)">
+	@GetMapping("lab-exam/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Get laboratory exam details")
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public LabExamDto LabExam(
+		@PathVariable Long id
+	) {
+		return LabExamDto.fromEntity(
+			labService.getById(id)
+		);
+	}
+
+	@GetMapping("physical-exam/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Get the performed physical exam result details")
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public PhysicalExamDetailsDto PhysicalExam(
+		@PathVariable Long id
+	) {
+		return PhysicalExamDetailsDto.fromEntity(
+			physicalExamService.getById(id)
+		);
 	}
 	//</editor-fold>
 
