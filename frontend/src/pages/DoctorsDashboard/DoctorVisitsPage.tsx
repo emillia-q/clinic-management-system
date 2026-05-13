@@ -57,47 +57,56 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
 
     const handleStartVisit = async () => {
         if (!selectedVisit) return;
-
         try {
-            const doctorId = localStorage.getItem('userId');
-            const payload = {
-                appointmentDate: selectedVisit.appointmentDate,
+            await api.patch('/doctors/visits/start', {
+                visitId: selectedVisit.id,
                 description: selectedVisit.description || "Started",
-                doctorId: Number(doctorId),
-                status: "In Progress"
-            };
-            await api.put(`/visits/${selectedVisit.id}`, payload);
-        } catch {}
-
-        setSelectedVisit({
-            ...selectedVisit,
-            status: 'In Progress'
-        });
-
-        setVisits(prevVisits => prevVisits.map(v =>
-            v.id === selectedVisit.id ? { ...v, status: 'In Progress' } : v
-        ));
+                diagnosis: ""
+            });
+            updateLocalStatus('In Progress');
+        } catch (error) {
+            console.error("Start error:", error);
+            updateLocalStatus('In Progress');
+        }
     };
 
     const handleFinishVisit = async () => {
         if (!selectedVisit) return;
-
         try {
             await api.patch('/doctors/visits/finish', {
                 visitId: selectedVisit.id,
                 description: selectedVisit.description || "Finished",
                 diagnosis: selectedVisit.diagnosis || ""
             });
-        } catch {}
+            updateLocalStatus('Finished');
+        } catch (error) {
+            console.error("Finish error:", error);
+            updateLocalStatus('Finished');
+        }
+    };
 
-        setSelectedVisit({
-            ...selectedVisit,
-            status: 'Finished'
-        });
+    const handleCancelVisit = async () => {
+        if (!selectedVisit) return;
+        if (!window.confirm("Are you sure you want to cancel this visit?")) return;
 
-        setVisits(prevVisits => prevVisits.map(v =>
-            v.id === selectedVisit.id ? { ...v, status: 'Finished' } : v
-        ));
+        try {
+            await api.patch('/doctors/visits/cancel', {
+                visitId: selectedVisit.id,
+                description: selectedVisit.description || "Cancelled by doctor",
+                diagnosis: ""
+            });
+            updateLocalStatus('Cancelled');
+        } catch (error) {
+            console.error("Cancel error:", error);
+            updateLocalStatus('Cancelled');
+        }
+    };
+
+    const updateLocalStatus = (newStatus: string) => {
+        if (!selectedVisit) return;
+        const updated = { ...selectedVisit, status: newStatus };
+        setSelectedVisit(updated);
+        setVisits(prev => prev.map(v => v.id === selectedVisit.id ? updated : v));
     };
 
     const isInProgress = (status: string) => {
@@ -166,9 +175,9 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                                         </td>
                                         <td>{v.patientName}</td>
                                         <td>
-                                                <span className={`badge ${isInProgress(v.status) ? 'bg-success' : v.status === 'Finished' ? 'bg-secondary' : 'bg-primary'}`}>
-                                                    {v.status}
-                                                </span>
+                                            <span className={`badge ${isInProgress(v.status) ? 'bg-success' : v.status === 'Finished' ? 'bg-secondary' : v.status === 'Cancelled' ? 'bg-danger' : 'bg-primary'}`}>
+                                                {v.status}
+                                            </span>
                                         </td>
                                     </tr>
                                 ))}
@@ -183,12 +192,8 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                         <div className="card border-0 shadow-lg rounded-3 overflow-hidden text-start">
                             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h4 className="fw-bold mb-0 text-primary">
-                                        Visit: {selectedVisit.patientName}
-                                    </h4>
-                                    <p className="text-muted small">
-                                        ({new Date(selectedVisit.appointmentDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})
-                                    </p>
+                                    <h4 className="fw-bold mb-0 text-primary">Visit Details</h4>
+                                    <p className="text-muted small">{selectedVisit.patientName}</p>
                                 </div>
                                 <button className="btn-close" onClick={() => setSelectedVisit(null)}></button>
                             </div>
@@ -203,35 +208,36 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                                         <span className="text-muted small fw-bold">PATIENT PESEL</span>
                                         <span className="fw-bold">{selectedVisit.socialSecurityNo || 'N/A'}</span>
                                     </div>
-                                    <div className="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
-                                        <span className="text-muted small fw-bold">VISIT DATE</span>
-                                        <span className="fw-bold">{new Date(selectedVisit.appointmentDate).toLocaleDateString()}</span>
-                                    </div>
                                     <div className="d-flex justify-content-between mb-3">
                                         <span className="text-muted small fw-bold">VISIT STATUS</span>
-                                        <span className={`badge ${isInProgress(selectedVisit.status) ? 'bg-success' : selectedVisit.status === 'Finished' ? 'bg-secondary' : 'bg-primary'}`}>
+                                        <span className={`badge ${isInProgress(selectedVisit.status) ? 'bg-success' : selectedVisit.status === 'Finished' ? 'bg-secondary' : selectedVisit.status === 'Cancelled' ? 'bg-danger' : 'bg-primary'}`}>
                                             {selectedVisit.status}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div className="d-grid gap-2 pt-3">
+                                <div className="d-grid gap-2 pt-2">
                                     {selectedVisit.status === 'Registered' && (
-                                        <button className="btn btn-primary btn-lg fw-bold py-3 shadow-sm" onClick={handleStartVisit}>
-                                            <i className="fa-solid fa-play me-2"></i> Start Visit
-                                        </button>
+                                        <>
+                                            <button className="btn btn-primary btn-lg fw-bold py-3 mb-2" onClick={handleStartVisit}>
+                                                <i className="fa-solid fa-play me-2"></i> Start Visit
+                                            </button>
+                                            <button className="btn btn-outline-danger btn-sm fw-bold border-0" onClick={handleCancelVisit}>
+                                                Cancel Appointment
+                                            </button>
+                                        </>
                                     )}
 
                                     {isInProgress(selectedVisit.status) && (
                                         <>
-                                            <button
-                                                className="btn btn-outline-dark btn-lg fw-bold border-2 py-3 mb-2"
-                                                onClick={() => onOrderExam(selectedVisit.id)}
-                                            >
+                                            <button className="btn btn-outline-dark btn-lg fw-bold border-2 py-3 mb-2" onClick={() => onOrderExam(selectedVisit.id)}>
                                                 <i className="fa-solid fa-microscope me-2"></i> Order New Exam
                                             </button>
-                                            <button className="btn btn-success btn-lg fw-bold py-3 shadow-sm" onClick={handleFinishVisit}>
+                                            <button className="btn btn-success btn-lg fw-bold py-3 mb-3 shadow-sm" onClick={handleFinishVisit}>
                                                 <i className="fa-solid fa-check me-2"></i> Finish Visit
+                                            </button>
+                                            <button className="btn btn-link text-danger text-decoration-none btn-sm" onClick={handleCancelVisit}>
+                                                Cancel Visit (In Progress)
                                             </button>
                                         </>
                                     )}

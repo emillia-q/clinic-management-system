@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -27,31 +30,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		@Nonnull HttpServletRequest request,
 		@Nonnull HttpServletResponse response,
 		@Nonnull FilterChain filterChain
-		) throws ServletException, IOException{
-		final var jwt = jwtService.getTokenFromRequest(request);
-		final String userLogin;
+	) throws ServletException, IOException {
+		final var jwtOptional = jwtService.getTokenFromRequest(request);
 
-		// If there is no Bearer header, go to the next filter
-		if(jwt.isEmpty()){
-			filterChain.doFilter(request,response);
+		if (jwtOptional.isEmpty()) {
+			filterChain.doFilter(request, response);
 			return;
 		}
-		userLogin=jwtService.extractUsername(jwt.get());
 
-		// If we have a login and the user is not yet "logged in" to the system
-		if(userLogin!=null&& SecurityContextHolder.getContext().getAuthentication()==null){
-			UserDetails userDetails=this.userDetailsService.loadUserByUsername(userLogin);
+		String jwt = jwtOptional.get();
+		String userLogin = jwtService.extractUsername(jwt);
 
-			// Check if token didn't expire
-			if(jwtService.isTokenValid(jwt.get(),userDetails)){
-				UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
+		if (userLogin != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userLogin);
+
+			if (jwtService.isTokenValid(jwt, userDetails)) {
+
+				List<Map<String, String>> roles = jwtService.extractClaim(jwt, claims -> claims.get("role", List.class));
+
+				List<SimpleGrantedAuthority> authorities;
+				if (roles != null) {
+					authorities = roles.stream()
+						.map(roleMap -> new SimpleGrantedAuthority(roleMap.get("authority")))
+						.toList();
+				} else {
+
+					authorities = userDetails.getAuthorities().stream()
+						.map(a -> new SimpleGrantedAuthority(a.getAuthority()))
+						.toList();
+				}
+
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 					userDetails,
 					null,
-					userDetails.getAuthorities()
+					authorities
 				);
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-				// WE OFFICIALLY LOG THE USER INTO THE SYSTEM for the duration of this one query
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 		}
