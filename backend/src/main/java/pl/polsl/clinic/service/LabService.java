@@ -6,7 +6,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.polsl.clinic.dto.doctor.request.AddLabExamRequest;
-import pl.polsl.clinic.dto.lab.response.LabExamDto;
+import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.entity.LabExam;
 import pl.polsl.clinic.entity.LaboratoryExamDict;
 import pl.polsl.clinic.entity.Visit;
@@ -27,9 +27,9 @@ public class LabService {
 	private final VisitRepository visitRepository;
 	private final LaboratoryExamDictRepository laboratoryExamDictRepository;
 
-	public List<LabExamDto> getExamsByStatus(LabExamStatus status) {
+	public List<LabExamDetailsDto> getExamsByStatus(LabExamStatus status) {
 		return labExamRepository.findByStatus(status.name()).stream()
-			.map(LabExamDto::fromEntity)
+			.map(LabExamDetailsDto::fromEntity)
 			.toList();
 	}
 
