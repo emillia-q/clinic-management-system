@@ -181,8 +181,10 @@ public class VisitService {
 
 	public record ModifyVisitDoctorRequest(Long visitId, String description, String diagnosis) {
 		public Visit updateEntity(Visit visit) {
-			visit.setDescription(description);
-			visit.setDiagnosis(diagnosis);
+			if (description != null)
+				visit.setDescription(description);
+			if (diagnosis != null)
+				visit.setDiagnosis(diagnosis);
 			return visit;
 		}
 	}
