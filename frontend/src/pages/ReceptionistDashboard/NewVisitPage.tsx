@@ -33,9 +33,15 @@ export const NewVisitPage = ({onBack, initialPatientId}: NewVisitPageProps) => {
     useEffect(() => {
         const loadData = async () => {
             try {
+                const token = localStorage.getItem('token');
+
                 const [patRes, docRes] = await Promise.all([
-                    fetch("http://localhost:8080/api/v1/patients"),
-                    fetch("http://localhost:8080/api/v1/staff?type=Doctor")
+                    fetch("http://localhost:8080/api/v1/patients", {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    }),
+                    fetch("http://localhost:8080/api/v1/staff?type=Doctor", {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    })
                 ]);
 
                 if (patRes.ok) {
@@ -71,9 +77,14 @@ export const NewVisitPage = ({onBack, initialPatientId}: NewVisitPageProps) => {
         };
 
         try {
+            const token = localStorage.getItem('token');
+
             const response = await fetch("http://localhost:8080/api/v1/visits", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(payload)
             });
 

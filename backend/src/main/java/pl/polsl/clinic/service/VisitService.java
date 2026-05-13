@@ -88,6 +88,7 @@ public class VisitService {
 
 		visit.setAppointmentDate(req.appointmentDate());
 		visit.setDescription(req.description());
+		visit.setStatus(req.status());
 
 		if (!visit.getDoctor().getUserId().equals(req.doctorId())) {
 			Doctor newDoctor = doctorRepository.findById(req.doctorId())
