@@ -5,8 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import pl.polsl.clinic.dto.lab.response.LabExamDto;
-import pl.polsl.clinic.entity.Doctor;
+import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.enums.LabExamStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.security.jwt.JwtService;
@@ -23,7 +22,7 @@ public class LabTechnicianController {
 
 	@GetMapping("/exams/pending")
 	@Operation(summary = "Get list of ordered exams")
-	public List<LabExamDto> getPending() {
+	public List<LabExamDetailsDto> getPending() {
 		return labService.getExamsByStatus(LabExamStatus.Ordered);
 	}
 
