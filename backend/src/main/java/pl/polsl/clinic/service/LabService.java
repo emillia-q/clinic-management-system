@@ -5,17 +5,14 @@ import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.polsl.clinic.controller.LabManagerController;
 import pl.polsl.clinic.dto.doctor.request.AddLabExamRequest;
 import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
-import pl.polsl.clinic.entity.LabExam;
-import pl.polsl.clinic.entity.LaboratoryExamDict;
-import pl.polsl.clinic.entity.Visit;
+import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.LabExamStatus;
 import pl.polsl.clinic.exception.ItemNotFoundException;
 import pl.polsl.clinic.exception.InvalidParametersException;
-import pl.polsl.clinic.repository.LabExamRepository;
-import pl.polsl.clinic.repository.LaboratoryExamDictRepository;
-import pl.polsl.clinic.repository.VisitRepository;
+import pl.polsl.clinic.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +23,8 @@ public class LabService {
 	private final LabExamRepository labExamRepository;
 	private final VisitRepository visitRepository;
 	private final LaboratoryExamDictRepository laboratoryExamDictRepository;
+	private final LabTechnicianRepository labTechnicianRepository;
+	private final LabManagerRepository labManagerRepository;
 
 	public List<LabExamDetailsDto> getExamsByStatus(LabExamStatus status) {
 		return labExamRepository.findByStatus(status.name()).stream()
@@ -34,35 +33,41 @@ public class LabService {
 	}
 
 	@Transactional
-	public void submitResult(Long id, String result) {
+	public void submitResult(Long id, String result, Long userId) {
 		LabExam exam = labExamRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setResult(result);
 		exam.setStatus(LabExamStatus.Completed.name());
 		exam.setExecutionCancelDate(LocalDateTime.now());
+		var technician = labTechnicianRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabTechnician.class, userId));
+		exam.setLabTechnician(technician);
 		labExamRepository.save(exam);
 	}
 
 	@Transactional
-	public void cancelExam(Long id) {
+	public void cancelExam(Long id, Long userId) {
 		LabExam exam = labExamRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setStatus(LabExamStatus.Cancelled.name());
 		exam.setExecutionCancelDate(LocalDateTime.now());
+		var technician = labTechnicianRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabTechnician.class, userId));
+		exam.setLabTechnician(technician);
 		labExamRepository.save(exam);
 	}
 
 	@Transactional
-	public void approveExam(Long id, String managerNotes) {
+	public void approveExam(Long id, String managerNotes, Long userId) {
 		LabExam exam = labExamRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setManagerNotes(managerNotes);
 		exam.setStatus(LabExamStatus.Validated.name());
+		var manager = labManagerRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabManager.class, userId));
+		exam.setLabManager(manager);
 		labExamRepository.save(exam);
 	}
 
 	@Transactional
-	public void rejectExam(Long id, String managerNotes) {
+	public void rejectExam(Long id, String managerNotes, Long userId) {
 		if (managerNotes == null || managerNotes.trim().isEmpty()) {
 			throw new InvalidParametersException("Manager notes are required for rejection.");
 		}
@@ -70,6 +75,8 @@ public class LabService {
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setManagerNotes(managerNotes);
 		exam.setStatus(LabExamStatus.Rejected.name());
+		var manager = labManagerRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabManager.class, userId));
+		exam.setLabManager(manager);
 		labExamRepository.save(exam);
 	}
 
