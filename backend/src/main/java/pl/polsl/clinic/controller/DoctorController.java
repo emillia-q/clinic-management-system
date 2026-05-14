@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.Data;
@@ -24,9 +23,10 @@ import pl.polsl.clinic.dto.doctor.request.AddPhysicalExamRequest;
 import pl.polsl.clinic.dto.doctor.response.DoctorDto;
 import pl.polsl.clinic.dto.doctor.response.DoctorGeneralDto;
 import pl.polsl.clinic.dto.doctor.response.PhysicalExamDetailsDto;
-import pl.polsl.clinic.dto.lab.response.LabExamDto;
+import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.dto.patient.response.PatientDto;
 import pl.polsl.clinic.dto.patient.response.PatientGeneralDto;
+import pl.polsl.clinic.dto.visit.response.VisitDetailsWithOrdersDto;
 import pl.polsl.clinic.dto.visit.response.VisitDto;
 import pl.polsl.clinic.dto.visit.response.VisitExamDateTypeDto;
 import pl.polsl.clinic.dto.visit.response.VisitGeneralDto;
@@ -180,10 +180,10 @@ public class DoctorController {
 	@ResponseStatus(HttpStatus.OK)
 	@Operation(summary = "Get laboratory exam details")
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public LabExamDto LabExam(
+	public LabExamDetailsDto LabExam(
 		@PathVariable Long id
 	) {
-		return LabExamDto.fromEntity(
+		return LabExamDetailsDto.fromEntity(
 			labService.getById(id)
 		);
 	}
@@ -227,9 +227,9 @@ public class DoctorController {
 	@Operation(summary = "Get the visit details by id")
 	@ApiResponse(responseCode = "200", description = "Visit details", content = {@Content(array = @ArraySchema(schema = @Schema(implementation = VisitDto.class)))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public VisitDto GetVisit(
+	public VisitDetailsWithOrdersDto GetVisit(
 		@PathVariable Long id) {
-		return VisitDto.fromEntity(visitService.getById(id).orElseThrow(() -> new ItemNotFoundException(Visit.class, id)));
+		return VisitDetailsWithOrdersDto.fromEntity(visitService.getById(id).orElseThrow(() -> new ItemNotFoundException(Visit.class, id)));
 	}
 
 	@GetMapping("my-visits")
