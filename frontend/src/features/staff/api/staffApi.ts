@@ -1,4 +1,4 @@
-import type {StaffDto, StaffListDto} from "../types/staff.types.ts";
+import type {AddStaffRequest, StaffCreatedDto, StaffDto, StaffListDto} from "../types/staff.types.ts";
 import {apiClient} from "../../../shared/api/client.ts";
 
 const STAFF_BASE_PATH = "/staff";
@@ -39,6 +39,11 @@ export const staffApi = {
 
     getById: async (id: number): Promise<StaffDto> => {
         const response = await apiClient.get<StaffDto>(`${STAFF_BASE_PATH}/${id}`);
+        return response.data;
+    },
+
+    createStaff: async (data: AddStaffRequest): Promise<StaffCreatedDto> => {
+        const response = await apiClient.post<StaffCreatedDto>(STAFF_BASE_PATH, data);
         return response.data;
     }
 };
