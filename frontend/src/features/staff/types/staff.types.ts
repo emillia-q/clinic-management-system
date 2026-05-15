@@ -18,6 +18,13 @@ export interface StaffListDto {
 }
 
 export interface StaffCreatedDto extends StaffDto {
-    temporaryPasswd: string;
+    temporaryPassword: string;
+}
+
+export interface AddStaffRequest {
+    firstName: string;
+    lastName: string;
+    userType: string;
+    licenseNo?: string;
 }
 

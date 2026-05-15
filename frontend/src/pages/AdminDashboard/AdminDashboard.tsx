@@ -1,10 +1,14 @@
+import {useState} from "react";
 import {ConfirmationModal} from "../../features/staff/ui/ConfirmationModal.tsx";
 import {StaffDetailsPanel} from "../../features/staff/ui/StaffDetailsPanel.tsx";
 import {StaffList} from "../../features/staff/ui/StaffList.tsx";
 import {StaffTabs} from "../../features/staff/ui/StaffTabs.tsx";
 import {useStaffDashboard} from "../../features/staff/model/useStaffDashboard.ts";
+import {AddUserModal} from "../../features/staff/ui/AddUserModal.tsx";
 
 export const AdminDashboard = () => {
+    const [showAddUser, setShowAddUser] = useState(false);
+
     const {
         selectedStaff,
         staffList,
@@ -17,13 +21,14 @@ export const AdminDashboard = () => {
         handleSelectStaff,
         openStatusChangeConfirmation,
         closeStatusChangeConfirmation,
-        toggleAccountStatus
+        toggleAccountStatus,
+        refreshList,
     } = useStaffDashboard();
 
     return (
         <div className="container-fluid py-4">
 
-            <div className="row mb-4">
+            <div className="row mb-4 align-items-center">
                 <div className="col-md-5 col-lg-4">
                     <div className="input-group shadow-sm">
                         <input
@@ -41,6 +46,15 @@ export const AdminDashboard = () => {
                             Search
                         </button>
                     </div>
+                </div>
+                <div className="col-auto ms-auto">
+                    <button
+                        className="btn btn-success px-4 shadow-sm"
+                        onClick={() => setShowAddUser(true)}
+                    >
+                        <i className="fa-solid fa-user-plus me-2"></i>
+                        Add New User
+                    </button>
                 </div>
             </div>
 
@@ -73,6 +87,12 @@ export const AdminDashboard = () => {
                 message={`Are you sure you want to change the status of ${selectedStaff?.firstName} ${selectedStaff?.lastName}?`}
                 onConfirm={toggleAccountStatus}
                 onCancel={closeStatusChangeConfirmation}
+            />
+
+            <AddUserModal
+                isOpen={showAddUser}
+                onClose={() => setShowAddUser(false)}
+                onUserCreated={() => refreshList?.()}
             />
         </div>
     );
