@@ -8,6 +8,7 @@ import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import { OrderExamPage } from "./pages/DoctorsDashboard/OrderExamPage.tsx";
 import { useState } from "react";
 import { LoginPage } from "./pages/LoginPage.tsx";
+import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
@@ -32,6 +33,7 @@ function App() {
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
     const [role, setRole] = useState<UserRole | null>(getStoredRole());
+    const [requiresPasswordChange, setRequiresPasswordChange] = useState(false);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -46,10 +48,21 @@ function App() {
         setSelectedVisitId(null);
     };
 
-    const handleLoginSuccess = (loggedRole: UserRole) => {
+    const handleLoginSuccess = (loggedRole: UserRole, passwdChangeRequired: boolean) => {
         setRole(loggedRole);
         setIsAuthenticated(true);
-        if (loggedRole === "Administrator") {
+        if (passwdChangeRequired) {
+            setRequiresPasswordChange(true);
+        } else if (loggedRole === "Administrator") {
+            setCurrentView("ADMIN");
+        } else {
+            setCurrentView("VISITS");
+        }
+    };
+
+    const handlePasswordChanged = () => {
+        setRequiresPasswordChange(false);
+        if (role === "Administrator") {
             setCurrentView("ADMIN");
         } else {
             setCurrentView("VISITS");
@@ -63,6 +76,10 @@ function App() {
 
     if (!isAuthenticated || !role) {
         return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+    }
+
+    if (requiresPasswordChange) {
+        return <ChangePasswordPage onPasswordChanged={handlePasswordChanged} />;
     }
 
     return (
