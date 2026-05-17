@@ -10,6 +10,7 @@ import { useState } from "react";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
+import {LaborantDashbord} from "./pages/LaborantDashbord/LaborantDashbord.tsx";
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
 
@@ -100,7 +101,7 @@ function App() {
                         <AdminDashboard />
                     ) :
 
-                    role === "Receptionist" ? (
+                role === "Receptionist" ? (
                             <>
                                 {currentView === 'VISITS' && (
                                     <VisitsPage onNewVisit={() => setCurrentView('NEW_VISIT')} />
@@ -120,7 +121,7 @@ function App() {
                             </>
                         ) :
 
-                        role === "Doctor" ? (
+                role === "Doctor" ? (
                             <>
                                 {currentView === 'PATIENTS' && (
                                     <DoctorPatientsPage />
@@ -152,7 +153,12 @@ function App() {
                                     )
                                 )}
                             </>
-                        ) : (
+                    ) :
+                role === "LabTechnician" ? (
+                    <LaborantDashbord />
+                ) :
+
+                (
                             <div className="container py-5">
                                 <div className="alert alert-info">
                                     Dashboard for <strong>{role}</strong> is under construction.
