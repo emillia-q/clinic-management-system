@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import pl.polsl.clinic.dto.lab.request.ExamResultDto;
 import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.entity.Doctor;
 import pl.polsl.clinic.enums.LabExamStatus;
@@ -30,9 +31,9 @@ public class LabTechnicianController {
 	@PatchMapping("/exams/{id}/result")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Operation(summary = "Submit result (Execute exam)")
-	public void submitResult(@PathVariable Long id, @RequestBody String result, HttpServletRequest request) {
+	public void submitResult(@PathVariable Long id, @RequestBody ExamResultDto result, HttpServletRequest request) {
 		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
-		labService.submitResult(id, result, jwtService.extractUserId(jwt));
+		labService.submitResult(id, result.result(), jwtService.extractUserId(jwt));
 	}
 
 	@PatchMapping("/exams/{id}/cancel")

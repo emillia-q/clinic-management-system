@@ -2,9 +2,11 @@ package pl.polsl.clinic.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import pl.polsl.clinic.dto.lab.request.ManagerExamNotesDto;
 import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.entity.Doctor;
 import pl.polsl.clinic.enums.LabExamStatus;
@@ -30,16 +32,16 @@ public class LabManagerController {
 	@PatchMapping("/exams/{id}/approve")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@Operation(summary = "Approve lab result")
-	public void approve(@PathVariable Long id, @RequestBody(required = false) String notes, HttpServletRequest request) {
+	public void approve(@PathVariable Long id, @RequestBody(required = false) ManagerExamNotesDto notes, HttpServletRequest request) {
 		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
-		labService.approveExam(id, notes, jwtService.extractUserId(jwt));
+		labService.approveExam(id, notes.notes(), jwtService.extractUserId(jwt));
 	}
 
 	@PatchMapping("/exams/{id}/reject")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@Operation(summary = "Reject lab result (Notes required)") //
-	public void reject(@PathVariable Long id, @RequestBody String notes, HttpServletRequest request) {
+	@Operation(summary = "Reject lab result (Notes required)")
+	public void reject(@PathVariable Long id, @RequestBody @NonNull ManagerExamNotesDto notes, HttpServletRequest request) {
 		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
-		labService.rejectExam(id, notes, jwtService.extractUserId(jwt));
+		labService.rejectExam(id, notes.notes(), jwtService.extractUserId(jwt));
 	}
 }
