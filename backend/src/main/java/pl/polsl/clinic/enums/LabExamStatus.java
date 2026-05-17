@@ -5,5 +5,5 @@ public enum LabExamStatus {
 	Completed,
 	Validated,
 	Rejected,
-	Cancelled
+	Canceled
 }
