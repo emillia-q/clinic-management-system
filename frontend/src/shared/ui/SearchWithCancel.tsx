@@ -1,38 +1,17 @@
 import React, {useState} from 'react';
 
-export interface SearchPatientsData {
-    name: string | null;
-    surname: string | null;
-    pesel: string | null;
+interface SearchWithCancelProps {
+    onSearch: (params: string | null) => void;
+    searchForText: string;
+    placeholderText: string;
 }
 
-interface PatientSearchProps {
-    onSearch: (params: SearchPatientsData | null) => void;
-}
-
-export const SearchPatients = ({onSearch}: PatientSearchProps) => {
+export const SearchWithCancel = ({onSearch, searchForText, placeholderText}: SearchWithCancelProps) => {
     const [localQuery, setLocalQuery] = useState("");
 
     const handleSearchSubmit = () => {
-        //extract words from string
-        const data: SearchPatientsData = {name: null, surname: null, pesel: null};
-        const words: string[] = localQuery.trim().split(/\s+/);
-        if (words.length === 0) return null;
-        words.forEach((word) => {
-            if (/^\d+$/.test(word)) data.pesel = word;
-            else {
-                if (word.trim().length !== 0) {
-                    if (data.name === null) {
-                        data.name = word;
-                    } else {
-                        data.surname = word;
-                    }
-                }
-            }
-        });
-        onSearch(data);
-    };
-
+        onSearch(localQuery);
+    }
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             handleSearchSubmit();
@@ -43,16 +22,16 @@ export const SearchPatients = ({onSearch}: PatientSearchProps) => {
         onSearch(null);
     }
 
-    //TODO: use "SearchWithCancel" component
+
     return (
         <>  {/* Use a Fragment instead of a <div> to avoid layout breaking */}
             <div className="col-md-5">
-                <label className="form-label small fw-bold text-muted text-uppercase">Search Patients</label>
+                <label className="form-label small fw-bold text-muted text-uppercase">{searchForText}</label>
                 <div className="input-group shadow-sm">
                     <input
                         type="text"
                         className="form-control border-end-0"
-                        placeholder="Search by Full Name or PESEL..."
+                        placeholder={placeholderText}
                         value={localQuery}
                         onChange={(e) => setLocalQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -71,7 +50,7 @@ export const SearchPatients = ({onSearch}: PatientSearchProps) => {
                     <button
                         className="btn btn-white border border-start-0 text-danger"
                         type="button"
-                        onClick={handleClearSearch} // You'll need to define this function
+                        onClick={handleClearSearch}
                         style={{
                             borderTopRightRadius: '10px',
                             borderBottomRightRadius: '10px'

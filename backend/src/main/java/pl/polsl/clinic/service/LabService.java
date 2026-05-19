@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.polsl.clinic.controller.LabManagerController;
 import pl.polsl.clinic.dto.doctor.request.AddLabExamRequest;
 import pl.polsl.clinic.dto.lab.response.LabExamDetailsDto;
 import pl.polsl.clinic.entity.*;
@@ -48,7 +47,7 @@ public class LabService {
 	public void cancelExam(Long id, Long userId) {
 		LabExam exam = labExamRepository.findById(id)
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
-		exam.setStatus(LabExamStatus.Cancelled.name());
+		exam.setStatus(LabExamStatus.Canceled.name());
 		exam.setExecutionCancelDate(LocalDateTime.now());
 		var technician = labTechnicianRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabTechnician.class, userId));
 		exam.setLabTechnician(technician);
