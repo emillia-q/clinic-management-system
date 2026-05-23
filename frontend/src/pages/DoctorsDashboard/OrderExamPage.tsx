@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { orderExam } from '../../features/exams/api/exam.api';
+import axios from 'axios';
 
 interface OrderExamPageProps {
     visitId: number | null;
@@ -38,10 +39,17 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
                 }
             );
             onBack();
-        } catch (error: any) {
-            const serverMessage = error.response?.data?.message || error.message;
+        } catch (error) {
+            let serverMessage = "An unexpected error occurred";
+
+            if (axios.isAxiosError(error)) {
+                serverMessage = error.response?.data?.message || error.message;
+                console.error("Full error details:", error.response?.data);
+            } else if (error instanceof Error) {
+                serverMessage = error.message;
+            }
+
             toast.error("Error: " + serverMessage);
-            console.error("Full error details:", error.response?.data);
         } finally {
             setIsLoading(false);
         }
