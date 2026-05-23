@@ -26,14 +26,17 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
         setIsLoading(true);
         try {
             await orderExam(examType, { visitId: Number(visitId), examName, notes });
-            toast.success("Order placed successfully!", {
-                duration: 4000,
-                style: {
-                    borderRadius: '0',
-                    border: '1px solid #000',
-                    color: '#000',
-                },
-            });
+            toast.success(
+                examType === 'Laboratory' ? "Order placed successfully!" : "Exam results submitted successfully!",
+                {
+                    duration: 4000,
+                    style: {
+                        borderRadius: '0',
+                        border: '1px solid #000',
+                        color: '#000',
+                    },
+                }
+            );
             onBack();
         } catch (error: any) {
             const serverMessage = error.response?.data?.message || error.message;
@@ -74,7 +77,9 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
                         <button className="btn btn-link text-dark p-0 me-3" onClick={onBack}>
                             <i className="fa-solid fa-arrow-left fs-3"></i>
                         </button>
-                        <h2 className="fw-bold mb-0 mx-auto">Order a New Exam</h2>
+                        <h2 className="fw-bold mb-0 mx-auto">
+                            {examType === 'Laboratory' ? 'Order a New Exam' : 'Submit Exam Results'}
+                        </h2>
                     </div>
 
                     <form onSubmit={handleSubmit}>
@@ -124,7 +129,10 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
                                 style={{ borderRadius: '0', border: '1px solid #000' }}
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Ordering..." : "Order"}
+                                {isLoading
+                                    ? (examType === 'Laboratory' ? "Ordering..." : "Submitting...")
+                                    : (examType === 'Laboratory' ? "Order" : "Submit")
+                                }
                             </button>
                         </div>
                     </form>
