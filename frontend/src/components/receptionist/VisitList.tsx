@@ -5,9 +5,10 @@ interface VisitListProps {
     isLoading: boolean;
     onSelectVisit: (visit: VisitDto) => void;
     selectedVisitId?: number;
+    isSearching: boolean; // <--- NOWY PROP: Informacja czy tryb wyszukiwania jest aktywny
 }
 
-export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId}: VisitListProps) => {
+export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, isSearching}: VisitListProps) => {
     const getStatusClass = (status: string) => {
         const s = status.toLowerCase();
         if (s === 'registered') return 'bg-primary text-white';
@@ -22,7 +23,10 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId}: V
             <table className="table table-hover mb-0">
                 <thead className="table-light">
                 <tr className="border-bottom border-2">
-                    <th className="py-3 px-4 fw-bold text-secondary" style={{width: '150px'}}>TIME</th>
+                    {/* Jeśli szukamy, poszerzamy lekko kolumnę na datę + czas */}
+                    <th className="py-3 px-4 fw-bold text-secondary" style={{width: isSearching ? '240px' : '150px'}}>
+                        {isSearching ? 'DATE & TIME' : 'TIME'}
+                    </th>
                     <th className="py-3 fw-bold text-secondary">PATIENT NAME</th>
                     <th className="py-3 fw-bold text-secondary">DOCTOR</th>
                     <th className="py-3 fw-bold text-secondary text-center">STATUS</th>
@@ -42,10 +46,21 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId}: V
                             style={{cursor: 'pointer', verticalAlign: 'middle'}}
                         >
                             <td className="py-3 px-4 fw-bold">
-                                {new Date(visit.appointmentDate).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                })}
+                                {/* WARUNKOWE RENDEROWANIE DATY: Tylko gdy isSearching === true */}
+                                {isSearching && (
+                                    <span className="badge bg-light text-dark border me-2 fw-bold text-uppercase" style={{fontSize: '0.75rem'}}>
+                                        {new Date(visit.appointmentDate).toLocaleDateString('pl-PL', {
+                                            day: '2-digit',
+                                            month: '2-digit'
+                                        })}
+                                    </span>
+                                )}
+                                <span>
+                                    {new Date(visit.appointmentDate).toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </span>
                             </td>
                             <td className="py-3 fw-semibold text-dark">{visit.patientName}</td>
                             <td className="py-3 text-muted">Dr. {visit.doctorName}</td>

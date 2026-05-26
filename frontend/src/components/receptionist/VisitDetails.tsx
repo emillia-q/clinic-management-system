@@ -4,9 +4,10 @@ interface VisitDetailsProps {
     visit: VisitDto;
     onClose: () => void;
     onCancelClick: () => void;
+    onEditClick: () => void; // Dodajemy nowy prop!
 }
 
-export const VisitDetails = ({visit, onClose, onCancelClick}: VisitDetailsProps) => {
+export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: VisitDetailsProps) => {
     const dateObj = new Date(visit.appointmentDate);
     const formattedDate = dateObj.toLocaleDateString('pl-PL');
     const formattedTime = dateObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
@@ -62,19 +63,26 @@ export const VisitDetails = ({visit, onClose, onCancelClick}: VisitDetailsProps)
                     </div>
                 </div>
 
-                <div className="d-flex gap-2 mt-auto pt-4">
-                    <button className="btn btn-outline-dark flex-grow-1 fw-bold py-2" style={{borderRadius: '10px'}}>
-                        Edit
-                    </button>
-                    <button
-                        className="btn btn-outline-danger flex-grow-1 fw-bold py-2"
-                        style={{borderRadius: '10px'}}
-                        onClick={onCancelClick}
-                    >
-                        Cancel Visit
-                    </button>
-                </div>
+                {visit.status.toLowerCase() === 'registered' && (
+                    <div className="d-flex gap-2 mt-auto pt-4 w-100">
+                        <button
+                            className="btn btn-outline-dark flex-grow-1 fw-bold py-2"
+                            style={{borderRadius: '10px'}}
+                            onClick={onEditClick}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className="btn btn-outline-danger flex-grow-1 fw-bold py-2"
+                            style={{borderRadius: '10px'}}
+                            onClick={onCancelClick}
+                        >
+                            Cancel Visit
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
+
