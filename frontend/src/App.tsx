@@ -11,6 +11,7 @@ import { LoginPage } from "./pages/LoginPage.tsx";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
 import {LaborantDashbord} from "./pages/LaborantDashbord/LaborantDashbord.tsx";
+import type { VisitDto } from "./features/visits/types/visit.types.ts";
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
 
@@ -35,6 +36,8 @@ function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
     const [role, setRole] = useState<UserRole | null>(getStoredRole());
     const [requiresPasswordChange, setRequiresPasswordChange] = useState(false);
+    const [preferredVisitDate, setPreferredVisitDate] = useState<string>("");
+    const [editingVisit, setEditingVisit] = useState<VisitDto | null>(null);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -47,6 +50,7 @@ function App() {
         setCurrentView("VISITS");
         setSelectedPatientId(null);
         setSelectedVisitId(null);
+        setEditingVisit(null);
     };
 
     const handleLoginSuccess = (loggedRole: UserRole, passwdChangeRequired: boolean) => {
@@ -72,6 +76,7 @@ function App() {
 
     const handleScheduleVisit = (patientId: number) => {
         setSelectedPatientId(patientId);
+        setEditingVisit(null);
         setCurrentView('NEW_VISIT');
     };
 
@@ -92,79 +97,88 @@ function App() {
                 onViewChange={(view: any) => {
                     setCurrentView(view);
                     setSelectedVisitId(null);
+                    setEditingVisit(null);
                 }}
                 currentView={currentView}
             />
 
             <main>
                 {role === "Administrator" ? (
-                        <AdminDashboard />
-                    ) :
-
-                role === "Receptionist" ? (
-                            <>
-                                {currentView === 'VISITS' && (
-                                    <VisitsPage onNewVisit={() => setCurrentView('NEW_VISIT')} />
-                                )}
-                                {currentView === 'PATIENTS' && (
-                                    <PatientsPage onScheduleVisit={handleScheduleVisit} />
-                                )}
-                                {currentView === 'NEW_VISIT' && (
-                                    <NewVisitPage
-                                        initialPatientId={selectedPatientId}
-                                        onBack={() => {
-                                            setCurrentView('VISITS');
-                                            setSelectedPatientId(null);
-                                        }}
-                                    />
-                                )}
-                            </>
-                        ) :
-
-                role === "Doctor" ? (
-                            <>
-                                {currentView === 'PATIENTS' && (
-                                    <DoctorPatientsPage />
-                                )}
-
-                                {currentView === 'VISITS' && (
-                                    !selectedVisitId ? (
-                                        <div className="container py-5">
-                                            <h2 className="fw-bold mb-4 text-start">Doctor's Appointments</h2>
-                                            <div className="card shadow-sm border-0 p-5 text-center bg-light">
-                                                <i className="fa-solid fa-calendar-check fa-3x mb-3 opacity-25"></i>
-                                                <p className="text-muted">Appointment list will be here.</p>
-                                                <div className="mt-4">
-                                                    <button
-                                                        className="btn btn-dark fw-bold px-4 py-2"
-                                                        onClick={() => setSelectedVisitId(1)}
-                                                    >
-                                                        <i className="fa-solid fa-microscope me-2"></i>
-                                                        Example: Order Exam for Visit #1
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <OrderExamPage
-                                            visitId={selectedVisitId}
-                                            onBack={() => setSelectedVisitId(null)}
-                                        />
-                                    )
-                                )}
-                            </>
-                    ) :
-                role === "LabTechnician" ? (
-                    <LaborantDashbord />
-                ) :
-
-                (
-                            <div className="container py-5">
-                                <div className="alert alert-info">
-                                    Dashboard for <strong>{role}</strong> is under construction.
-                                </div>
-                            </div>
+                    <AdminDashboard />
+                ) : role === "Receptionist" ? (
+                    <>
+                        {currentView === 'VISITS' && (
+                            <VisitsPage
+                                onNewVisit={(visitToEdit, preferredDate) => {
+                                    if (visitToEdit) {
+                                        setEditingVisit(visitToEdit);
+                                        setPreferredVisitDate("");
+                                    } else {
+                                        setEditingVisit(null);
+                                        setPreferredVisitDate(preferredDate || "");
+                                    }
+                                    setCurrentView('NEW_VISIT');
+                                }}
+                            />
                         )}
+                        {currentView === 'PATIENTS' && (
+                            <PatientsPage onScheduleVisit={handleScheduleVisit} />
+                        )}
+                        {currentView === 'NEW_VISIT' && (
+                            <NewVisitPage
+                                initialPatientId={selectedPatientId}
+                                visitToEdit={editingVisit}
+                                preferredDate={preferredVisitDate}
+                                onBack={() => {
+                                    setCurrentView('VISITS');
+                                    setSelectedPatientId(null);
+                                    setEditingVisit(null);
+                                    setPreferredVisitDate("");
+                                }}
+                            />
+                        )}
+                    </>
+                ) : role === "Doctor" ? (
+                    <>
+                        {currentView === 'PATIENTS' && (
+                            <DoctorPatientsPage />
+                        )}
+
+                        {currentView === 'VISITS' && (
+                            !selectedVisitId ? (
+                                <div className="container py-5">
+                                    <h2 className="fw-bold mb-4 text-start">Doctor's Appointments</h2>
+                                    <div className="card shadow-sm border-0 p-5 text-center bg-light">
+                                        <i className="fa-solid fa-calendar-check fa-3x mb-3 opacity-25"></i>
+                                        <p className="text-muted">Appointment list will be here.</p>
+                                        <div className="mt-4">
+                                            <button
+                                                className="btn btn-dark fw-bold px-4 py-2"
+                                                onClick={() => setSelectedVisitId(1)}
+                                            >
+                                                <i className="fa-solid fa-microscope me-2"></i>
+                                                Example: Order Exam for Visit #1
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <OrderExamPage
+                                    visitId={selectedVisitId}
+                                    onBack={() => setSelectedVisitId(null)}
+                                />
+                            )
+                        )}
+                    </>
+                ) : role === "LabTechnician" ? (
+                    <LaborantDashbord />
+                ) : (
+                    <div className="container py-5">
+                        <div className="alert alert-info">
+                            Dashboard for <strong>{role}</strong> is under construction.
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );
