@@ -7,9 +7,10 @@ public record LoginResponse(
 	String login,
 	UserType role,
 	Long userId,
-	String type
+	String type,
+	boolean passwdChangeRequired
 ) {
-	public LoginResponse(String token,String login, UserType role, Long userId){
-		this(token,login,role,userId,"Bearer");
+	public LoginResponse(String token, String login, UserType role, Long userId, boolean passwdChangeRequired){
+		this(token, login, role, userId, "Bearer", passwdChangeRequired);
 	}
 }

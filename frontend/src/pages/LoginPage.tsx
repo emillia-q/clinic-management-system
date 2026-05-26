@@ -7,10 +7,11 @@ interface LoginResponse {
     role: UserRole;
     userId: number;
     login: string;
+    passwdChangeRequired: boolean;
 }
 
 interface LoginPageProps {
-    onLoginSuccess: (role: UserRole) => void;
+    onLoginSuccess: (role: UserRole, passwdChangeRequired: boolean) => void;
 }
 
 export const LoginPage = ({onLoginSuccess}: LoginPageProps) => {
@@ -40,7 +41,7 @@ export const LoginPage = ({onLoginSuccess}: LoginPageProps) => {
                 localStorage.setItem('login', data.login);
                 localStorage.setItem('isAuthenticated', 'true');
 
-                onLoginSuccess(data.role);
+                onLoginSuccess(data.role, data.passwdChangeRequired);
             } else {
                 setError("Invalid username or password");
             }

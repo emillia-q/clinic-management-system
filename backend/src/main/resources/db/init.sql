@@ -62,7 +62,7 @@ CREATE TABLE lab_exam
 
 ALTER TABLE lab_exam
     ADD
-    CHECK (status IN ('Completed', 'Ordered', 'Rejected', 'Validated'))
+    CHECK (status IN ('Completed', 'Ordered', 'Rejected', 'Validated', 'Canceled'))
 ;
 
 ALTER TABLE lab_exam

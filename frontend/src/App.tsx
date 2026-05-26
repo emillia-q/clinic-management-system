@@ -9,7 +9,10 @@ import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import { OrderExamPage } from "./pages/DoctorsDashboard/OrderExamPage.tsx";
 import { useState } from "react";
 import { LoginPage } from "./pages/LoginPage.tsx";
+import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
+import {LaborantDashbord} from "./pages/LaborantDashbord/LaborantDashbord.tsx";
+import type { VisitDto } from "./features/visits/types/visit.types.ts";
 
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
@@ -34,6 +37,9 @@ function App() {
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
     const [role, setRole] = useState<UserRole | null>(getStoredRole());
+    const [requiresPasswordChange, setRequiresPasswordChange] = useState(false);
+    const [preferredVisitDate, setPreferredVisitDate] = useState<string>("");
+    const [editingVisit, setEditingVisit] = useState<VisitDto | null>(null);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -46,12 +52,24 @@ function App() {
         setCurrentView("VISITS");
         setSelectedPatientId(null);
         setSelectedVisitId(null);
+        setEditingVisit(null);
     };
 
-    const handleLoginSuccess = (loggedRole: UserRole) => {
+    const handleLoginSuccess = (loggedRole: UserRole, passwdChangeRequired: boolean) => {
         setRole(loggedRole);
         setIsAuthenticated(true);
-        if (loggedRole === "Administrator") {
+        if (passwdChangeRequired) {
+            setRequiresPasswordChange(true);
+        } else if (loggedRole === "Administrator") {
+            setCurrentView("ADMIN");
+        } else {
+            setCurrentView("VISITS");
+        }
+    };
+
+    const handlePasswordChanged = () => {
+        setRequiresPasswordChange(false);
+        if (role === "Administrator") {
             setCurrentView("ADMIN");
         } else {
             setCurrentView("VISITS");
@@ -60,11 +78,16 @@ function App() {
 
     const handleScheduleVisit = (patientId: number) => {
         setSelectedPatientId(patientId);
+        setEditingVisit(null);
         setCurrentView('NEW_VISIT');
     };
 
     if (!isAuthenticated || !role) {
         return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+    }
+
+    if (requiresPasswordChange) {
+        return <ChangePasswordPage onPasswordChanged={handlePasswordChanged} />;
     }
 
     return (
@@ -76,40 +99,52 @@ function App() {
                 onViewChange={(view: any) => {
                     setCurrentView(view);
                     setSelectedVisitId(null);
+                    setEditingVisit(null);
                 }}
                 currentView={currentView}
             />
 
             <main>
                 {role === "Administrator" ? (
-                        <AdminDashboard />
-                    ) :
-
-                    role === "Receptionist" ? (
-                            <>
-                                {currentView === 'VISITS' && (
-                                    <VisitsPage onNewVisit={() => setCurrentView('NEW_VISIT')} />
-                                )}
-                                {currentView === 'PATIENTS' && (
-                                    <PatientsPage onScheduleVisit={handleScheduleVisit} />
-                                )}
-                                {currentView === 'NEW_VISIT' && (
-                                    <NewVisitPage
-                                        initialPatientId={selectedPatientId}
-                                        onBack={() => {
-                                            setCurrentView('VISITS');
-                                            setSelectedPatientId(null);
-                                        }}
-                                    />
-                                )}
-                            </>
-                        ) :
-
-                        role === "Doctor" ? (
-                            <>
-                                {currentView === 'PATIENTS' && (
-                                    <DoctorPatientsPage />
-                                )}
+                    <AdminDashboard />
+                ) : role === "Receptionist" ? (
+                    <>
+                        {currentView === 'VISITS' && (
+                            <VisitsPage
+                                onNewVisit={(visitToEdit, preferredDate) => {
+                                    if (visitToEdit) {
+                                        setEditingVisit(visitToEdit);
+                                        setPreferredVisitDate("");
+                                    } else {
+                                        setEditingVisit(null);
+                                        setPreferredVisitDate(preferredDate || "");
+                                    }
+                                    setCurrentView('NEW_VISIT');
+                                }}
+                            />
+                        )}
+                        {currentView === 'PATIENTS' && (
+                            <PatientsPage onScheduleVisit={handleScheduleVisit} />
+                        )}
+                        {currentView === 'NEW_VISIT' && (
+                            <NewVisitPage
+                                initialPatientId={selectedPatientId}
+                                visitToEdit={editingVisit}
+                                preferredDate={preferredVisitDate}
+                                onBack={() => {
+                                    setCurrentView('VISITS');
+                                    setSelectedPatientId(null);
+                                    setEditingVisit(null);
+                                    setPreferredVisitDate("");
+                                }}
+                            />
+                        )}
+                    </>
+                ) : role === "Doctor" ? (
+                    <>
+                        {currentView === 'PATIENTS' && (
+                            <DoctorPatientsPage />
+                        )}
 
                                 {currentView === 'VISITS' && (
                                     !selectedVisitId ? (
@@ -127,8 +162,23 @@ function App() {
                                 <div className="alert alert-info">
                                     Dashboard for <strong>{role}</strong> is under construction.
                                 </div>
-                            </div>
+                            ) : (
+                                <OrderExamPage
+                                    visitId={selectedVisitId}
+                                    onBack={() => setSelectedVisitId(null)}
+                                />
+                            )
                         )}
+                    </>
+                ) : role === "LabTechnician" ? (
+                    <LaborantDashbord />
+                ) : (
+                    <div className="container py-5">
+                        <div className="alert alert-info">
+                            Dashboard for <strong>{role}</strong> is under construction.
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );

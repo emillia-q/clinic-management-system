@@ -69,7 +69,8 @@ export const useStaffDashboard = () => {
         handleSelectStaff,
         openStatusChangeConfirmation,
         closeStatusChangeConfirmation,
-        toggleAccountStatus
+        toggleAccountStatus,
+        refreshList: loadStaff,
     };
 };
 
