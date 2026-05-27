@@ -146,22 +146,9 @@ function App() {
                             <DoctorPatientsPage />
                         )}
 
-                                {currentView === 'VISITS' && (
-                                    !selectedVisitId ? (
-                                        <DoctorVisitsPage onOrderExam={(visitId) => setSelectedVisitId(visitId)} />
-                                    ) : (
-                                        <OrderExamPage
-                                            visitId={selectedVisitId}
-                                            onBack={() => setSelectedVisitId(null)}
-                                        />
-                                    )
-                                )}
-                            </>
-                        ) : (
-                            <div className="container py-5">
-                                <div className="alert alert-info">
-                                    Dashboard for <strong>{role}</strong> is under construction.
-                                </div>
+                        {currentView === 'VISITS' && (
+                            !selectedVisitId ? (
+                                <DoctorVisitsPage onOrderExam={(visitId) => setSelectedVisitId(visitId)} />
                             ) : (
                                 <OrderExamPage
                                     visitId={selectedVisitId}
