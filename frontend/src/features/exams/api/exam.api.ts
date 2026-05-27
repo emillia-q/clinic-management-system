@@ -1,5 +1,11 @@
 import axios from 'axios';
 
+export interface OrderExamData {
+    visitId: number;
+    examName: string;
+    notes: string;
+}
+
 const api = axios.create({
     baseURL: 'http://localhost:8080/api/v1/doctors'
 });
@@ -12,7 +18,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const orderExam = async (type: string, data: any) => {
+export const orderExam = async (type: string, data: OrderExamData) => {
     const isLab = type === 'Laboratory';
     const endpoint = isLab ? '/lab-exam' : '/physical-exam';
 
