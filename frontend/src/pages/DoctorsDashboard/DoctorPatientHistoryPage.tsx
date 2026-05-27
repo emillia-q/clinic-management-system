@@ -35,9 +35,9 @@ export const DoctorPatientHistoryPage = ({patient, onBack}: DoctorPatientHistory
                     <div className="text-muted">Loading history...</div>
                 ) : (
                     <>
-                        <HistoryListSection title="Visits" items={history?.visits ?? []}/>
-                        <HistoryListSection title="Physical Exams" items={history?.physicalExams ?? []}/>
-                        <HistoryListSection title="Laboratory Exams" items={history?.labExams ?? []}/>
+                        <HistoryListSection title="Visits" items={history?.visits ?? []} sectionType="visits"/>
+                        <HistoryListSection title="Physical Exams" items={history?.physicalExams ?? []} sectionType="physicalExams"/>
+                        <HistoryListSection title="Laboratory Exams" items={history?.labExams ?? []} sectionType="labExams"/>
                     </>
                 )}
             </div>

@@ -20,6 +20,7 @@ public class PhysicalExamDetailsDto {
 	private LocalDateTime date;
 	private String patientName;
 	private String patientPesel;
+	private String doctorName;
 
 	static public PhysicalExamDetailsDto fromEntity(PhysicalExam pe) {
 		var visit = pe.getVisit();
@@ -35,7 +36,8 @@ public class PhysicalExamDetailsDto {
 			pe.getResult(),
 			visit.getAppointmentDate(),
 			patient.getFirstName() + " " + patient.getLastName(),
-			patient.getSocialSecurityNo()
+			patient.getSocialSecurityNo(),
+			doctor.getFirstName() + " " + doctor.getLastName()
 		);
 	}
 }

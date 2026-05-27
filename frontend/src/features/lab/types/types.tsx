@@ -11,8 +11,8 @@ export interface LabExamDetails {
     result: string;
     doctorNotes: string;
     managerNotes: string;
-    labTechnicianId: number;
-    labManagerId: number;
+    labTechnicianName: string | null;
+    labManagerName: string | null;
     doctorId: number;
     patientId: number;
 }

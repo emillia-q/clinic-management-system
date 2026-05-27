@@ -20,8 +20,8 @@ public record LabExamDetailsDto(
 	String result,
 	String doctorNotes,
 	String managerNotes,
-	Long labTechnicianId,
-	Long labManagerId,
+	String labTechnicianName,
+	String labManagerName,
 	Long doctorId,
 	Long patientId
 ) {
@@ -42,10 +42,10 @@ public record LabExamDetailsDto(
 			entity.getDoctorNotes(),
 			entity.getManagerNotes(),
 			Optional.ofNullable(entity.getLabTechnician())
-				.map(LabTechnician::getUserId)
+				.map(t -> t.getFirstName() + " " + t.getLastName())
 				.orElse(null),
 			Optional.ofNullable(entity.getLabManager())
-				.map(LabManager::getUserId)
+				.map(m -> m.getFirstName() + " " + m.getLastName())
 				.orElse(null),
 			doctor.getUserId(),
 			patient.getPatientId()
