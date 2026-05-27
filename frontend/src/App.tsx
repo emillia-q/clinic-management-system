@@ -3,6 +3,7 @@ import { Header } from "./components/layout/Header.tsx";
 import { AdminDashboard } from "./pages/AdminDashboard/AdminDashboard.tsx";
 import { PatientsPage } from "./pages/ReceptionistDashboard/PatientsPage.tsx";
 import { DoctorPatientsPage } from "./pages/DoctorsDashboard/DoctorsPatientsPage.tsx";
+import { DoctorVisitsPage } from "./pages/DoctorsDashboard/DoctorVisitsPage.tsx";
 import { NewVisitPage } from "./pages/ReceptionistDashboard/NewVisitPage.tsx";
 import { VisitsPage } from "./pages/ReceptionistDashboard/VisitsPage.tsx";
 import { OrderExamPage } from "./pages/DoctorsDashboard/OrderExamPage.tsx";
@@ -12,6 +13,7 @@ import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
 import {LaborantDashbord} from "./pages/LaborantDashbord/LaborantDashbord.tsx";
 import type { VisitDto } from "./features/visits/types/visit.types.ts";
+
 
 type UserRole = "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
 
@@ -146,22 +148,7 @@ function App() {
 
                         {currentView === 'VISITS' && (
                             !selectedVisitId ? (
-                                <div className="container py-5">
-                                    <h2 className="fw-bold mb-4 text-start">Doctor's Appointments</h2>
-                                    <div className="card shadow-sm border-0 p-5 text-center bg-light">
-                                        <i className="fa-solid fa-calendar-check fa-3x mb-3 opacity-25"></i>
-                                        <p className="text-muted">Appointment list will be here.</p>
-                                        <div className="mt-4">
-                                            <button
-                                                className="btn btn-dark fw-bold px-4 py-2"
-                                                onClick={() => setSelectedVisitId(1)}
-                                            >
-                                                <i className="fa-solid fa-microscope me-2"></i>
-                                                Example: Order Exam for Visit #1
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <DoctorVisitsPage onOrderExam={(visitId) => setSelectedVisitId(visitId)} />
                             ) : (
                                 <OrderExamPage
                                     visitId={selectedVisitId}

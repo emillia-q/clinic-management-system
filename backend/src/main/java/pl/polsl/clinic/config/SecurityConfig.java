@@ -2,6 +2,7 @@ package pl.polsl.clinic.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +36,8 @@ public class SecurityConfig {
 					"/swagger-ui.html",
 					"/api/v1/auth/**"
 				).permitAll()
-				.requestMatchers("/api/v1/staff/**").hasAnyRole("Administrator", "Receptionist")
+				.requestMatchers(HttpMethod.GET, "/api/v1/staff").authenticated()  //allows anyone who is logged in to get staff list
+				.requestMatchers("/api/v1/staff/**").hasRole("Administrator")
 				.requestMatchers("/api/v1/doctors/**").hasRole("Doctor")
 				.requestMatchers("/api/v1/lab-technician/**").hasRole("LabTechnician")
 				.requestMatchers("/api/v1/lab-manager/**").hasRole("LabManager")

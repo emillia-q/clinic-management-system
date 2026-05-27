@@ -254,7 +254,7 @@ public class DoctorController {
 	@Operation(summary = "Start a visit")
 	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public void StartVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+	public void StartVisit(@RequestBody @NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
 		visitService.ModifyVisitDoctor(request, VisitStatus.In_Progress);
 	}
 
@@ -263,7 +263,7 @@ public class DoctorController {
 	@Operation(summary = "Cancel a visit due to reasons")
 	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public void CancelVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+	public void CancelVisit(@RequestBody @NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
 		visitService.ModifyVisitDoctor(request, VisitStatus.Cancelled);
 	}
 
@@ -272,7 +272,7 @@ public class DoctorController {
 	@Operation(summary = "Finish a visit")
 	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
 	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
-	public void FinishVisit(@NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+	public void FinishVisit(@RequestBody @NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
 		visitService.ModifyVisitDoctor(request, VisitStatus.Finished);
 	}
 	//</editor-fold>

@@ -23,7 +23,7 @@ public class JwtService {
 	private final SecretKey signingKey;
 	private final long expirationSeconds;
 
-	private <T> T extractClaim(String token, Function<Claims, T> resolver) {
+	public <T> T extractClaim(String token, Function<Claims, T> resolver) {
 		Claims claims = Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token).getPayload();
 		return resolver.apply(claims);
 	}
