@@ -44,4 +44,10 @@ public class LabManagerController {
 		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
 		labService.rejectExam(id, notes.notes(), jwtService.extractUserId(jwt));
 	}
+
+	@GetMapping("/exams")
+	@Operation(summary = "Get list of exams by any status")
+	public List<LabExamDetailsDto> getExamsByStatus(@RequestParam LabExamStatus status) {
+		return labService.getExamsByStatus(status);
+	}
 }
