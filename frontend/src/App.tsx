@@ -12,6 +12,7 @@ import { LoginPage } from "./pages/LoginPage.tsx";
 import { ChangePasswordPage } from "./pages/ChangePasswordPage.tsx";
 import { Toaster } from 'react-hot-toast';
 import {LaborantDashbord} from "./pages/LaborantDashbord/LaborantDashbord.tsx";
+import { LabManagerDashboard } from "./pages/LabManagerDashboard/LabManagerDashboard.tsx";
 import type { VisitDto } from "./features/visits/types/visit.types.ts";
 
 
@@ -96,7 +97,7 @@ function App() {
             <Header
                 userRole={role}
                 onLogout={handleLogout}
-                onViewChange={(view: any) => {
+                onViewChange={(view: 'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN') => {
                     setCurrentView(view);
                     setSelectedVisitId(null);
                     setEditingVisit(null);
@@ -159,6 +160,8 @@ function App() {
                     </>
                 ) : role === "LabTechnician" ? (
                     <LaborantDashbord />
+                ) : role === "LabManager" ? (
+                    <LabManagerDashboard />
                 ) : (
                     <div className="container py-5">
                         <div className="alert alert-info">
