@@ -28,7 +28,7 @@ export const ChangePasswordPage = ({ onPasswordChanged }: ChangePasswordPageProp
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8080/api/v1/auth/change-password', {
+            const response = await fetch((import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1") + '/auth/change-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

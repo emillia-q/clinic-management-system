@@ -15,7 +15,7 @@ export const DoctorPatientsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const api = axios.create({
-        baseURL: 'http://localhost:8080/api/v1/doctors'
+        baseURL: (import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1") + '/doctors'
     });
     api.interceptors.request.use((config) => {
         const token = localStorage.getItem('token');
