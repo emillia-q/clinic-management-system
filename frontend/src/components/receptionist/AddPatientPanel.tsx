@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import axios from "axios";
 
 interface AddPatientPanelProps {
     onClose: () => void;
@@ -46,19 +47,27 @@ export const AddPatientPanel = ({onClose, onRefresh}: AddPatientPanelProps) => {
         validateField(name, value);
     };
 
+    const api = axios.create({
+        baseURL: 'http://localhost:8080/api/v1/patients'
+    });
+    api.interceptors.request.use((config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
+
     const handleAdd = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/v1/patients", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(formData),
-            });
 
-            if (response.ok) {
+            const response = await api.post("", formData );
+
+            if (response.status >= 200 && response.status < 300) {
                 onRefresh();
                 onClose();
             } else {
-                const rawText = await response.text();
+                const rawText = await response.data();
                 console.log("server response:", rawText);
 
                 alert("DEBUG:\n" + rawText);
