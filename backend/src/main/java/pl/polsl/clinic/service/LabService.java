@@ -60,6 +60,7 @@ public class LabService {
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setManagerNotes(managerNotes);
 		exam.setStatus(LabExamStatus.Validated.name());
+		exam.setApprovalRejectionDate(LocalDateTime.now());
 		var manager = labManagerRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabManager.class, userId));
 		exam.setLabManager(manager);
 		labExamRepository.save(exam);
@@ -74,6 +75,7 @@ public class LabService {
 			.orElseThrow(() -> new ItemNotFoundException(LabExam.class, id));
 		exam.setManagerNotes(managerNotes);
 		exam.setStatus(LabExamStatus.Rejected.name());
+		exam.setApprovalRejectionDate(LocalDateTime.now());
 		var manager = labManagerRepository.findById(userId).orElseThrow(() -> new ItemNotFoundException(LabManager.class, userId));
 		exam.setLabManager(manager);
 		labExamRepository.save(exam);

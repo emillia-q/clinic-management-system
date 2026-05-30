@@ -3,6 +3,7 @@ import {format} from "date-fns";
 import type {LabExamDetailsDto, PhysicalExamDetailsDto, VisitDetailsDto, VisitHistoryItemDto} from "../types/patientHistory.types.ts";
 import {doctorPatientHistoryApi} from "../api/doctorPatientHistoryApi.ts";
 import {getLabExamStatusBadgeClass, getVisitStatusBadgeClass} from "../../../shared/ui/status";
+import {getLabExamHistoryLabels} from "../utils/labExamHistoryLabels.ts";
 
 type SectionType = "visits" | "physicalExams" | "labExams";
 
@@ -35,23 +36,35 @@ const VisitDetail = ({detail}: { detail: VisitDetailsDto }) => (
     </div>
 );
 
-const LabExamDetail = ({detail}: { detail: LabExamDetailsDto }) => (
-    <div className="mt-2 px-1">
-        <DetailRow label="Exam code" value={<code>{detail.examCode}</code>}/>
-        <DetailRow label="Status" value={<span className={getLabExamStatusBadgeClass(detail.status)}>{detail.status}</span>}/>
-        <DetailRow label="Ordered by" value={detail.orderedByDoctor}/>
-        <DetailRow label="Order date" value={fmt(detail.orderDate)}/>
-        <DetailRow
-            label="Completion date"
-            value={detail.completionDate ? fmt(detail.completionDate) : "—"}
-        />
-        <DetailRow label="Lab technician" value={detail.labTechnicianName}/>
-        <DetailRow label="Approved by" value={detail.labManagerName}/>
-        {detail.result && <DetailRow label="Result" value={detail.result}/>}
-        {detail.doctorNotes && <DetailRow label="Doctor notes" value={detail.doctorNotes}/>}
-        {detail.managerNotes && <DetailRow label="Manager notes" value={detail.managerNotes}/>}
-    </div>
-);
+const LabExamDetail = ({detail}: { detail: LabExamDetailsDto }) => {
+    const labels = getLabExamHistoryLabels(detail.status);
+
+    return (
+        <div className="mt-2 px-1">
+            <DetailRow label="Exam code" value={<code>{detail.examCode}</code>}/>
+            <DetailRow label="Status" value={<span className={getLabExamStatusBadgeClass(detail.status)}>{detail.status}</span>}/>
+            <DetailRow label="Ordered by" value={detail.orderedByDoctor}/>
+            <DetailRow label="Order date" value={fmt(detail.orderDate)}/>
+            <DetailRow
+                label={labels.executionDateLabel}
+                value={detail.completionDate ? fmt(detail.completionDate) : "—"}
+            />
+            <DetailRow label={labels.executorLabel} value={detail.labTechnicianName ?? "—"}/>
+            {labels.showManagerReview && labels.managerActionDateLabel && (
+                <DetailRow
+                    label={labels.managerActionDateLabel}
+                    value={detail.approvalRejectionDate ? fmt(detail.approvalRejectionDate) : "—"}
+                />
+            )}
+            {labels.showManagerReview && labels.managerActionByLabel && (
+                <DetailRow label={labels.managerActionByLabel} value={detail.labManagerName ?? "—"}/>
+            )}
+            {detail.result && <DetailRow label="Result" value={detail.result}/>}
+            {detail.doctorNotes && <DetailRow label="Doctor notes" value={detail.doctorNotes}/>}
+            {detail.managerNotes && <DetailRow label="Lab manager notes" value={detail.managerNotes}/>}
+        </div>
+    );
+};
 
 const PhysicalExamDetail = ({detail}: { detail: PhysicalExamDetailsDto }) => (
     <div className="mt-2 px-1">
@@ -76,10 +89,10 @@ const HistoryItemRow = ({item, sectionType}: { item: VisitHistoryItemDto; sectio
     const handleToggle = async () => {
         if (expanded) {
             setExpanded(false);
+            setDetails(null);
             return;
         }
         setExpanded(true);
-        if (details) return;
         setLoading(true);
         setError(false);
         try {
@@ -94,6 +107,7 @@ const HistoryItemRow = ({item, sectionType}: { item: VisitHistoryItemDto; sectio
             setDetails(data);
         } catch {
             setError(true);
+            setDetails(null);
         } finally {
             setLoading(false);
         }

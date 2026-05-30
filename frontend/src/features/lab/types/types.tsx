@@ -5,8 +5,9 @@ export interface LabExamDetails {
     patientName: string;
     patientPesel: string;
     orderedByDoctor: string;
-    orderDate: string; // ISO-8601 string format
-    completionDate: string; // ISO-8601 string format
+    orderDate: string;
+    completionDate: string | null;
+    approvalRejectionDate: string | null;
     status: string;
     result: string;
     doctorNotes: string;
