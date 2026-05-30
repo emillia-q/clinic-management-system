@@ -4,27 +4,30 @@ import {PatientSearchAdd} from "../../components/receptionist/PatientSearchAdd.t
 import {PatientList} from "../../features/patients/ui/PatientList.tsx";
 import {PatientDetails} from "../../components/receptionist/PatientDetails";
 import {AddPatientPanel} from "../../components/receptionist/AddPatientPanel.tsx";
-import type {SearchPatientsData} from "../../features/patients/ui/SearchPatients.tsx";
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
 import {patientsApi} from "../../features/patients/api/patientsApi.ts";
+import {filterPatientsByQuery} from "../../features/patients/utils/filterPatientsByQuery.ts";
 
 interface PatientsPageProps {
     onScheduleVisit: (patientId: number) => void;
 }
 
 export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
+    const [allPatients, setAllPatients] = useState<PatientDto[]>([]);
     const [patients, setPatients] = useState<PatientDto[]>([]);
+    const [appliedSearchQuery, setAppliedSearchQuery] = useState<string | null>(null);
     const [selectedPatient, setSelectedPatient] = useState<PatientDto | null>(null);
     const [isAddingNew, setIsAddingNew] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchPatients = async (searchParams?: SearchPatientsData | null) => {
+    const fetchPatients = async (searchQuery = appliedSearchQuery) => {
         setIsLoading(true);
         try {
-            const response = await patientsApi.get('', {params: searchParams});
-            setPatients(response.data);
+            const response = await patientsApi.get('');
+            setAllPatients(response.data);
+            setPatients(filterPatientsByQuery(response.data, searchQuery));
         } catch (error) {
-            const errorDetails = error.response.data as InvalidParametersErrorDetails;
+            const errorDetails = (error as {response: {data: InvalidParametersErrorDetails}}).response.data;
             let fullErrorMessage: string = "";
             if (errorDetails.errors) {
                 const fieldErrors = Object.entries(errorDetails.errors)
@@ -42,12 +45,13 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     };
 
     useEffect(() => {
-        void fetchPatients();
+        void fetchPatients(null);
     }, []);
 
-    const setSearchQueryReFetch = async (params: SearchPatientsData | null) => {
-        await fetchPatients(params);
-    }
+    const handleSearch = (query: string | null) => {
+        setAppliedSearchQuery(query);
+        setPatients(filterPatientsByQuery(allPatients, query));
+    };
 
     const handleOpenAddPanel = () => {
         setSelectedPatient(null);
@@ -79,7 +83,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     return (
         <div className="container-fluid py-4 px-5">
             <PatientSearchAdd
-                onSearch={setSearchQueryReFetch}
+                onSearch={handleSearch}
                 onAddPatientClick={handleOpenAddPanel}
             />
 

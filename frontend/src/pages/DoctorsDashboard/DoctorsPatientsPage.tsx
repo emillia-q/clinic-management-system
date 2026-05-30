@@ -2,14 +2,16 @@ import {useEffect, useState} from 'react';
 import type {PatientDto, PatientUpcomingVisitDto} from "../../features/patients/types/patient.types.ts";
 import {PatientList} from "../../features/patients/ui/PatientList.tsx";
 import {PatientDetailsForDoctor} from "../../features/doctors/ui/PatientDetailsForDoctor.tsx";
-import {SearchPatients, type SearchPatientsData} from "../../features/patients/ui/SearchPatients.tsx";
+import {SearchPatients} from "../../features/patients/ui/SearchPatients.tsx";
 import {DoctorPatientHistoryPage} from "./DoctorPatientHistoryPage.tsx";
 import axios from 'axios';
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
-
+import {filterPatientsByQuery} from "../../features/patients/utils/filterPatientsByQuery.ts";
 
 export const DoctorPatientsPage = () => {
+    const [allPatients, setAllPatients] = useState<PatientDto[]>([]);
     const [patients, setPatients] = useState<PatientDto[]>([]);
+    const [appliedSearchQuery, setAppliedSearchQuery] = useState<string | null>(null);
     const [selectedPatient, setSelectedPatient] = useState<PatientUpcomingVisitDto | null>(null);
     const [historyPatient, setHistoryPatient] = useState<PatientDto | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,13 +27,14 @@ export const DoctorPatientsPage = () => {
         return config;
     });
 
-    const fetchPatients = async (searchParams?: SearchPatientsData | null) => {
+    const fetchPatients = async (searchQuery = appliedSearchQuery) => {
         setIsLoading(true);
         try {
-            const response = await api.get('/patients', {params: searchParams});
-            setPatients(response.data);
+            const response = await api.get('/patients');
+            setAllPatients(response.data);
+            setPatients(filterPatientsByQuery(response.data, searchQuery));
         } catch (error) {
-            const errorDetails = error.response.data as InvalidParametersErrorDetails;
+            const errorDetails = (error as {response: {data: InvalidParametersErrorDetails}}).response.data;
             let fullErrorMessage: string = "";
             if (errorDetails.errors) {
                 const fieldErrors = Object.entries(errorDetails.errors)
@@ -48,12 +51,13 @@ export const DoctorPatientsPage = () => {
         }
     };
 
-    const setSearchQueryReFetch = async (params: SearchPatientsData | null) => {
-        await fetchPatients(params);
-    }
+    const handleSearch = (query: string | null) => {
+        setAppliedSearchQuery(query);
+        setPatients(filterPatientsByQuery(allPatients, query));
+    };
 
     useEffect(() => {
-        void fetchPatients();
+        void fetchPatients(null);
     }, []);
 
     const handleSelectPatient = async (patientFromList: PatientDto) => {
@@ -77,9 +81,7 @@ export const DoctorPatientsPage = () => {
     return (
         <div className="container-fluid py-4 px-5">
             <div className="row mb-4 align-items-end">
-                <SearchPatients
-                    onSearch={setSearchQueryReFetch}
-                />
+                <SearchPatients onSearch={handleSearch} />
             </div>
 
             <div className="row g-4">
