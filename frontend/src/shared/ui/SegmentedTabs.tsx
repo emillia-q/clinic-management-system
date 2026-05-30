@@ -12,6 +12,7 @@ export interface SegmentedTabsProps {
     onTabChange: (tab: string) => void;
     uppercase?: boolean;
     className?: string;
+    tabLabels?: Record<string, string>;
 }
 
 export const SegmentedTabs = ({
@@ -20,6 +21,7 @@ export const SegmentedTabs = ({
     onTabChange,
     uppercase = false,
     className = 'mb-0',
+    tabLabels,
 }: SegmentedTabsProps) => (
     <div
         className={`btn-group w-100 shadow-sm overflow-hidden ${className}`}
@@ -27,6 +29,7 @@ export const SegmentedTabs = ({
     >
         {tabs.map((tab) => {
             const isActive = activeTab === tab;
+            const label = tabLabels?.[tab] ?? tab;
             return (
                 <button
                     key={tab}
@@ -40,7 +43,7 @@ export const SegmentedTabs = ({
                         color: isActive ? TAB_ACTIVE_COLOR : TAB_INACTIVE_COLOR,
                     }}
                 >
-                    {uppercase ? tab.toUpperCase() : tab}
+                    {uppercase ? label.toUpperCase() : label}
                 </button>
             );
         })}

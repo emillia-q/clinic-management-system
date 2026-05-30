@@ -11,6 +11,7 @@ import {
     DetailFieldLabel,
     PAGE_TITLE_CLASS,
     PANEL_TITLE_CLASS,
+    StatusBadge,
     TABLE_CARD_CLASS,
     TABLE_HEAD_ROW_CLASS,
 } from "../../shared/ui";
@@ -201,9 +202,7 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                                         </td>
                                         <td>{v.patientName}</td>
                                         <td>
-                                            <span className={`badge ${isInProgress(v.status) ? 'bg-success' : v.status === 'Finished' ? 'bg-secondary' : v.status === 'Cancelled' ? 'bg-danger' : 'bg-primary'}`}>
-                                                {v.status}
-                                            </span>
+                                            <StatusBadge status={v.status} domain="visit" padded={false} />
                                         </td>
                                     </tr>
                                 ))}
@@ -239,9 +238,7 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center">
                                         <DetailFieldLabel className="mb-0">Visit Status</DetailFieldLabel>
-                                        <span className={`badge ${isInProgress(selectedVisit.status) ? 'bg-success' : selectedVisit.status === 'Finished' ? 'bg-secondary' : selectedVisit.status === 'Cancelled' ? 'bg-danger' : 'bg-primary'}`}>
-                                            {selectedVisit.status}
-                                        </span>
+                                        <StatusBadge status={selectedVisit.status} domain="visit" padded={false} />
                                     </div>
                                 </div>
 

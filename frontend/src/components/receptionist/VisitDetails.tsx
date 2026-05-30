@@ -1,13 +1,14 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
+import {DetailFieldLabel} from "../../shared/ui/DetailFieldLabel";
 import {
     BTN_PANEL_DANGER,
     BTN_PANEL_OUTLINE,
     PANEL_TITLE_CLASS,
     roundedStyle,
+    StatusBadge,
     UI_CARD_BORDER_RADIUS,
-} from "../../shared/ui/styles";
-import {DetailFieldLabel} from "../../shared/ui/DetailFieldLabel";
+} from "../../shared/ui";
 
 interface VisitDetailsProps {
     visit: VisitDto;
@@ -60,7 +61,7 @@ export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: Visit
                     </div>
                     <div>
                         <DetailFieldLabel>Visit Status:</DetailFieldLabel>
-                        <p className="mb-0 fw-bold text-primary">{visit.status}</p>
+                        <StatusBadge status={visit.status} domain="visit" padded={false} className="mt-1" />
                     </div>
                 </div>
 

@@ -1,6 +1,7 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
 import {FONT_SIZE_CAPTION, TABLE_HEAD_ROW_CLASS} from "../../shared/ui/styles";
+import {StatusBadge} from "../../shared/ui";
 
 interface VisitListProps {
     visits: VisitDto[];
@@ -11,15 +12,6 @@ interface VisitListProps {
 }
 
 export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, isSearching}: VisitListProps) => {
-    const getStatusClass = (status: string) => {
-        const s = status.toLowerCase();
-        if (s === 'registered') return 'bg-primary text-white';
-        if (s === 'in progress') return 'bg-warning text-dark';
-        if (s === 'finished') return 'bg-success text-white';
-        if (s === 'cancelled') return 'bg-danger text-white';
-        return 'bg-secondary text-white';
-    };
-
     return (
         <div className="bg-white border-start border-end border-bottom border-2 shadow-sm">
             <table className="table table-hover mb-0 align-middle">
@@ -68,9 +60,7 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, is
                             <td className="py-3 fw-semibold text-dark">{visit.patientName}</td>
                             <td className="py-3 text-muted">{formatDoctorFromFullName(visit.doctorName)}</td>
                             <td className="py-3 text-center">
-                                <span className={`badge py-2 px-3 ${getStatusClass(visit.status)}`}>
-                                    {visit.status.toUpperCase()}
-                                </span>
+                                <StatusBadge status={visit.status} domain="visit" uppercase />
                             </td>
                         </tr>
                     ))

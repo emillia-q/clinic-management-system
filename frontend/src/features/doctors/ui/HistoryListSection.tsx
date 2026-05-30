@@ -2,6 +2,7 @@ import {useState} from "react";
 import {format} from "date-fns";
 import type {LabExamDetailsDto, PhysicalExamDetailsDto, VisitDetailsDto, VisitHistoryItemDto} from "../types/patientHistory.types.ts";
 import {doctorPatientHistoryApi} from "../api/doctorPatientHistoryApi.ts";
+import {getLabExamStatusBadgeClass, getVisitStatusBadgeClass} from "../../../shared/ui/status";
 
 type SectionType = "visits" | "physicalExams" | "labExams";
 
@@ -17,14 +18,6 @@ const fmt = (date: string | null | undefined) =>
 const fmtDate = (date: string | null | undefined) =>
     date ? format(new Date(date), "dd.MM.yyyy") : "—";
 
-const statusBadgeClass = (status: string) => {
-    const s = status.toLowerCase();
-    if (s === "finished" || s === "approved" || s === "done") return "badge bg-success";
-    if (s === "cancelled" || s === "rejected") return "badge bg-danger";
-    if (s === "in_progress" || s === "ordered") return "badge bg-warning text-dark";
-    return "badge bg-secondary";
-};
-
 const DetailRow = ({label, value}: { label: string; value: React.ReactNode }) => (
     <div className="d-flex gap-2 mb-1 small">
         <span className="text-muted" style={{minWidth: "140px"}}>{label}:</span>
@@ -35,7 +28,7 @@ const DetailRow = ({label, value}: { label: string; value: React.ReactNode }) =>
 const VisitDetail = ({detail}: { detail: VisitDetailsDto }) => (
     <div className="mt-2 px-1">
         <DetailRow label="Doctor" value={detail.doctorName}/>
-        <DetailRow label="Status" value={<span className={statusBadgeClass(detail.status)}>{detail.status}</span>}/>
+        <DetailRow label="Status" value={<span className={getVisitStatusBadgeClass(detail.status)}>{detail.status}</span>}/>
         <DetailRow label="Date" value={fmt(detail.appointmentDate)}/>
         {detail.description && <DetailRow label="Description" value={detail.description}/>}
         {detail.diagnosis && <DetailRow label="Diagnosis" value={detail.diagnosis}/>}
@@ -45,7 +38,7 @@ const VisitDetail = ({detail}: { detail: VisitDetailsDto }) => (
 const LabExamDetail = ({detail}: { detail: LabExamDetailsDto }) => (
     <div className="mt-2 px-1">
         <DetailRow label="Exam code" value={<code>{detail.examCode}</code>}/>
-        <DetailRow label="Status" value={<span className={statusBadgeClass(detail.status)}>{detail.status}</span>}/>
+        <DetailRow label="Status" value={<span className={getLabExamStatusBadgeClass(detail.status)}>{detail.status}</span>}/>
         <DetailRow label="Ordered by" value={detail.orderedByDoctor}/>
         <DetailRow label="Order date" value={fmt(detail.orderDate)}/>
         <DetailRow

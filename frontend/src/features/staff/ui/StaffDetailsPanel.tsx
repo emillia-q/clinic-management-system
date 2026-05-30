@@ -8,6 +8,7 @@ import {
     FIELD_LABEL_CLASS,
     FIELD_LABEL_STYLE,
     PANEL_TITLE_CLASS,
+    StatusBadge,
     TABLE_CARD_CLASS,
 } from "../../../shared/ui";
 
@@ -33,10 +34,13 @@ export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffD
                                 <h5 className={`${PANEL_TITLE_CLASS} mb-1 text-dark`}>
                                     {selectedStaff.firstName} {selectedStaff.lastName}
                                 </h5>
-                                <span
-                                    className={`badge py-2 px-3 ${selectedStaff.isActive === "Y" ? "bg-success" : "bg-danger"}`}>
-                                    {selectedStaff.isActive === "Y" ? "Active Account" : "Inactive Account"}
-                                </span>
+                                <StatusBadge
+                                    domain="account"
+                                    status={selectedStaff.isActive === "Y" ? "Active" : "Inactive"}
+                                    label={selectedStaff.isActive === "Y" ? "Active Account" : "Inactive Account"}
+                                    padded={false}
+                                    className="py-2 px-3"
+                                />
                             </div>
                         </div>
 

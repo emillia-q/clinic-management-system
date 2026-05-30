@@ -5,6 +5,7 @@ import {ManagerExamList} from '../../features/lab/ui/ManagerExamList.tsx';
 import {ManagerVerificationDetails} from '../../features/lab/ui/ManagerVerificationDetails.tsx';
 import {VisitTabs} from '../../components/receptionist/VisitTabs.tsx';
 import {DASHBOARD_PAGE_CLASS} from '../../shared/ui/styles';
+import {LAB_MANAGER_TAB_LABELS} from '../../shared/ui/status';
 
 const STATUS_TABS = ['Completed', 'Validated', 'Rejected'];
 
@@ -102,6 +103,7 @@ export const LabManagerDashboard = () => {
                     <VisitTabs
                         tabs={STATUS_TABS}
                         activeTab={activeTab}
+                        tabLabels={LAB_MANAGER_TAB_LABELS}
                         onTabChange={(tab) => {
                             setActiveTab(tab);
                             setSelectedExam(null);
