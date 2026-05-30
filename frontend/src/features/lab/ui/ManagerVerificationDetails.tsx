@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import type {LabExamDetails} from '../types/types.tsx';
+import type {LabExamDetails} from '../types';
 
 interface ManagerVerificationDetailsProps {
     exam: LabExamDetails;

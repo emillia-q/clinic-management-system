@@ -1,4 +1,4 @@
-import type {LabExamDetails} from '../types/types.tsx';
+import type {LabExamDetails} from '../types';
 import {UI_CARD_BORDER_RADIUS, UI_MODAL_MAX_WIDTH, roundedStyle} from '../../../shared/ui/styles';
 
 interface CancelExamModalProps {

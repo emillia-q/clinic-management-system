@@ -1,4 +1,4 @@
-import type {LabExamDetails} from '../types/types.tsx';
+import type {LabExamDetails} from '../types';
 import {StatusBadge} from '../../../shared/ui';
 import {TABLE_HEAD_ROW_CLASS} from '../../../shared/ui/styles';
 
