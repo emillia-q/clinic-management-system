@@ -4,6 +4,7 @@ import {SearchExamType} from '../../features/lab/ui/SearchExamType.tsx';
 import {ManagerExamList} from '../../features/lab/ui/ManagerExamList.tsx';
 import {ManagerVerificationDetails} from '../../features/lab/ui/ManagerVerificationDetails.tsx';
 import {VisitTabs} from '../../components/receptionist/VisitTabs.tsx';
+import {DASHBOARD_PAGE_CLASS} from '../../shared/ui/styles';
 
 const STATUS_TABS = ['Completed', 'Validated', 'Rejected'];
 
@@ -91,7 +92,7 @@ export const LabManagerDashboard = () => {
     };
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             <div className="row mb-4 align-items-end">
                 <SearchExamType onSearch={handleSearch}/>
             </div>

@@ -7,6 +7,14 @@ import {VisitDetails} from "../../components/receptionist/VisitDetails";
 import {CancelVisitModal} from "../../components/receptionist/CancelVisitModal";
 import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
 import {SearchField} from "../../shared/ui/SearchField";
+import {
+    BTN_TOOLBAR_PRIMARY,
+    DASHBOARD_PAGE_CLASS,
+    FORM_LABEL_CLASS,
+    PAGE_TITLE_CLASS,
+    SEARCH_FIELD_WRAPPER_STYLE,
+    roundedStyle,
+} from "../../shared/ui/styles";
 
 interface DoctorDto {
     id: number;
@@ -123,7 +131,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
     };
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             <div className="mb-4">
                 <DateStripline
                     selectedDate={selectedDate}
@@ -139,7 +147,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
                     label="Search Patient / PESEL"
                     placeholder="Enter name or PESEL..."
                     className=""
-                    wrapperStyle={{minWidth: '320px', maxWidth: '380px'}}
+                    wrapperStyle={SEARCH_FIELD_WRAPPER_STYLE}
                     onSearch={(query) => {
                         setAppliedSearchQuery(query ?? "");
                         setSelectedVisit(null);
@@ -148,7 +156,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
 
                 {/* Lekkie, nowoczesne tagi-przyciski lekarzy umieszczone obok */}
                 <div className="flex-grow-1">
-                    <label className="form-label fw-bold text-secondary small text-uppercase mb-2 d-block">
+                    <label className={`${FORM_LABEL_CLASS} d-block`}>
                         Filter by Doctors
                     </label>
                     <div className="d-flex flex-wrap gap-2 align-items-center" style={{ paddingBottom: '2px' }}>
@@ -204,12 +212,12 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
             </div>
 
             <header className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="fw-bold text-dark">
+                <h2 className={PAGE_TITLE_CLASS}>
                     {appliedSearchQuery.trim().length > 0
                         ? `Found Results in "${activeTab}"`
                         : `Upcoming Visits ${isToday ? "(Today)" : `(${selectedDate})`}`}
                 </h2>
-                <button className="btn btn-primary fw-bold px-4 shadow-sm" onClick={() => onNewVisit(null, selectedDate)} style={{borderRadius: '10px'}}>
+                <button className={BTN_TOOLBAR_PRIMARY} style={roundedStyle} onClick={() => onNewVisit(null, selectedDate)}>
                     <i className="fa-solid fa-plus me-2"></i> New Visit
                 </button>
             </header>

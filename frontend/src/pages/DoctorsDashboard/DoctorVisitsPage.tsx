@@ -3,6 +3,17 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { DateStripline } from "../../components/receptionist/DateStripline";
 import { SegmentedTabs } from "../../shared/ui/SegmentedTabs";
+import {
+    BTN_PANEL_OUTLINE,
+    BTN_PANEL_PRIMARY,
+    BTN_PANEL_SUCCESS,
+    DASHBOARD_PAGE_CLASS,
+    DetailFieldLabel,
+    PAGE_TITLE_CLASS,
+    PANEL_TITLE_CLASS,
+    TABLE_CARD_CLASS,
+    TABLE_HEAD_ROW_CLASS,
+} from "../../shared/ui";
 interface Visit {
     id: number;
     patientName: string;
@@ -135,7 +146,7 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
         : visits.filter(v => (v.status || "").toLowerCase() === activeTab.toLowerCase());
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             <div className="mb-5">
                 <DateStripline
                     selectedDate={selectedDate}
@@ -150,7 +161,7 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
             <div className="row g-4">
                 <div className={selectedVisit ? "col-md-8" : "col-md-12"} style={{transition: 'all 0.3s ease'}}>
                     <header className="mb-4 text-start">
-                        <h2 className="fw-bold text-dark">Doctor's Appointments</h2>
+                        <h2 className={PAGE_TITLE_CLASS}>Doctor's Appointments</h2>
                     </header>
 
                     <SegmentedTabs
@@ -164,14 +175,14 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                         className="mb-4"
                     />
 
-                    <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+                    <div className={`${TABLE_CARD_CLASS} rounded-3 overflow-hidden`}>
                         <div className="card-body p-0">
                             <table className="table table-hover mb-0 align-middle">
-                                <thead className="table-light text-start">
-                                <tr>
-                                    <th className="ps-4">Time</th>
-                                    <th>Patient</th>
-                                    <th>Status</th>
+                                <thead className="bg-light">
+                                <tr className={TABLE_HEAD_ROW_CLASS}>
+                                    <th className="px-4 py-3">Time</th>
+                                    <th className="py-3">Patient</th>
+                                    <th className="py-3">Status</th>
                                 </tr>
                                 </thead>
                                 <tbody className="text-start">
@@ -204,11 +215,11 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
 
                 {selectedVisit && (
                     <div className="col-md-4">
-                        <div className="card border-0 shadow-lg rounded-3 overflow-hidden text-start">
-                            <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-start">
+                        <div className={`${TABLE_CARD_CLASS} rounded-3 overflow-hidden text-start`}>
+                            <div className="card-header bg-white border-0 pt-3 px-3 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <h4 className="fw-bold mb-0 text-primary">Visit Details</h4>
-                                    <p className="text-muted small">{selectedVisit.patientName}</p>
+                                    <h5 className={PANEL_TITLE_CLASS}>Visit Details</h5>
+                                    <p className="text-muted small mb-0">{selectedVisit.patientName}</p>
                                 </div>
                                 <button className="btn-close" onClick={() => {
                                     setSelectedVisit(null);
@@ -217,17 +228,17 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                             </div>
 
                             <div className="card-body px-4 pb-4">
-                                <div className="mb-4">
-                                    <div className="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
-                                        <span className="text-muted small fw-bold">VISIT ID</span>
+                                <div className="mb-4 vstack gap-2">
+                                    <div className="d-flex justify-content-between pb-2 border-bottom border-light">
+                                        <DetailFieldLabel className="mb-0">Visit ID</DetailFieldLabel>
                                         <span className="fw-bold">#{selectedVisit.id}</span>
                                     </div>
-                                    <div className="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
-                                        <span className="text-muted small fw-bold">PATIENT PESEL</span>
+                                    <div className="d-flex justify-content-between pb-2 border-bottom border-light">
+                                        <DetailFieldLabel className="mb-0">Patient PESEL</DetailFieldLabel>
                                         <span className="fw-bold">{selectedVisit.socialSecurityNo || 'N/A'}</span>
                                     </div>
-                                    <div className="d-flex justify-content-between mb-3">
-                                        <span className="text-muted small fw-bold">VISIT STATUS</span>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <DetailFieldLabel className="mb-0">Visit Status</DetailFieldLabel>
                                         <span className={`badge ${isInProgress(selectedVisit.status) ? 'bg-success' : selectedVisit.status === 'Finished' ? 'bg-secondary' : selectedVisit.status === 'Cancelled' ? 'bg-danger' : 'bg-primary'}`}>
                                             {selectedVisit.status}
                                         </span>
@@ -237,10 +248,10 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                                 <div className="d-grid gap-2 pt-2">
                                     {selectedVisit.status === 'Registered' && (
                                         <>
-                                            <button className="btn btn-primary btn-lg fw-bold py-3 mb-2" onClick={handleStartVisit}>
+                                            <button className={`${BTN_PANEL_PRIMARY} mb-2`} onClick={handleStartVisit}>
                                                 <i className="fa-solid fa-play me-2"></i> Start Visit
                                             </button>
-                                            <button className="btn btn-outline-danger btn-sm fw-bold border-0" onClick={handleCancelVisit}>
+                                            <button className="btn btn-link text-danger text-decoration-none btn-sm fw-bold border-0 p-0" onClick={handleCancelVisit}>
                                                 Cancel Appointment
                                             </button>
                                         </>
@@ -248,13 +259,13 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
 
                                     {isInProgress(selectedVisit.status) && (
                                         <>
-                                            <button className="btn btn-outline-dark btn-lg fw-bold border-2 py-3 mb-2" onClick={() => onOrderExam(selectedVisit.id)}>
+                                            <button className={`${BTN_PANEL_OUTLINE} mb-2`} onClick={() => onOrderExam(selectedVisit.id)}>
                                                 <i className="fa-solid fa-microscope me-2"></i> Order New Exam
                                             </button>
-                                            <button className="btn btn-success btn-lg fw-bold py-3 mb-3 shadow-sm" onClick={handleFinishVisit}>
+                                            <button className={`${BTN_PANEL_SUCCESS} mb-2 shadow-sm`} onClick={handleFinishVisit}>
                                                 <i className="fa-solid fa-check me-2"></i> Finish Visit
                                             </button>
-                                            <button className="btn btn-link text-danger text-decoration-none btn-sm" onClick={handleCancelVisit}>
+                                            <button className="btn btn-link text-danger text-decoration-none btn-sm fw-bold p-0" onClick={handleCancelVisit}>
                                                 Cancel Visit (In Progress)
                                             </button>
                                         </>

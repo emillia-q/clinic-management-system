@@ -6,6 +6,11 @@ import {StaffTabs} from "../../features/staff/ui/StaffTabs.tsx";
 import {useStaffDashboard} from "../../features/staff/model/useStaffDashboard.ts";
 import {AddUserModal} from "../../features/staff/ui/AddUserModal.tsx";
 import {SearchField} from "../../shared/ui/SearchField";
+import {
+    BTN_TOOLBAR_SUCCESS,
+    DASHBOARD_PAGE_CLASS,
+    roundedStyle,
+} from "../../shared/ui/styles";
 
 export const AdminDashboard = () => {
     const [showAddUser, setShowAddUser] = useState(false);
@@ -25,19 +30,18 @@ export const AdminDashboard = () => {
     } = useStaffDashboard();
 
     return (
-        <div className="container-fluid py-4">
+        <div className={DASHBOARD_PAGE_CLASS}>
 
             <div className="row mb-4 align-items-end">
                 <SearchField
                     label="Search Staff"
                     placeholder="Search Staff..."
-                    size="lg"
-                    className="col-md-5 col-lg-4"
                     onSearch={handleSearch}
                 />
                 <div className="col-auto ms-auto">
                     <button
-                        className="btn btn-success px-4 shadow-sm"
+                        className={BTN_TOOLBAR_SUCCESS}
+                        style={roundedStyle}
                         onClick={() => setShowAddUser(true)}
                     >
                         <i className="fa-solid fa-user-plus me-2"></i>

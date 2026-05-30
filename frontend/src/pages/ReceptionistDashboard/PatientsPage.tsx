@@ -7,6 +7,7 @@ import {AddPatientPanel} from "../../components/receptionist/AddPatientPanel.tsx
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
 import {patientsApi} from "../../features/patients/api/patientsApi.ts";
 import {filterPatientsByQuery} from "../../features/patients/utils/filterPatientsByQuery.ts";
+import {DASHBOARD_PAGE_CLASS} from "../../shared/ui/styles";
 
 interface PatientsPageProps {
     onScheduleVisit: (patientId: number) => void;
@@ -81,7 +82,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     };
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             <PatientSearchAdd
                 onSearch={handleSearch}
                 onAddPatientClick={handleOpenAddPanel}

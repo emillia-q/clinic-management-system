@@ -1,11 +1,19 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
+import {
+    BTN_PANEL_DANGER,
+    BTN_PANEL_OUTLINE,
+    PANEL_TITLE_CLASS,
+    roundedStyle,
+    UI_CARD_BORDER_RADIUS,
+} from "../../shared/ui/styles";
+import {DetailFieldLabel} from "../../shared/ui/DetailFieldLabel";
 
 interface VisitDetailsProps {
     visit: VisitDto;
     onClose: () => void;
     onCancelClick: () => void;
-    onEditClick: () => void; // Dodajemy nowy prop!
+    onEditClick: () => void;
 }
 
 export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: VisitDetailsProps) => {
@@ -14,68 +22,60 @@ export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: Visit
     const formattedTime = dateObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
     return (
-        <div className="card border-0 shadow-sm h-100 overflow-auto" style={{borderRadius: '15px'}}>
+        <div className="card border-0 shadow-sm h-100 overflow-auto" style={{borderRadius: UI_CARD_BORDER_RADIUS}}>
             <div className="card-body p-4 d-flex flex-column">
                 <div className="d-flex justify-content-between align-items-start mb-4">
-                    <h3 className="fw-bold mb-0">Visit Details</h3>
+                    <h5 className={PANEL_TITLE_CLASS}>Visit Details</h5>
                     <button className="btn btn-link text-dark p-0" onClick={onClose}>
                         <i className="fa-solid fa-xmark fs-4"></i>
                     </button>
                 </div>
 
-                {/* Lista detali */}
                 <div className="vstack gap-3 mb-5">
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Visit
-                            ID:</label>
+                        <DetailFieldLabel>Visit ID:</DetailFieldLabel>
                         <p className="mb-0 fw-semibold">{visit.id}</p>
                     </div>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Visit
-                            Date:</label>
+                        <DetailFieldLabel>Visit Date:</DetailFieldLabel>
                         <p className="mb-0">{formattedDate}</p>
                     </div>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Visit
-                            Time:</label>
+                        <DetailFieldLabel>Visit Time:</DetailFieldLabel>
                         <p className="mb-0">{formattedTime}</p>
                     </div>
                     <hr className="my-2 opacity-10"/>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Patient
-                            Name:</label>
-                        <p className="mb-0 fw-bold fs-5 text-dark">{visit.patientName}</p>
+                        <DetailFieldLabel>Patient Name:</DetailFieldLabel>
+                        <p className="mb-0 fw-bold text-dark">{visit.patientName}</p>
                     </div>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Patient
-                            PESEL:</label>
+                        <DetailFieldLabel>Patient PESEL:</DetailFieldLabel>
                         <p className="mb-0">{visit.socialSecurityNo}</p>
                     </div>
                     <hr className="my-2 opacity-10"/>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase"
-                               style={{fontSize: '0.7rem'}}>Doctor:</label>
+                        <DetailFieldLabel>Doctor:</DetailFieldLabel>
                         <p className="mb-0 fw-semibold text-dark">{formatDoctorFromFullName(visit.doctorName)}</p>
                     </div>
                     <div>
-                        <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Visit
-                            Status:</label>
-                        <p className="mb-0 fw-bold" style={{color: '#0d6efd'}}>{visit.status}</p>
+                        <DetailFieldLabel>Visit Status:</DetailFieldLabel>
+                        <p className="mb-0 fw-bold text-primary">{visit.status}</p>
                     </div>
                 </div>
 
                 {visit.status.toLowerCase() === 'registered' && (
                     <div className="d-flex gap-2 mt-auto pt-4 w-100">
                         <button
-                            className="btn btn-outline-dark flex-grow-1 fw-bold py-2"
-                            style={{borderRadius: '10px'}}
+                            className={`${BTN_PANEL_OUTLINE} flex-grow-1`}
+                            style={roundedStyle}
                             onClick={onEditClick}
                         >
                             Edit
                         </button>
                         <button
-                            className="btn btn-outline-danger flex-grow-1 fw-bold py-2"
-                            style={{borderRadius: '10px'}}
+                            className={`${BTN_PANEL_DANGER} flex-grow-1`}
+                            style={roundedStyle}
                             onClick={onCancelClick}
                         >
                             Cancel Visit
@@ -86,4 +86,3 @@ export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: Visit
         </div>
     );
 };
-

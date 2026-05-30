@@ -1,6 +1,7 @@
 import type {PatientDto} from "../../features/patients/types/patient.types.ts";
 import {HistoryListSection} from "../../features/doctors/ui/HistoryListSection.tsx";
 import {useDoctorPatientHistory} from "../../features/doctors/model/useDoctorPatientHistory.ts";
+import {DASHBOARD_PAGE_CLASS, PAGE_TITLE_CLASS, UI_BORDER_RADIUS} from "../../shared/ui/styles";
 
 interface DoctorPatientHistoryPageProps {
     patient: PatientDto;
@@ -11,15 +12,15 @@ export const DoctorPatientHistoryPage = ({patient, onBack}: DoctorPatientHistory
     const {history, isLoading, historyUnavailable} = useDoctorPatientHistory(patient.id);
 
     return (
-        <div className="container py-4">
-            <div className="mx-auto bg-white shadow-sm p-4" style={{maxWidth: "780px"}}>
+        <div className={DASHBOARD_PAGE_CLASS}>
+            <div className="mx-auto bg-white shadow-sm p-4" style={{maxWidth: "780px", borderRadius: UI_BORDER_RADIUS}}>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                     <button className="btn btn-link text-dark p-0" onClick={onBack}>
                         <i className="fa-solid fa-arrow-left fs-4"/>
                     </button>
-                    <h3 className="h4 mb-0 fw-bold text-center flex-grow-1">
+                    <h2 className={`${PAGE_TITLE_CLASS} mb-0 text-center flex-grow-1 fs-4`}>
                         Visit History: {patient.firstName} {patient.lastName}
-                    </h3>
+                    </h2>
                     <div style={{width: "28px"}}/>
                 </div>
 

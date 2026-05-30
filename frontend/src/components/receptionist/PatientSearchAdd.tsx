@@ -1,5 +1,5 @@
 import {SearchPatients} from "../../features/patients/ui/SearchPatients.tsx";
-import {UI_BORDER_RADIUS} from "../../shared/ui/styles";
+import {UI_BORDER_RADIUS, BTN_TOOLBAR_PRIMARY} from "../../shared/ui/styles";
 
 interface PatientSearchProps {
     onSearch: (query: string | null) => void;
@@ -12,7 +12,7 @@ export const PatientSearchAdd = ({onSearch, onAddPatientClick}: PatientSearchPro
             <SearchPatients onSearch={onSearch} />
             <div className="col-md-7 text-end">
                 <button
-                    className="btn btn-primary shadow-sm px-4 fw-bold"
+                    className={BTN_TOOLBAR_PRIMARY}
                     onClick={onAddPatientClick}
                     style={{borderRadius: UI_BORDER_RADIUS}}
                 >

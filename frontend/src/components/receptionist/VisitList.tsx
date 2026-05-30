@@ -1,12 +1,13 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
+import {FONT_SIZE_CAPTION, TABLE_HEAD_ROW_CLASS} from "../../shared/ui/styles";
 
 interface VisitListProps {
     visits: VisitDto[];
     isLoading: boolean;
     onSelectVisit: (visit: VisitDto) => void;
     selectedVisitId?: number;
-    isSearching: boolean; // <--- NOWY PROP: Informacja czy tryb wyszukiwania jest aktywny
+    isSearching: boolean;
 }
 
 export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, isSearching}: VisitListProps) => {
@@ -21,16 +22,15 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, is
 
     return (
         <div className="bg-white border-start border-end border-bottom border-2 shadow-sm">
-            <table className="table table-hover mb-0">
-                <thead className="table-light">
-                <tr className="border-bottom border-2">
-                    {/* Jeśli szukamy, poszerzamy lekko kolumnę na datę + czas */}
-                    <th className="py-3 px-4 fw-bold text-secondary" style={{width: isSearching ? '240px' : '150px'}}>
-                        {isSearching ? 'DATE & TIME' : 'TIME'}
+            <table className="table table-hover mb-0 align-middle">
+                <thead className="bg-light">
+                <tr className={TABLE_HEAD_ROW_CLASS}>
+                    <th className="px-4 py-3" style={{width: isSearching ? '240px' : '150px'}}>
+                        {isSearching ? 'Date & Time' : 'Time'}
                     </th>
-                    <th className="py-3 fw-bold text-secondary">PATIENT NAME</th>
-                    <th className="py-3 fw-bold text-secondary">DOCTOR</th>
-                    <th className="py-3 fw-bold text-secondary text-center">STATUS</th>
+                    <th className="py-3">Patient Name</th>
+                    <th className="py-3">Doctor</th>
+                    <th className="py-3 text-center">Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -44,12 +44,14 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, is
                             key={visit.id}
                             onClick={() => onSelectVisit(visit)}
                             className={selectedVisitId === visit.id ? "table-active" : ""}
-                            style={{cursor: 'pointer', verticalAlign: 'middle'}}
+                            style={{cursor: 'pointer'}}
                         >
                             <td className="py-3 px-4 fw-bold">
-                                {/* WARUNKOWE RENDEROWANIE DATY: Tylko gdy isSearching === true */}
                                 {isSearching && (
-                                    <span className="badge bg-light text-dark border me-2 fw-bold text-uppercase" style={{fontSize: '0.75rem'}}>
+                                    <span
+                                        className="badge bg-light text-dark border me-2 fw-bold text-uppercase"
+                                        style={{fontSize: FONT_SIZE_CAPTION}}
+                                    >
                                         {new Date(visit.appointmentDate).toLocaleDateString('pl-PL', {
                                             day: '2-digit',
                                             month: '2-digit'
@@ -66,9 +68,9 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, is
                             <td className="py-3 fw-semibold text-dark">{visit.patientName}</td>
                             <td className="py-3 text-muted">{formatDoctorFromFullName(visit.doctorName)}</td>
                             <td className="py-3 text-center">
-                                    <span className={`badge py-2 px-3 ${getStatusClass(visit.status)}`}>
-                                        {visit.status.toUpperCase()}
-                                    </span>
+                                <span className={`badge py-2 px-3 ${getStatusClass(visit.status)}`}>
+                                    {visit.status.toUpperCase()}
+                                </span>
                             </td>
                         </tr>
                     ))

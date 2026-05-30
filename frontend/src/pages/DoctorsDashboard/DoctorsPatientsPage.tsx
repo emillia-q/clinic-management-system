@@ -7,6 +7,7 @@ import {DoctorPatientHistoryPage} from "./DoctorPatientHistoryPage.tsx";
 import axios from 'axios';
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
 import {filterPatientsByQuery} from "../../features/patients/utils/filterPatientsByQuery.ts";
+import {DASHBOARD_PAGE_CLASS} from "../../shared/ui/styles";
 
 export const DoctorPatientsPage = () => {
     const [allPatients, setAllPatients] = useState<PatientDto[]>([]);
@@ -79,7 +80,7 @@ export const DoctorPatientsPage = () => {
     }
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             <div className="row mb-4 align-items-end">
                 <SearchPatients onSearch={handleSearch} />
             </div>

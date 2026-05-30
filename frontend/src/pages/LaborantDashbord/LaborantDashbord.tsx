@@ -4,6 +4,7 @@ import {labTechnicianApi} from '../../features/lab/api/labTechnicianApi.ts'
 import {SearchExamType} from "../../features/lab/ui/SearchExamType.tsx";
 import {ExamList} from "../../features/lab/ui/ExamList.tsx";
 import {ExamDetails} from "../../features/lab/ui/ExamDetails.tsx";
+import {DASHBOARD_PAGE_CLASS} from "../../shared/ui/styles";
 
 
 export const LaborantDashbord = () => {
@@ -56,7 +57,7 @@ export const LaborantDashbord = () => {
     };
 
     return (
-        <div className="container-fluid py-4 px-5">
+        <div className={DASHBOARD_PAGE_CLASS}>
             {/*Search by patient*/}
             <div className="row mb-4 align-items-end">
                 <SearchExamType onSearch={handleSearch}/>

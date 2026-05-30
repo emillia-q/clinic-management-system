@@ -1,5 +1,9 @@
 import React, {useState} from 'react';
-import {UI_BORDER_RADIUS} from './styles';
+import {
+    SEARCH_FIELD_CLASS,
+    SEARCH_LABEL_CLASS,
+    UI_BORDER_RADIUS,
+} from './styles';
 
 export interface SearchFieldProps {
     placeholder: string;
@@ -7,16 +11,14 @@ export interface SearchFieldProps {
     label?: string;
     className?: string;
     wrapperStyle?: React.CSSProperties;
-    size?: 'default' | 'lg';
 }
 
 export const SearchField = ({
     placeholder,
     onSearch,
     label,
-    className = 'col-md-5',
+    className = SEARCH_FIELD_CLASS,
     wrapperStyle,
-    size = 'default',
 }: SearchFieldProps) => {
     const [localQuery, setLocalQuery] = useState('');
 
@@ -36,19 +38,17 @@ export const SearchField = ({
         onSearch(null);
     };
 
-    const inputClass = size === 'lg' ? 'form-control form-control-lg border-end-0' : 'form-control border-end-0';
-
     return (
         <div className={className} style={wrapperStyle}>
             {label && (
-                <label className="form-label small fw-bold text-muted text-uppercase mb-2">
+                <label className={SEARCH_LABEL_CLASS}>
                     {label}
                 </label>
             )}
             <div className="input-group shadow-sm">
                 <input
                     type="text"
-                    className={inputClass}
+                    className="form-control border-end-0"
                     placeholder={placeholder}
                     value={localQuery}
                     onChange={(e) => setLocalQuery(e.target.value)}

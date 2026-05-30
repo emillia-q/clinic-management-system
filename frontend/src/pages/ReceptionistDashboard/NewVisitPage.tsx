@@ -4,6 +4,7 @@ import type {StaffListDto} from "../../features/staff/types/staff.types.ts";
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {parseFetchError} from "../../features/errors/utils/parseFetchError.ts";
 import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
+import {BTN_PANEL_PRIMARY, FORM_LABEL_CLASS, PAGE_TITLE_CLASS} from "../../shared/ui/styles";
 
 interface NewVisitPageProps {
     initialPatientId: number | null;
@@ -230,7 +231,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                         <button className="btn btn-link text-dark p-0 me-3" onClick={onBack}>
                             <i className="fa-solid fa-arrow-left fs-3"></i>
                         </button>
-                        <h2 className="fw-bold mb-0">
+                        <h2 className={`${PAGE_TITLE_CLASS} mb-0`}>
                             {isEditMode ? "Edit Scheduled Visit" : "Schedule a New Visit"}
                         </h2>
                     </div>
@@ -242,7 +243,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                             </div>
                         )}
                         <div className="mb-4">
-                            <label className="form-label fw-bold text-secondary small">Select Patient</label>
+                            <label className={FORM_LABEL_CLASS}>Select Patient</label>
                             <select
                                 className="form-select form-select-lg border-2"
                                 value={selectedPatientId}
@@ -260,7 +261,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                         </div>
 
                         <div className="mb-4">
-                            <label className="form-label fw-bold text-secondary small">Select Doctor</label>
+                            <label className={FORM_LABEL_CLASS}>Select Doctor</label>
                             <select
                                 className="form-select form-select-lg border-2"
                                 value={selectedDoctorId}
@@ -280,7 +281,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
 
                         <div className="row g-3">
                             <div className="col-md-6">
-                                <label className="form-label fw-bold text-secondary small">Visit Date</label>
+                                <label className={FORM_LABEL_CLASS}>Visit Date</label>
                                 <input
                                     type="date"
                                     className="form-control form-control-lg border-2"
@@ -295,7 +296,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                                 />
                             </div>
                             <div className="col-md-6">
-                                <label className="form-label fw-bold text-secondary small">Visit Time</label>
+                                <label className={FORM_LABEL_CLASS}>Visit Time</label>
                                 <select
                                     className="form-select form-select-lg border-2"
                                     value={visitTime}
@@ -313,7 +314,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                         <div className="text-center mt-5 pt-4">
                             <button
                                 type="submit"
-                                className="btn btn-primary btn-lg px-5 py-3 fw-bold shadow"
+                                className={`${BTN_PANEL_PRIMARY} px-4`}
                                 disabled={isLoading}
                             >
                                 {isLoading ? "Processing..." : (isEditMode ? "Update Visit" : "Save Visit")}
