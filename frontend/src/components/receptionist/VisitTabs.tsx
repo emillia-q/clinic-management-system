@@ -15,7 +15,7 @@ export const VisitTabs = ({tabs, activeTab, onTabChange}: VisitTabsProps) => (
                     flex: 1,
                     borderRadius: 0,
                     backgroundColor: activeTab === tab ? '#2c3e50' : '#f8f9fa',
-                    color: activeTab === tab ? '#white' : '#333'
+                    color: activeTab === tab ? '#ffffff' : '#333333',
                 }}
             >
                 {tab.toUpperCase()}
