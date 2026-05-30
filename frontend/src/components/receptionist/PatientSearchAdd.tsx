@@ -1,4 +1,5 @@
 import {SearchPatients, type SearchPatientsData} from "../../features/patients/ui/SearchPatients.tsx";
+import {UI_BORDER_RADIUS} from "../../shared/ui/styles";
 
 interface PatientSearchProps {
     onSearch: (params: SearchPatientsData | null) => void;
@@ -13,7 +14,7 @@ export const PatientSearchAdd = ({onSearch, onAddPatientClick}: PatientSearchPro
             {/* Add New Patient Button */}
             <div className="col-md-7 text-end">
                 <button className="btn btn-primary shadow-sm px-4 fw-bold" onClick={onAddPatientClick}
-                        style={{borderRadius: '10px'}}>
+                        style={{borderRadius: UI_BORDER_RADIUS}}>
                     <i className="fa-solid fa-user-plus me-2"></i>
                     Add New Patient
                 </button>

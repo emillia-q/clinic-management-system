@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { DateStripline } from "../../components/receptionist/DateStripline";
+import { SegmentedTabs } from "../../shared/ui/SegmentedTabs";
 interface Visit {
     id: number;
     patientName: string;
@@ -152,22 +153,16 @@ export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisit
                         <h2 className="fw-bold text-dark">Doctor's Appointments</h2>
                     </header>
 
-                    <ul className="nav nav-tabs mb-4 border-0">
-                        {tabs.map(tab => (
-                            <li className="nav-item" key={tab}>
-                                <button
-                                    className={`nav-link fw-bold ${activeTab === tab ? 'active text-dark border-dark border-top-0 border-start-0 border-end-0 border-4' : 'text-muted border-0'}`}
-                                    onClick={() => {
-                                        setActiveTab(tab);
-                                        setSelectedVisit(null);
-                                        onSelectedVisitIdChange?.(null);
-                                    }}
-                                >
-                                    {tab}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    <SegmentedTabs
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        onTabChange={(tab) => {
+                            setActiveTab(tab);
+                            setSelectedVisit(null);
+                            onSelectedVisitIdChange?.(null);
+                        }}
+                        className="mb-4"
+                    />
 
                     <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
                         <div className="card-body p-0">

@@ -5,6 +5,7 @@ import {StaffList} from "../../features/staff/ui/StaffList.tsx";
 import {StaffTabs} from "../../features/staff/ui/StaffTabs.tsx";
 import {useStaffDashboard} from "../../features/staff/model/useStaffDashboard.ts";
 import {AddUserModal} from "../../features/staff/ui/AddUserModal.tsx";
+import {SearchField} from "../../shared/ui/SearchField";
 
 export const AdminDashboard = () => {
     const [showAddUser, setShowAddUser] = useState(false);
@@ -13,10 +14,8 @@ export const AdminDashboard = () => {
         selectedStaff,
         staffList,
         activeTab,
-        searchQuery,
         showConfirm,
         setActiveTab,
-        setSearchQuery,
         handleSearch,
         handleSelectStaff,
         openStatusChangeConfirmation,
@@ -28,25 +27,14 @@ export const AdminDashboard = () => {
     return (
         <div className="container-fluid py-4">
 
-            <div className="row mb-4 align-items-center">
-                <div className="col-md-5 col-lg-4">
-                    <div className="input-group shadow-sm">
-                        <input
-                            type="text"
-                            className="form-control form-control-lg"
-                            placeholder="Search Staff..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <button
-                            className="btn btn-primary px-4"
-                            onClick={handleSearch}
-                        >
-                            <i className="fa-solid fa-magnifying-glass me-2"></i>
-                            Search
-                        </button>
-                    </div>
-                </div>
+            <div className="row mb-4 align-items-end">
+                <SearchField
+                    label="Search Staff"
+                    placeholder="Search Staff..."
+                    size="lg"
+                    className="col-md-5 col-lg-4"
+                    onSearch={handleSearch}
+                />
                 <div className="col-auto ms-auto">
                     <button
                         className="btn btn-success px-4 shadow-sm"

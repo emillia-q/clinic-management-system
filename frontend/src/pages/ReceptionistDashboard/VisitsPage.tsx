@@ -6,6 +6,7 @@ import {DateStripline} from "../../components/receptionist/DateStripline";
 import {VisitDetails} from "../../components/receptionist/VisitDetails";
 import {CancelVisitModal} from "../../components/receptionist/CancelVisitModal";
 import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
+import {SearchField} from "../../shared/ui/SearchField";
 
 interface DoctorDto {
     id: number;
@@ -24,7 +25,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitDto | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [appliedSearchQuery, setAppliedSearchQuery] = useState<string>("");
 
     const [doctors, setDoctors] = useState<DoctorDto[]>([]);
     const [selectedDoctors, setSelectedDoctors] = useState<string[]>([]);
@@ -78,7 +79,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
             if (!hasDoctor) return false;
         }
 
-        const cleanQuery = searchQuery.trim().toLowerCase();
+        const cleanQuery = appliedSearchQuery.trim().toLowerCase();
         if (cleanQuery.length > 0) {
             const patientNameLower = (v.patientName || "").toLowerCase();
             const peselLower = (v.socialSecurityNo || "").toLowerCase();
@@ -133,45 +134,17 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
                 />
             </div>
 
-            {/* MINIMALISTYCZNA SEKCJA FILTRÓW W JEDNEJ LINII - BEZ TŁA I BEZ BRZYDKIEJ RAMKI */}
             <div className="d-flex flex-wrap align-items-end gap-4 mb-5 text-start">
-
-                {/* Zgrabny, krótki search bar po lewej stronie */}
-                <div style={{ minWidth: '320px', maxWidth: '380px' }}>
-                    <label className="form-label fw-bold text-secondary small text-uppercase mb-2">
-                        Search Patient / PESEL
-                    </label>
-                    <div className="input-group position-relative">
-                        <span className="input-group-text bg-light border-2 border-end-0" style={{borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px'}}>
-                            <i className="fa-solid fa-magnifying-glass text-muted"></i>
-                        </span>
-                        <input
-                            type="text"
-                            className="form-control border-2 border-start-0 border-end-0 bg-light py-2"
-                            placeholder="Enter name or PESEL..."
-                            value={searchQuery}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                                setSelectedVisit(null);
-                            }}
-                            style={{ paddingRight: '40px' }}
-                        />
-                        {searchQuery.length > 0 ? (
-                            <button
-                                className="btn border-2 border-start-0 bg-light text-secondary position-absolute end-0 h-100 px-3 z-3"
-                                style={{ borderTopRightRadius: '10px', borderBottomRightRadius: '10px', borderColor: '#dee2e6' }}
-                                onClick={() => {
-                                    setSearchQuery("");
-                                    setSelectedVisit(null);
-                                }}
-                            >
-                                <i className="fa-solid fa-xmark"></i>
-                            </button>
-                        ) : (
-                            <span className="input-group-text bg-light border-2 border-start-0" style={{ width: '42px', borderTopRightRadius: '10px', borderBottomRightRadius: '10px' }}></span>
-                        )}
-                    </div>
-                </div>
+                <SearchField
+                    label="Search Patient / PESEL"
+                    placeholder="Enter name or PESEL..."
+                    className=""
+                    wrapperStyle={{minWidth: '320px', maxWidth: '380px'}}
+                    onSearch={(query) => {
+                        setAppliedSearchQuery(query ?? "");
+                        setSelectedVisit(null);
+                    }}
+                />
 
                 {/* Lekkie, nowoczesne tagi-przyciski lekarzy umieszczone obok */}
                 <div className="flex-grow-1">
@@ -232,7 +205,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
 
             <header className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="fw-bold text-dark">
-                    {searchQuery.trim().length > 0
+                    {appliedSearchQuery.trim().length > 0
                         ? `Found Results in "${activeTab}"`
                         : `Upcoming Visits ${isToday ? "(Today)" : `(${selectedDate})`}`}
                 </h2>
@@ -257,7 +230,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
                         isLoading={isLoading}
                         onSelectVisit={setSelectedVisit}
                         selectedVisitId={selectedVisit?.id}
-                        isSearching={searchQuery.trim().length > 0}
+                        isSearching={appliedSearchQuery.trim().length > 0}
                     />
                 </div>
 
