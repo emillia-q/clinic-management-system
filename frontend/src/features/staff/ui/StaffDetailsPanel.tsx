@@ -7,7 +7,7 @@ interface StaffDetailsPanelProps {
 
 export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffDetailsPanelProps) => {
     return (
-        <div className="card shadow-sm border-light" style={{flex: 1, minHeight: "400px"}}>
+        <div className="card shadow-sm border-light" style={{minHeight: "400px"}}>
             <div className="card-body p-4">
                 {selectedStaff ? (
                     <div>
