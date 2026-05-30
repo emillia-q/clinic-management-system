@@ -1,0 +1,15 @@
+/* Custom StatusBadge colors — Bootstrap utilities do not cover these brand tokens. */
+.badge.status-badge-lab-completed {
+    background-color: #6f42c1;
+    color: #fff;
+}
+
+.badge.status-badge-visit-in-progress {
+    background-color: #0ea5e9;
+    color: #fff;
+}
+
+.badge.status-badge-lab-canceled {
+    background-color: #e67e22;
+    color: #fff;
+}

@@ -28,6 +28,8 @@ export const TABLE_CARD_CLASS = 'card shadow-sm border-0';
 export const SEARCH_FIELD_CLASS = 'col-md-5';
 export const SEARCH_FIELD_WRAPPER_STYLE = {minWidth: '320px', maxWidth: '380px'} as const;
 
+export const SPLIT_PANEL_TRANSITION_STYLE = {transition: 'all 0.3s ease'} as const;
+
 export const AVATAR_SIZE = '64px';
 export const BTN_CLOSE_SIZE = '32px';
 

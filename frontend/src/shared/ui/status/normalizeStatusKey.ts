@@ -6,7 +6,3 @@ export const normalizeStatusKey = (status: string): string =>
         .replace(/-/g, '_');
 
 export type StatusDomain = 'visit' | 'labExam' | 'account';
-
-export const LAB_MANAGER_TAB_LABELS: Record<string, string> = {
-    Completed: 'Completed (To Verify)',
-};

@@ -14,7 +14,7 @@ export const getStatusBadgeClass = (status: string, domain: StatusDomain): strin
     }
 };
 
-export {normalizeStatusKey, LAB_MANAGER_TAB_LABELS} from './normalizeStatusKey';
+export {normalizeStatusKey} from './normalizeStatusKey';
 export type {StatusDomain} from './normalizeStatusKey';
 export {getVisitStatusBadgeClass} from './visitStatusColors';
 export {getLabExamStatusBadgeClass} from './labExamStatusColors';
