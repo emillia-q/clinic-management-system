@@ -34,7 +34,10 @@ export const LaborantDashbord = () => {
             return;
         }
         params = params.toLowerCase();
-        setFilteredExams(exams.filter((exam) => exam.examCode.toLowerCase().includes(params || "") || exam.examName.toLowerCase().includes(params || "")));
+        setFilteredExams(exams.filter((exam) =>
+            exam.patientName.toLowerCase().includes(params) ||
+            exam.patientPesel.toLowerCase().includes(params)
+        ));
     };
     const handleSelectExam = async (exam: LabExamDetails) => {
         setSelectedExam(exam);
@@ -54,7 +57,7 @@ export const LaborantDashbord = () => {
 
     return (
         <div className="container-fluid py-4 px-5">
-            {/*Search by Exam*/}
+            {/*Search by patient*/}
             <div className="row mb-4 align-items-end">
                 <SearchExamType onSearch={handleSearch}/>
             </div>
