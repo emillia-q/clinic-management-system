@@ -1,3 +1,5 @@
+import {formatStaffRole} from "../../features/staff/utils/formatStaffRole.ts";
+
 interface HeaderProps {
     userRole?: "Administrator" | "Doctor" | "Receptionist" | "LabTechnician" | "LabManager";
     onLogout: () => void;
@@ -72,8 +74,11 @@ export const Header = ({userRole, onLogout, onViewChange, currentView}: HeaderPr
                     </ul>
 
                     <div className="d-flex align-items-center gap-3">
-                        <span className="text-white small">
-                             Logged in as: <strong>{userRole || 'Guest'}</strong>
+                        <span className="d-flex align-items-center gap-2 text-white">
+                            <span className="d-none d-md-inline opacity-90">Logged in as:</span>
+                            <span className="badge rounded-pill bg-white text-primary px-3 py-2 fs-6 fw-semibold">
+                                {formatStaffRole(userRole)}
+                            </span>
                         </span>
                         <button className="btn btn-light btn-sm shadow-sm px-3" onClick={onLogout}>
                             <i className="fa-solid fa-right-from-bracket me-2"></i>
