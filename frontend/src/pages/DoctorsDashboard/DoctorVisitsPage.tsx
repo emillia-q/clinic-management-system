@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { DateStripline } from "../../components/receptionist/DateStripline";
-
 interface Visit {
     id: number;
     patientName: string;
@@ -14,6 +14,8 @@ interface Visit {
 
 interface DoctorVisitsPageProps {
     onOrderExam: (visitId: number) => void;
+    selectedVisitId?: number | null;
+    onSelectedVisitIdChange?: (visitId: number | null) => void;
 }
 
 const api = axios.create({
@@ -26,7 +28,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
+export const DoctorVisitsPage = ({ onOrderExam, selectedVisitId, onSelectedVisitIdChange }: DoctorVisitsPageProps) => {
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [visits, setVisits] = useState<Visit[]>([]);
     const [activeTab, setActiveTab] = useState<string>('All');
@@ -52,9 +54,21 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
 
     useEffect(() => {
         void fetchVisits();
-        setSelectedVisit(null);
     }, [fetchVisits]);
 
+    useEffect(() => {
+        if (selectedVisitId == null) {
+            setSelectedVisit(null);
+            return;
+        }
+        if (selectedVisit?.id === selectedVisitId) {
+            return;
+        }
+        const visit = visits.find(v => v.id === selectedVisitId);
+        if (visit) {
+            setSelectedVisit(visit);
+        }
+    }, [visits, selectedVisitId, selectedVisit?.id]);
     const handleStartVisit = async () => {
         if (!selectedVisit) return;
         try {
@@ -66,7 +80,10 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
             updateLocalStatus('In Progress');
         } catch (error) {
             console.error("Start error:", error);
-            updateLocalStatus('In Progress');
+            const message = axios.isAxiosError(error)
+                ? error.response?.data?.message || error.message
+                : 'Failed to start visit';
+            toast.error(message);
         }
     };
 
@@ -81,7 +98,6 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
             updateLocalStatus('Finished');
         } catch (error) {
             console.error("Finish error:", error);
-            updateLocalStatus('Finished');
         }
     };
 
@@ -98,7 +114,6 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
             updateLocalStatus('Cancelled');
         } catch (error) {
             console.error("Cancel error:", error);
-            updateLocalStatus('Cancelled');
         }
     };
 
@@ -126,6 +141,7 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                     onDateChange={(date: string) => {
                         setSelectedDate(date);
                         setSelectedVisit(null);
+                        onSelectedVisitIdChange?.(null);
                     }}
                 />
             </div>
@@ -144,6 +160,7 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                                     onClick={() => {
                                         setActiveTab(tab);
                                         setSelectedVisit(null);
+                                        onSelectedVisitIdChange?.(null);
                                     }}
                                 >
                                     {tab}
@@ -166,7 +183,10 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                                 {filteredVisits.map(v => (
                                     <tr
                                         key={v.id}
-                                        onClick={() => setSelectedVisit(v)}
+                                        onClick={() => {
+                                            setSelectedVisit(v);
+                                            onSelectedVisitIdChange?.(v.id);
+                                        }}
                                         style={{ cursor: 'pointer' }}
                                         className={selectedVisit?.id === v.id ? 'table-active' : ''}
                                     >
@@ -195,7 +215,10 @@ export const DoctorVisitsPage = ({ onOrderExam }: DoctorVisitsPageProps) => {
                                     <h4 className="fw-bold mb-0 text-primary">Visit Details</h4>
                                     <p className="text-muted small">{selectedVisit.patientName}</p>
                                 </div>
-                                <button className="btn-close" onClick={() => setSelectedVisit(null)}></button>
+                                <button className="btn-close" onClick={() => {
+                                    setSelectedVisit(null);
+                                    onSelectedVisitIdChange?.(null);
+                                }}></button>
                             </div>
 
                             <div className="card-body px-4 pb-4">

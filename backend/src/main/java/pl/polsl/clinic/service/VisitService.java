@@ -190,6 +190,7 @@ public class VisitService {
 		}
 	}
 
+	@Transactional
 	public void ModifyVisitDoctor(ModifyVisitDoctorRequest request, VisitStatus newStatus) {
 		Visit visit = visitRepository.findById(request.visitId()).orElseThrow(() -> new ItemNotFoundException(Visit.class, request.visitId()));
 		var currentStatus = visit.getStatus();

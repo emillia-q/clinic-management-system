@@ -45,7 +45,6 @@ public class Visit {
 	private String diagnosis;
 	static public final String diagnosis_ = "diagnosis";
 
-	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false, length = 50)
 	private VisitStatus status = VisitStatus.Registered;
 	static public final String status_ = "status";
