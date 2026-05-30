@@ -61,6 +61,7 @@ export const Header = ({userRole, onLogout, onViewChange, currentView}: HeaderPr
                         {userRole === 'Administrator' && (
                             <li className="nav-item">
                                 <button
+                                    type="button"
                                     className={`nav-link btn btn-link border-0 text-white ${currentView === 'ADMIN' ? 'active fw-bold border-bottom' : 'opacity-75'}`}
                                     onClick={() => onViewChange('ADMIN')}
                                 >
