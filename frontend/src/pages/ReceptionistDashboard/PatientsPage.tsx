@@ -19,7 +19,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     const [isLoading, setIsLoading] = useState(true);
 
     const api = axios.create({
-        baseURL: 'http://localhost:8080/api/v1/patients'
+        baseURL: (import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1") + '/patients'
     });
     api.interceptors.request.use((config) => {
         const token = localStorage.getItem('token');
