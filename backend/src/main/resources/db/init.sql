@@ -170,7 +170,7 @@ CREATE TABLE visit
 ;
 
 ALTER TABLE visit
-    ADD CHECK (status IN ('Registered', 'In Progress', 'In_Progress', 'Finished', 'Cancelled'))
+    ADD CHECK (status IN ('Registered', 'In Progress', 'Finished', 'Cancelled'))
 ;
 
 ALTER TABLE visit

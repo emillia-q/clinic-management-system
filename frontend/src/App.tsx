@@ -39,7 +39,8 @@ const getInitialView = (): 'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN' => {
 function App() {
     const [currentView, setCurrentView] = useState<'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN'>(getInitialView);
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
-    const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
+    const [doctorSelectedVisitId, setDoctorSelectedVisitId] = useState<number | null>(null);
+    const [orderExamVisitId, setOrderExamVisitId] = useState<number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
     const [role, setRole] = useState<UserRole | null>(getStoredRole());
     const [requiresPasswordChange, setRequiresPasswordChange] = useState(false);
@@ -56,7 +57,8 @@ function App() {
         setIsAuthenticated(false);
         setCurrentView("VISITS");
         setSelectedPatientId(null);
-        setSelectedVisitId(null);
+        setDoctorSelectedVisitId(null);
+        setOrderExamVisitId(null);
         setEditingVisit(null);
     };
 
@@ -103,7 +105,8 @@ function App() {
                 onLogout={handleLogout}
                 onViewChange={(view: 'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN') => {
                     setCurrentView(view);
-                    setSelectedVisitId(null);
+                    setDoctorSelectedVisitId(null);
+                    setOrderExamVisitId(null);
                     setEditingVisit(null);
                 }}
                 currentView={role === "Administrator" ? "ADMIN" : currentView}
@@ -152,12 +155,19 @@ function App() {
                         )}
 
                         {currentView === 'VISITS' && (
-                            !selectedVisitId ? (
-                                <DoctorVisitsPage onOrderExam={(visitId) => setSelectedVisitId(visitId)} />
-                            ) : (
+                            orderExamVisitId ? (
                                 <OrderExamPage
-                                    visitId={selectedVisitId}
-                                    onBack={() => setSelectedVisitId(null)}
+                                    visitId={orderExamVisitId}
+                                    onBack={() => setOrderExamVisitId(null)}
+                                />
+                            ) : (
+                                <DoctorVisitsPage
+                                    selectedVisitId={doctorSelectedVisitId}
+                                    onSelectedVisitIdChange={setDoctorSelectedVisitId}
+                                    onOrderExam={(visitId) => {
+                                        setDoctorSelectedVisitId(visitId);
+                                        setOrderExamVisitId(visitId);
+                                    }}
                                 />
                             )
                         )}
