@@ -1,16 +1,20 @@
 import {useState, useEffect} from 'react';
 import type {PatientDto} from "../../features/patients/types/patient.types.ts";
+import {patientsApi} from "../../features/patients/api/patientsApi.ts";
+import type {ValidationErrorDetails} from "../../features/errors/types/ErrorType.ts";
+import type {AxiosError} from "axios";
 
 interface PatientDetailsProps {
     patient: PatientDto | null;
     onClose: () => void;
-    onRefresh: () => void;
+    onRefresh: () => void | Promise<void>;
     onSchedule: (id: number) => void;
 }
 
 export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: PatientDetailsProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState<PatientDto | null>(null);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     useEffect(() => {
         if (patient) {
@@ -23,48 +27,40 @@ export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: Patien
 
     const handleSave = async () => {
         if (!editData) return;
+        setSaveError(null);
 
         const payload = {
             id: editData.id,
             firstName: editData.firstName,
             lastName: editData.lastName,
             socialSecurityNo: editData.socialSecurityNo,
-            dateOfBirth: editData.dateOfBirth, //YYYY-MM-DD
-            email: editData.email,
+            dateOfBirth: editData.dateOfBirth,
+            email: editData.email || null,
             phoneNumber: editData.phoneNumber,
             address: {
                 city: editData.address.city,
                 street: editData.address.street,
                 houseNo: editData.address.houseNo,
-                postalCode: editData.address.postalCode || "00-000",
-                flatNumber: editData.address.flatNumber || ""
+                apartmentNo: editData.address.apartmentNo ?? editData.address.flatNumber ?? null,
             }
         };
 
-        console.log("Sending payload to backend:", payload);
-
         try {
-            const response = await fetch("http://localhost:8080/api/v1/patients", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                setIsEditing(false);
-                onRefresh();
-                alert("Patient updated successfully!");
+            await patientsApi.put("", payload);
+            setIsEditing(false);
+            await onRefresh();
+        } catch (err: unknown) {
+            const axiosError = err as AxiosError<ValidationErrorDetails & { message?: string }>;
+            const data = axiosError.response?.data;
+            if (data?.errors && Object.keys(data.errors).length > 0) {
+                setSaveError(
+                    Object.entries(data.errors)
+                        .map(([field, message]) => `${field}: ${message}`)
+                        .join("; ")
+                );
             } else {
-                const errorData = await response.text();
-                console.error("Backend error response:", errorData);
-                alert(`Update failed: ${response.status}. Check console for details.`);
+                setSaveError(data?.message ?? "Could not update patient. Please try again.");
             }
-        } catch (error) {
-            console.error("Network/Connection error:", error);
-            alert("Could not connect to the server.");
         }
     };
     return (
@@ -184,12 +180,20 @@ export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: Patien
                 </div>
 
                 <div className="mt-auto pt-3 border-top">
+                    {saveError && (
+                        <div className="alert alert-danger py-2 small mb-3" role="alert">
+                            {saveError}
+                        </div>
+                    )}
                     {isEditing ? (
                         <div className="d-grid gap-2">
-                            <button className="btn btn-success fw-bold py-2 shadow-sm" onClick={handleSave}>
+                            <button className="btn btn-success fw-bold py-2 shadow-sm" onClick={() => void handleSave()}>
                                 <i className="fa-solid fa-check me-2"></i>Save Changes
                             </button>
-                            <button className="btn btn-outline-secondary btn-sm" onClick={() => setIsEditing(false)}>
+                            <button className="btn btn-outline-secondary btn-sm" onClick={() => {
+                                setIsEditing(false);
+                                setSaveError(null);
+                            }}>
                                 Cancel
                             </button>
                         </div>
@@ -202,7 +206,10 @@ export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: Patien
                                 Schedule a New Visit
                             </button>
                             <div className="text-end">
-                                <button className="btn p-0 border-0" onClick={() => setIsEditing(true)}>
+                                <button className="btn p-0 border-0" onClick={() => {
+                                    setIsEditing(true);
+                                    setSaveError(null);
+                                }}>
                                     <i className="fa-solid fa-pen-to-square fs-4 text-dark shadow-hover"></i>
                                 </button>
                             </div>

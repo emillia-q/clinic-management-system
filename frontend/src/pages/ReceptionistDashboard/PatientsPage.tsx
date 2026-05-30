@@ -5,8 +5,8 @@ import {PatientList} from "../../features/patients/ui/PatientList.tsx";
 import {PatientDetails} from "../../components/receptionist/PatientDetails";
 import {AddPatientPanel} from "../../components/receptionist/AddPatientPanel.tsx";
 import type {SearchPatientsData} from "../../features/patients/ui/SearchPatients.tsx";
-import axios from "axios";
 import type {InvalidParametersErrorDetails} from "../../features/errors/types/ErrorType.ts";
+import {patientsApi} from "../../features/patients/api/patientsApi.ts";
 
 interface PatientsPageProps {
     onScheduleVisit: (patientId: number) => void;
@@ -18,21 +18,10 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     const [isAddingNew, setIsAddingNew] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const api = axios.create({
-        baseURL: (import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1") + '/patients'
-    });
-    api.interceptors.request.use((config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    });
-
     const fetchPatients = async (searchParams?: SearchPatientsData | null) => {
         setIsLoading(true);
         try {
-            const response = await api.get('', {params: searchParams});
+            const response = await patientsApi.get('', {params: searchParams});
             setPatients(response.data);
         } catch (error) {
             const errorDetails = error.response.data as InvalidParametersErrorDetails;
@@ -68,10 +57,22 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
     const handleSelectPatient = async (patientFromList: PatientDto) => {
         setIsAddingNew(false);
         try {
-            const response = await api.get(`/${patientFromList.id}`);
+            const response = await patientsApi.get(`/${patientFromList.id}`);
             setSelectedPatient(response.data);
         } catch (error) {
             console.error("Error fetching details:", error);
+        }
+    };
+
+    const refreshAfterEdit = async () => {
+        await fetchPatients();
+        if (selectedPatient) {
+            try {
+                const response = await patientsApi.get(`/${selectedPatient.id}`);
+                setSelectedPatient(response.data);
+            } catch (error) {
+                console.error("Error refreshing patient details:", error);
+            }
         }
     };
 
@@ -98,7 +99,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
                         <PatientDetails
                             patient={selectedPatient}
                             onClose={() => setSelectedPatient(null)}
-                            onRefresh={() => fetchPatients()}
+                            onRefresh={refreshAfterEdit}
                             onSchedule={onScheduleVisit}
                         />
                     )}
