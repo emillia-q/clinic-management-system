@@ -8,6 +8,6 @@ interface ExamTypeSearchProps {
 export const SearchExamType = ({onSearch}: ExamTypeSearchProps) => {
 
     return (
-        <SearchWithCancel onSearch={onSearch} searchForText={"Exam Types"} placeholderText={"Search Exam Types..."}/>
+        <SearchWithCancel onSearch={onSearch} searchForText={"Patient"} placeholderText={"Search by patient name or PESEL..."}/>
     );
 }

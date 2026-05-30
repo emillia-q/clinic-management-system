@@ -1,6 +1,7 @@
 import type {LabExamDetails} from '../types/types.tsx'
 import {format, parseISO} from 'date-fns';
 import {useState} from "react";
+import {CancelExamModal} from './CancelExamModal.tsx';
 
 interface ExamDetailsProps {
     exam: LabExamDetails;
@@ -13,6 +14,7 @@ export const ExamDetails = ({exam, onClose, onCompleteExam, onCancelExam}: ExamD
     const [editingResults, setEditingResults] = useState(false);
     const [result, setResult] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const handleCompleteClick = () => {
         if (!result.trim()) {
@@ -24,6 +26,17 @@ export const ExamDetails = ({exam, onClose, onCompleteExam, onCancelExam}: ExamD
     };
 
     return (
+        <>
+        {showCancelConfirm && (
+            <CancelExamModal
+                exam={exam}
+                onConfirm={() => {
+                    setShowCancelConfirm(false);
+                    onCancelExam("Canceled");
+                }}
+                onClose={() => setShowCancelConfirm(false)}
+            />
+        )}
         <div className="card shadow-sm border-0 h-100 position-sticky" style={{top: "20px"}}>
             {/* Header with Close Button */}
             <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3 px-3">
@@ -144,8 +157,8 @@ export const ExamDetails = ({exam, onClose, onCompleteExam, onCancelExam}: ExamD
                 {/*Cancel Exam*/}
                 <div className="text-center">
                     <button
-                        className="btn btn-outline-dark fw-bold py-2 shadow-sm mb-2 w-50"
-                        onClick={() => onCancelExam("Canceled")}
+                        className="btn btn-danger fw-bold py-2 shadow-sm mb-2 w-50"
+                        onClick={() => setShowCancelConfirm(true)}
                     >
                         Cancel Exam
                     </button>
@@ -153,5 +166,6 @@ export const ExamDetails = ({exam, onClose, onCompleteExam, onCancelExam}: ExamD
 
             </div>
         </div>
+        </>
     );
 }
