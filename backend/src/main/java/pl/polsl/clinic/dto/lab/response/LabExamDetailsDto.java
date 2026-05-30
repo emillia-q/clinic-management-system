@@ -16,6 +16,7 @@ public record LabExamDetailsDto(
 	String orderedByDoctor,
 	LocalDateTime orderDate,
 	LocalDateTime completionDate,
+	LocalDateTime approvalRejectionDate,
 	String status,
 	String result,
 	String doctorNotes,
@@ -36,7 +37,8 @@ public record LabExamDetailsDto(
 			patient.getSocialSecurityNo(),
 			doctor.getFirstName() + " " + doctor.getLastName(),
 			entity.getOrderDate(),
-			entity.getExecutionCancelDate(), // Cancellation or execution date
+			entity.getExecutionCancelDate(),
+			entity.getApprovalRejectionDate(),
 			entity.getStatus(),
 			entity.getResult(),
 			entity.getDoctorNotes(),

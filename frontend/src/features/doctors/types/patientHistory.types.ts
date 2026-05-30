@@ -47,6 +47,7 @@ export interface LabExamDetailsDto {
     orderedByDoctor: string;
     orderDate: string;
     completionDate: string | null;
+    approvalRejectionDate: string | null;
     status: string;
     result: string | null;
     doctorNotes: string | null;

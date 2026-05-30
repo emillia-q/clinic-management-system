@@ -9,9 +9,9 @@ export const useStaffDashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const loadStaff = async () => {
+    const loadStaff = async (query = searchQuery) => {
         try {
-            const data = await staffApi.getStaffList(activeTab, searchQuery);
+            const data = await staffApi.getStaffList(activeTab, query);
             setStaffList(data);
         } catch (error) {
             console.error("Fetch error:", error);
@@ -22,8 +22,10 @@ export const useStaffDashboard = () => {
         void loadStaff();
     }, [activeTab]);
 
-    const handleSearch = () => {
-        void loadStaff();
+    const handleSearch = (query?: string | null) => {
+        const nextQuery = query ?? searchQuery;
+        setSearchQuery(nextQuery);
+        void loadStaff(nextQuery);
     };
 
     const handleSelectStaff = async (id: number) => {
@@ -61,10 +63,8 @@ export const useStaffDashboard = () => {
         selectedStaff,
         staffList,
         activeTab,
-        searchQuery,
         showConfirm,
         setActiveTab,
-        setSearchQuery,
         handleSearch,
         handleSelectStaff,
         openStatusChangeConfirmation,

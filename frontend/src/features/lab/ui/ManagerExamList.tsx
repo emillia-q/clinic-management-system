@@ -1,4 +1,6 @@
-import type {LabExamDetails} from '../types/types.tsx';
+import type {LabExamDetails} from '../types';
+import {StatusBadge} from '../../../shared/ui';
+import {TABLE_HEAD_ROW_CLASS} from '../../../shared/ui/styles';
 
 interface ManagerExamListProps {
     exams: LabExamDetails[];
@@ -7,14 +9,6 @@ interface ManagerExamListProps {
     selectedExamId?: number;
 }
 
-const getStatusBadgeClass = (status: string) => {
-    const s = status.toLowerCase();
-    if (s === 'completed') return 'bg-warning text-dark';
-    if (s === 'validated') return 'bg-success';
-    if (s === 'rejected') return 'bg-danger';
-    return 'bg-secondary';
-};
-
 export const ManagerExamList = ({exams, isLoading, onSelectExam, selectedExamId}: ManagerExamListProps) => {
     return (
         <div className="card shadow-sm border-0">
@@ -22,7 +16,7 @@ export const ManagerExamList = ({exams, isLoading, onSelectExam, selectedExamId}
                 <div className="table-responsive">
                     <table className="table table-hover align-middle mb-0">
                         <thead className="bg-light">
-                        <tr className="text-secondary small fw-bold text-uppercase">
+                        <tr className={TABLE_HEAD_ROW_CLASS}>
                             <th className="px-4 py-3">ID</th>
                             <th className="py-3">Patient Name</th>
                             <th className="py-3">Exam Name</th>
@@ -48,9 +42,7 @@ export const ManagerExamList = ({exams, isLoading, onSelectExam, selectedExamId}
                                     <td>{exam.examName}</td>
                                     <td>{exam.orderedByDoctor || '-'}</td>
                                     <td className="text-center">
-                                        <span className={`badge ${getStatusBadgeClass(exam.status)}`}>
-                                            {exam.status}
-                                        </span>
+                                        <StatusBadge status={exam.status} domain="labExam" padded={false} />
                                     </td>
                                 </tr>
                             ))

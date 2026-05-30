@@ -1,5 +1,5 @@
 import {apiClient} from "../../../shared/api/client.ts";
-import type {LabExamDetails} from '../types/types.tsx'
+import type {LabExamDetails} from '../types'
 
 const LAB_TECHNICIAN_BASE_PATH = "/lab-technician/exams";
 

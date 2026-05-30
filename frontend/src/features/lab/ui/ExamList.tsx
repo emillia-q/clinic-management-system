@@ -1,4 +1,4 @@
-import type {LabExamDetails} from '../types/types.tsx'
+import type {LabExamDetails} from '../types'
 import {format, parseISO} from 'date-fns';
 
 interface ExamListProps {

@@ -34,7 +34,8 @@ public class LabManagerController {
 	@Operation(summary = "Approve lab result")
 	public void approve(@PathVariable Long id, @RequestBody(required = false) ManagerExamNotesDto notes, HttpServletRequest request) {
 		var jwt = jwtService.getTokenFromRequest(request).orElseThrow(() -> new ItemNotFoundException(Doctor.class, "Auth Header missing"));
-		labService.approveExam(id, notes.notes(), jwtService.extractUserId(jwt));
+		String managerNotes = notes != null ? notes.notes() : null;
+		labService.approveExam(id, managerNotes, jwtService.extractUserId(jwt));
 	}
 
 	@PatchMapping("/exams/{id}/reject")

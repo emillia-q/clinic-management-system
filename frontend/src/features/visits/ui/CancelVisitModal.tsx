@@ -1,13 +1,13 @@
-import type {LabExamDetails} from '../types';
-import {UI_CARD_BORDER_RADIUS, UI_MODAL_MAX_WIDTH, roundedStyle} from '../../../shared/ui/styles';
+import type {VisitDto} from "../types/visit.types.ts";
+import {UI_CARD_BORDER_RADIUS, UI_MODAL_MAX_WIDTH, roundedStyle} from "../../../shared/ui/styles";
 
-interface CancelExamModalProps {
-    exam: LabExamDetails;
+interface CancelVisitModalProps {
+    visit: VisitDto;
     onConfirm: () => void;
     onClose: () => void;
 }
 
-export const CancelExamModal = ({exam, onConfirm, onClose}: CancelExamModalProps) => {
+export const CancelVisitModal = ({visit, onConfirm, onClose}: CancelVisitModalProps) => {
     return (
         <div className="modal-backdrop d-flex align-items-center justify-content-center"
              style={{
@@ -24,18 +24,21 @@ export const CancelExamModal = ({exam, onConfirm, onClose}: CancelExamModalProps
                     <div className="mb-3 text-danger">
                         <i className="fa-solid fa-circle-exclamation fs-1"></i>
                     </div>
-                    <h5 className="fw-bold mb-3">Cancel Exam?</h5>
+                    <h5 className="fw-bold mb-3">Cancel Visit?</h5>
                     <p className="text-secondary mb-4">
-                        Are you sure you want to cancel this exam for <strong>{exam.patientName}</strong>?
+                        Are you sure you want to cancel the visit for <strong>{visit.patientName}</strong>?
                         <br/>
                         <span className="small text-muted">
-                            {exam.examName} ({exam.examCode})
+                            Scheduled on: {new Date(visit.appointmentDate).toLocaleDateString()} at {new Date(visit.appointmentDate).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
                         </span>
                     </p>
 
                     <div className="d-grid gap-2">
                         <button className="btn btn-danger py-2 fw-bold" onClick={onConfirm} style={roundedStyle}>
-                            Yes, Cancel Exam
+                            Yes, Cancel Visit
                         </button>
                         <button className="btn btn-light py-2 fw-bold" onClick={onClose} style={roundedStyle}>
                             No, keep it
