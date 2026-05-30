@@ -1,6 +1,8 @@
 import {useState} from "react";
+import type {AxiosError} from "axios";
 import type {AddStaffRequest, StaffCreatedDto} from "../types/staff.types.ts";
 import {staffApi} from "../api/staffApi.ts";
+import type {ValidationErrorDetails} from "../../errors/types/ErrorType.ts";
 
 interface AddUserModalProps {
     isOpen: boolean;
@@ -38,8 +40,13 @@ export const AddUserModal = ({isOpen, onClose, onUserCreated}: AddUserModalProps
         if (!form.firstName.trim()) newErrors.firstName = "First name is required.";
         if (!form.lastName.trim()) newErrors.lastName = "Last name is required.";
         if (!form.userType) newErrors.userType = "Role is required.";
-        if (form.userType === "Doctor" && !form.licenseNo?.trim()) {
-            newErrors.licenseNo = "License number is required for doctors.";
+        if (form.userType === "Doctor") {
+            const license = form.licenseNo?.trim() ?? "";
+            if (!license) {
+                newErrors.licenseNo = "License number is required for doctors.";
+            } else if (license.length !== 7) {
+                newErrors.licenseNo = "License number must be exactly 7 characters.";
+            }
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -68,8 +75,21 @@ export const AddUserModal = ({isOpen, onClose, onUserCreated}: AddUserModalProps
             setStep("credentials");
             onUserCreated();
         } catch (err: unknown) {
-            const error = err as {response?: {data?: {message?: string}}};
-            setApiError(error?.response?.data?.message ?? "Failed to create user. Please try again.");
+            const axiosError = err as AxiosError<ValidationErrorDetails & { licenseNo?: string; error?: string }>;
+            const data = axiosError.response?.data;
+
+            if (data?.errors?.licenseNo) {
+                setErrors(prev => ({...prev, licenseNo: data.errors!.licenseNo}));
+                setApiError(null);
+                return;
+            }
+            if (data?.licenseNo) {
+                setErrors(prev => ({...prev, licenseNo: data.licenseNo}));
+                setApiError(null);
+                return;
+            }
+
+            setApiError(data?.message ?? "Failed to create user. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -173,7 +193,8 @@ export const AddUserModal = ({isOpen, onClose, onUserCreated}: AddUserModalProps
                                             <input
                                                 type="text"
                                                 className={`form-control ${errors.licenseNo ? "is-invalid" : ""}`}
-                                                placeholder="Max 7 characters"
+                                                placeholder="Exactly 7 characters"
+                                                minLength={7}
                                                 maxLength={7}
                                                 value={form.licenseNo}
                                                 onChange={e => handleChange("licenseNo", e.target.value)}

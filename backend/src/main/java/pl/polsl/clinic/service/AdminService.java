@@ -8,6 +8,7 @@ import pl.polsl.clinic.dto.staff.response.StaffCreatedDto;
 import pl.polsl.clinic.dto.staff.response.StaffListDto;
 import pl.polsl.clinic.entity.*;
 import pl.polsl.clinic.enums.UserType;
+import pl.polsl.clinic.exception.FieldValidationException;
 import pl.polsl.clinic.repository.*;
 
 import java.util.List;
@@ -46,8 +47,15 @@ public class AdminService {
 		// Create an object based on type from dto
 		switch (dto.getUserType()) {
 			case Doctor -> {
+				String licenseNo = dto.getLicenseNo().trim();
+				if (doctorRepository.existsByLicenseNo(licenseNo)) {
+					throw new FieldValidationException(
+						"licenseNo",
+						"A doctor with this license number already exists."
+					);
+				}
 				Doctor doctor = new Doctor();
-				doctor.setLicenseNo(dto.getLicenseNo());
+				doctor.setLicenseNo(licenseNo);
 				staff = doctor;
 			}
 			case Receptionist -> staff = new Receptionist();

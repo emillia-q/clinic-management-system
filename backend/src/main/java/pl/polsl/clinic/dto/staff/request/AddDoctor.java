@@ -9,6 +9,6 @@ import lombok.EqualsAndHashCode;
 @Data
 public class AddDoctor extends AddStaff {
 	@NotNull
-	@Size(min = 1, max = 7)
+	@Size(min = 7, max = 7, message = "License number must be exactly 7 characters.")
 	private String licenseNo;
 }
