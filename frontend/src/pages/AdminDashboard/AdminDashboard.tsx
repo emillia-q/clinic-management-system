@@ -58,7 +58,7 @@ export const AdminDashboard = () => {
                 </div>
             </div>
 
-            <div className="row">
+            <div className="row mb-3">
                 <div className="col-12">
                     <StaffTabs activeTab={activeTab} onChangeTab={setActiveTab}/>
                 </div>

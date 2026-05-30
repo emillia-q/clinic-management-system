@@ -7,10 +7,15 @@ interface StaffListProps {
     onSelectStaff: (id: number) => void;
 }
 
+const STAFF_LIST_MAX_HEIGHT = "calc(100vh - 17rem)";
+
 export const StaffList = ({staffList, selectedStaffId, onSelectStaff}: StaffListProps) => {
     return (
-        <div className="card shadow-sm mb-4" style={{minHeight: "400px"}}>
-            <div className="card-body p-0">
+        <div className="card shadow-sm mb-4">
+            <div
+                className="card-body p-0 overflow-auto"
+                style={{maxHeight: STAFF_LIST_MAX_HEIGHT}}
+            >
                 {staffList && staffList.length > 0 ? (
                     <ul className="list-group list-group-flush">
                         {staffList.map((staff) => (

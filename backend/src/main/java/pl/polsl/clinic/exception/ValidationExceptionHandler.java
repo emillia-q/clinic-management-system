@@ -39,6 +39,16 @@ public class ValidationExceptionHandler {
 		return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(FieldValidationException.class)
+	public ResponseEntity<@NonNull ValidationErrorDetails> handleFieldValidationException(FieldValidationException ex) {
+		ValidationErrorDetails details = new ValidationErrorDetails(
+			OffsetDateTime.now(ZoneOffset.UTC),
+			"Validation failed for one or more fields.",
+			ex.getFieldErrors()
+		);
+		return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(ConstraintViolationException.class)
 //	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ValidationErrorDetails> handleConstraintViolationException(ConstraintViolationException ex) {

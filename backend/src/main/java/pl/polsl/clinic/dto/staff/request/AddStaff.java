@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import pl.polsl.clinic.enums.UserType;
+import pl.polsl.clinic.validator.ValidStaffRequest;
 
 @Data
+@ValidStaffRequest
 public class AddStaff {
 	@NotNull
 	@Size(min = 1, max = 100)
@@ -19,6 +21,5 @@ public class AddStaff {
 	@NotNull
 	private UserType userType;
 
-	@Size(max = 7)
 	private String licenseNo;
 }

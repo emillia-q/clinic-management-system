@@ -1,4 +1,5 @@
 import type {StaffDto} from "../types/staff.types.ts";
+import {formatStaffRole} from "../utils/formatStaffRole.ts";
 
 interface StaffDetailsPanelProps {
     selectedStaff: StaffDto | null;
@@ -7,45 +8,49 @@ interface StaffDetailsPanelProps {
 
 export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffDetailsPanelProps) => {
     return (
-        <div className="card shadow-sm border-light" style={{flex: 1, minHeight: "400px"}}>
-            <div className="card-body p-4">
+        <div className="card shadow-sm border-light" style={{minHeight: "400px"}}>
+            <div className="card-body p-4 p-lg-5">
                 {selectedStaff ? (
-                    <div>
-                        <div className="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+                    <div className="staff-details-panel">
+                        <div className="d-flex align-items-center gap-4 mb-4 border-bottom pb-4">
                             <div
-                                className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm"
-                                style={{width: "70px", height: "70px"}}
+                                className="d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm flex-shrink-0"
+                                style={{width: "88px", height: "88px"}}
                             >
-                                <i className="fa-solid fa-user-md fa-2x text-primary"></i>
+                                <i className="fa-solid fa-user-md fa-3x text-primary"></i>
                             </div>
                             <div>
-                                <h2 className="mb-0 fw-bold">{selectedStaff.firstName} {selectedStaff.lastName}</h2>
+                                <h2 className="mb-2 fw-bold display-6">
+                                    {selectedStaff.firstName} {selectedStaff.lastName}
+                                </h2>
                                 <span
-                                    className={`badge ${selectedStaff.isActive === "Y" ? "bg-success" : "bg-danger"}`}>
+                                    className={`badge fs-6 px-3 py-2 ${selectedStaff.isActive === "Y" ? "bg-success" : "bg-danger"}`}>
                                     {selectedStaff.isActive === "Y" ? "Active Account" : "Inactive Account"}
                                 </span>
                             </div>
                         </div>
 
-                        <div className="row g-3">
+                        <div className="row g-4">
                             <div className="col-sm-6">
-                                <label className="text-muted small d-block">Username</label>
-                                <p className="fw-medium text-dark">{selectedStaff.login}</p>
+                                <label className="text-muted d-block mb-1 fs-6 text-uppercase fw-semibold">Username</label>
+                                <p className="fs-5 fw-semibold text-dark mb-0">{selectedStaff.login}</p>
                             </div>
                             <div className="col-sm-6">
-                                <label className="text-muted small d-block">ID Number</label>
-                                <p className="fw-medium text-dark">#{selectedStaff.id}</p>
+                                <label className="text-muted d-block mb-1 fs-6 text-uppercase fw-semibold">ID Number</label>
+                                <p className="fs-5 fw-semibold text-dark mb-0">#{selectedStaff.id}</p>
                             </div>
                             <div className="col-sm-6">
-                                <label className="text-muted small d-block">Role</label>
-                                <p className="fw-medium text-dark">
-                                    <span className="badge bg-info text-dark">{selectedStaff.userType}</span>
+                                <label className="text-muted d-block mb-1 fs-6 text-uppercase fw-semibold">Role</label>
+                                <p className="mb-0">
+                                    <span className="badge fs-6 px-3 py-2 bg-primary text-white">
+                                        {formatStaffRole(selectedStaff.userType)}
+                                    </span>
                                 </p>
                             </div>
                             {selectedStaff.licenseNo && (
                                 <div className="col-sm-6">
-                                    <label className="text-muted small d-block">License Number</label>
-                                    <p className="fw-medium text-dark">{selectedStaff.licenseNo}</p>
+                                    <label className="text-muted d-block mb-1 fs-6 text-uppercase fw-semibold">License Number</label>
+                                    <p className="fs-5 fw-semibold text-dark mb-0">{selectedStaff.licenseNo}</p>
                                 </div>
                             )}
                         </div>
@@ -61,9 +66,9 @@ export const StaffDetailsPanel = ({selectedStaff, onRequestStatusChange}: StaffD
                         </div>
                     </div>
                 ) : (
-                    <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                    <div className="d-flex flex-column align-items-center justify-content-center h-100 text-muted py-5">
                         <i className="fa-solid fa-address-card fa-4x mb-3 opacity-25"></i>
-                        <p>Select a staff member to see details.</p>
+                        <p className="fs-5 mb-0">Select a staff member to see details.</p>
                     </div>
                 )}
             </div>

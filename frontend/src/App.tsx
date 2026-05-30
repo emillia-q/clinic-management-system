@@ -32,8 +32,12 @@ const getStoredRole = (): UserRole | null => {
     return null;
 };
 
+const getInitialView = (): 'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN' => {
+    return getStoredRole() === "Administrator" ? "ADMIN" : "VISITS";
+};
+
 function App() {
-    const [currentView, setCurrentView] = useState<'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN'>('VISITS');
+    const [currentView, setCurrentView] = useState<'PATIENTS' | 'NEW_VISIT' | 'VISITS' | 'ADMIN'>(getInitialView);
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("isAuthenticated") === "true");
@@ -102,7 +106,7 @@ function App() {
                     setSelectedVisitId(null);
                     setEditingVisit(null);
                 }}
-                currentView={currentView}
+                currentView={role === "Administrator" ? "ADMIN" : currentView}
             />
 
             <main>

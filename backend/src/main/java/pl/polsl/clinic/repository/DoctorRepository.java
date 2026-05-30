@@ -5,4 +5,5 @@ import pl.polsl.clinic.entity.Doctor;
 
 @Repository
 public interface DoctorRepository extends StaffBaseRepository<Doctor> {
+	boolean existsByLicenseNo(String licenseNo);
 }

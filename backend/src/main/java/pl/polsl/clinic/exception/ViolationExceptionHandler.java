@@ -19,7 +19,12 @@ public class ViolationExceptionHandler {
 	public ResponseEntity<@NonNull Map<String, String>> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
 		log.error("Data integrity violation: {}", ex.getMessage());
 		Map<String, String> error = new HashMap<>();
-		error.put("error", "Database constraint violation. Possible duplicate entry or foreign key constraint.");
+		String message = ex.getMostSpecificCause().getMessage();
+		if (message != null && message.toLowerCase().contains("license_no")) {
+			error.put("licenseNo", "A doctor with this license number already exists.");
+		} else {
+			error.put("error", "Database constraint violation. Possible duplicate entry or foreign key constraint.");
+		}
 		return new ResponseEntity<>(error, HttpStatus.CONFLICT);
 	}
 
