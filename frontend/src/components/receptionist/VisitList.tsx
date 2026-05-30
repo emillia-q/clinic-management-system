@@ -1,4 +1,5 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
+import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
 
 interface VisitListProps {
     visits: VisitDto[];
@@ -63,7 +64,7 @@ export const VisitList = ({visits, isLoading, onSelectVisit, selectedVisitId, is
                                 </span>
                             </td>
                             <td className="py-3 fw-semibold text-dark">{visit.patientName}</td>
-                            <td className="py-3 text-muted">Dr. {visit.doctorName}</td>
+                            <td className="py-3 text-muted">{formatDoctorFromFullName(visit.doctorName)}</td>
                             <td className="py-3 text-center">
                                     <span className={`badge py-2 px-3 ${getStatusClass(visit.status)}`}>
                                         {visit.status.toUpperCase()}

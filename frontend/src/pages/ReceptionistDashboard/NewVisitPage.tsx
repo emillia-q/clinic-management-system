@@ -3,6 +3,7 @@ import type {PatientGeneralDto} from "../../features/patients/types/patient.type
 import type {StaffListDto} from "../../features/staff/types/staff.types.ts";
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
 import {parseFetchError} from "../../features/errors/utils/parseFetchError.ts";
+import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
 
 interface NewVisitPageProps {
     initialPatientId: number | null;
@@ -74,7 +75,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                 }
 
                 if (!isSameDoctor && v.doctorName && currentSelectedDoctor) {
-                    const visitDocNameClean = v.doctorName.replace("Dr. ", "").trim().toLowerCase();
+                    const visitDocNameClean = stripDoctorPrefix(v.doctorName).toLowerCase();
                     const selectedDocNameClean = `${currentSelectedDoctor.firstName} ${currentSelectedDoctor.lastName}`.trim().toLowerCase();
                     isSameDoctor = visitDocNameClean === selectedDocNameClean;
                 }
@@ -144,7 +145,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                         if (visitToEdit.doctorId) {
                             setSelectedDoctorId(visitToEdit.doctorId.toString());
                         } else if (visitToEdit.doctorName) {
-                            const cleanDoctorName = visitToEdit.doctorName.replace("Dr. ", "").trim();
+                            const cleanDoctorName = stripDoctorPrefix(visitToEdit.doctorName);
                             const foundDoctor = doctorsData.find(d =>
                                 `${d.firstName} ${d.lastName}` === cleanDoctorName ||
                                 `${d.lastName} ${d.firstName}` === cleanDoctorName
@@ -272,7 +273,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                             >
                                 <option value="">Choose...</option>
                                 {doctors.map(d => (
-                                    <option key={d.id} value={d.id}>Dr. {d.firstName} {d.lastName}</option>
+                                    <option key={d.id} value={d.id}>{formatDoctorName(d.firstName, d.lastName)}</option>
                                 ))}
                             </select>
                         </div>

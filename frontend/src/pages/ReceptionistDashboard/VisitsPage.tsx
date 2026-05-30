@@ -5,6 +5,7 @@ import {VisitList} from "../../components/receptionist/VisitList";
 import {DateStripline} from "../../components/receptionist/DateStripline";
 import {VisitDetails} from "../../components/receptionist/VisitDetails";
 import {CancelVisitModal} from "../../components/receptionist/CancelVisitModal";
+import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
 
 interface DoctorDto {
     id: number;
@@ -70,7 +71,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
         if (!matchesStatus) return false;
 
         if (selectedDoctors.length > 0) {
-            const cleanDocName = (v.doctorName || "").toLowerCase().replace("dr. ", "").trim();
+            const cleanDocName = stripDoctorPrefix(v.doctorName || "").toLowerCase();
             const hasDoctor = selectedDoctors.some(docName =>
                 cleanDocName === docName.toLowerCase().trim()
             );
@@ -207,7 +208,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
 
                                     {/* CZYSTY TEKST BEZ ŻADNYCH CHUJOWYCH RAMEK WOKÓŁ NAZWISKA */}
                                     <span className={`fw-semibold ${isChecked ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.95rem' }}>
-                Dr. {doc.firstName} {doc.lastName}
+                {formatDoctorName(doc.firstName, doc.lastName)}
             </span>
                                 </div>
                             );

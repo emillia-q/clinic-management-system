@@ -1,4 +1,5 @@
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
+import {formatDoctorFromFullName} from "../../features/staff/utils/formatDoctorName.ts";
 
 interface VisitDetailsProps {
     visit: VisitDto;
@@ -54,7 +55,7 @@ export const VisitDetails = ({visit, onClose, onCancelClick, onEditClick}: Visit
                     <div>
                         <label className="text-secondary small fw-bold text-uppercase"
                                style={{fontSize: '0.7rem'}}>Doctor:</label>
-                        <p className="mb-0 fw-semibold text-dark">Dr. {visit.doctorName}</p>
+                        <p className="mb-0 fw-semibold text-dark">{formatDoctorFromFullName(visit.doctorName)}</p>
                     </div>
                     <div>
                         <label className="text-secondary small fw-bold text-uppercase" style={{fontSize: '0.7rem'}}>Visit
