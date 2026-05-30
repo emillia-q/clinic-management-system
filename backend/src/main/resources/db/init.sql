@@ -393,13 +393,13 @@ SELECT user_id FROM staff WHERE login = 'walter_white';
 
 -- 3. PATIENTS
 INSERT INTO patient (first_name, last_name, social_security_no, date_of_birth, email, phone_number)
-VALUES ('John', 'Doe', '90010112345', '1990-01-01', 'john.doe@email.com', '+48555100200');
+VALUES ('John', 'Doe', '90010199852', '1990-01-01', 'john.doe@email.com', '+48555100200');
 
 INSERT INTO patient (first_name, last_name, social_security_no, date_of_birth, email, phone_number)
-VALUES ('Jane', 'Smith', '85051254321', '1985-05-12', 'jane.smith@email.com', '+48555300400');
+VALUES ('Jane', 'Smith', '85051285127', '1985-05-12', 'jane.smith@email.com', '+48555300400');
 
 INSERT INTO patient (first_name, last_name, social_security_no, date_of_birth, email, phone_number)
-VALUES ('Will', 'Hunting', '95122598765', '1995-12-25', 'will.smart@email.com', '+48555900800');
+VALUES ('Will', 'Hunting', '95122549999', '1995-12-25', 'will.smart@email.com', '+48555900800');
 
 -- 4. ADDRESSES (Linked to Patients 1, 2, 3)
 INSERT INTO address (patient_patient_id, city, street, house_no, apartment_no)

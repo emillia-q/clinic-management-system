@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import type {PatientGeneralDto} from "../../features/patients/types/patient.types.ts";
 import type {StaffListDto} from "../../features/staff/types/staff.types.ts";
 import type {VisitDto} from "../../features/visits/types/visit.types.ts";
+import {parseFetchError} from "../../features/errors/utils/parseFetchError.ts";
+import {formatDoctorName, stripDoctorPrefix} from "../../features/staff/utils/formatDoctorName.ts";
 
 interface NewVisitPageProps {
     initialPatientId: number | null;
@@ -13,9 +15,6 @@ interface NewVisitPageProps {
 export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDate}: NewVisitPageProps) => {
     const isEditMode = !!visitToEdit;
 
-    // Rzutowanie na any, aby ominąć błędy TypeScript dotyczące brakujących pól w VisitDto
-    const visitDataRaw = visitToEdit as any;
-
     const initialDate = visitToEdit
         ? visitToEdit.appointmentDate.split('T')[0]
         : (preferredDate || "");
@@ -23,26 +22,19 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
 
     const [patients, setPatients] = useState<PatientGeneralDto[]>([]);
     const [doctors, setDoctors] = useState<StaffListDto[]>([]);
-    const [allVisits, setAllVisits] = useState<VisitDto[]>([]); // STAN: Wszystkie wizyty do walidacji terminów
+    const [allVisits, setAllVisits] = useState<VisitDto[]>([]);
 
     const [selectedPatientId, setSelectedPatientId] = useState(
-        visitToEdit ? (
-            visitDataRaw.patientId ||
-            (visitDataRaw.patient && visitDataRaw.patient.id) ||
-            visitDataRaw.idPatient || ""
-        ).toString() : (initialPatientId?.toString() || "")
+        visitToEdit?.patientId?.toString() ?? (initialPatientId?.toString() || "")
     );
 
     const [selectedDoctorId, setSelectedDoctorId] = useState(
-        visitToEdit ? (
-            visitDataRaw.doctorId ||
-            (visitDataRaw.doctor && visitDataRaw.doctor.id) ||
-            visitDataRaw.idDoctor || ""
-        ).toString() : ""
+        visitToEdit?.doctorId?.toString() ?? ""
     );
     const [visitDate, setVisitDate] = useState(initialDate);
     const [visitTime, setVisitTime] = useState(initialTime);
     const [isLoading, setIsLoading] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
     const today = new Date().toISOString().split('T')[0];
 
     // ZMODYFIKOWANA FUNKCJA: Filtruje zajęte sloty per lekarz i dzień
@@ -74,9 +66,7 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                 const vDate = v.appointmentDate.split('T')[0];
                 const isSameDate = vDate === visitDate;
 
-                // WYCIĄGANIE ID LEKARZA Z WIZYTY:
-                const rawV = v as any;
-                const vDocId = rawV.idDoctor || rawV.doctorId || (rawV.doctor && rawV.doctor.id);
+                const vDocId = v.doctorId;
 
                 // PORÓWNANIE PO ID (konwertujemy obie strony na Number dla bezpieczeństwa)
                 let isSameDoctor = false;
@@ -84,9 +74,8 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                     isSameDoctor = Number(vDocId) === Number(selectedDoctorId);
                 }
 
-                // KOŁO RATUNKOWE: Jeśli backend nie przysłał ID lekarza w wizycie, porównujemy tekstowo po imieniu i nazwisku
-                if (!isSameDoctor && rawV.doctorName && currentSelectedDoctor) {
-                    const visitDocNameClean = rawV.doctorName.replace("Dr. ", "").trim().toLowerCase();
+                if (!isSameDoctor && v.doctorName && currentSelectedDoctor) {
+                    const visitDocNameClean = stripDoctorPrefix(v.doctorName).toLowerCase();
                     const selectedDocNameClean = `${currentSelectedDoctor.firstName} ${currentSelectedDoctor.lastName}`.trim().toLowerCase();
                     isSameDoctor = visitDocNameClean === selectedDocNameClean;
                 }
@@ -131,13 +120,16 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                     setPatients(patientsData);
 
                     if (isEditMode && visitToEdit) {
-                        const raw = visitToEdit as any;
-                        const foundPatient = patientsData.find(p =>
-                            (raw.socialSecurityNo && p.socialSecurityNo === raw.socialSecurityNo) ||
-                            (raw.patientName && `${p.firstName} ${p.lastName}` === raw.patientName)
-                        );
-                        if (foundPatient) {
-                            setSelectedPatientId(foundPatient.id.toString());
+                        if (visitToEdit.patientId) {
+                            setSelectedPatientId(visitToEdit.patientId.toString());
+                        } else {
+                            const foundPatient = patientsData.find(p =>
+                                (visitToEdit.socialSecurityNo && p.socialSecurityNo === visitToEdit.socialSecurityNo) ||
+                                (visitToEdit.patientName && `${p.firstName} ${p.lastName}` === visitToEdit.patientName)
+                            );
+                            if (foundPatient) {
+                                setSelectedPatientId(foundPatient.id.toString());
+                            }
                         }
                     } else if (initialPatientId && !isEditMode) {
                         const exists = patientsData.find(p => p.id === initialPatientId);
@@ -150,9 +142,10 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                     setDoctors(doctorsData);
 
                     if (isEditMode && visitToEdit) {
-                        const raw = visitToEdit as any;
-                        if (raw.doctorName) {
-                            const cleanDoctorName = raw.doctorName.replace("Dr. ", "").trim();
+                        if (visitToEdit.doctorId) {
+                            setSelectedDoctorId(visitToEdit.doctorId.toString());
+                        } else if (visitToEdit.doctorName) {
+                            const cleanDoctorName = stripDoctorPrefix(visitToEdit.doctorName);
                             const foundDoctor = doctorsData.find(d =>
                                 `${d.firstName} ${d.lastName}` === cleanDoctorName ||
                                 `${d.lastName} ${d.firstName}` === cleanDoctorName
@@ -177,14 +170,28 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSaveError(null);
+
+        if (!selectedDoctorId || !selectedPatientId) {
+            setSaveError("Please select a patient and a doctor.");
+            return;
+        }
+
         setIsLoading(true);
 
-        const payload = {
+        const appointmentDate = `${visitDate}T${visitTime}:00`;
+        const createPayload = {
             patientId: Number(selectedPatientId),
             doctorId: Number(selectedDoctorId),
-            receptionistId: visitToEdit ? (visitDataRaw.receptionistId || 3) : 3,
-            appointmentDate: `${visitDate}T${visitTime}:00`,
-            description: visitToEdit ? (visitDataRaw.description || "Updated visit") : "New visit"
+            receptionistId: 3,
+            appointmentDate,
+            description: "New visit"
+        };
+        const updatePayload = {
+            appointmentDate,
+            description: visitToEdit?.description || "Updated visit",
+            doctorId: Number(selectedDoctorId),
+            status: visitToEdit?.status ?? "Registered"
         };
 
         try {
@@ -193,24 +200,23 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
             if (token) { headers["Authorization"] = `Bearer ${token}`; }
 
             const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1";
-            const url = isEditMode ? `${baseUrl}/visits/${visitToEdit.id}` : `${baseUrl}/visits`;
+            const url = isEditMode ? `${baseUrl}/visits/${visitToEdit!.id}` : `${baseUrl}/visits`;
             const method = isEditMode ? "PUT" : "POST";
+            const body = isEditMode ? updatePayload : createPayload;
 
             const response = await fetch(url, {
                 method: method,
                 headers: headers,
-                body: JSON.stringify(payload)
+                body: JSON.stringify(body)
             });
 
             if (response.ok) {
-                alert(isEditMode ? "Visit updated successfully!" : "Visit scheduled successfully!");
                 onBack();
             } else {
-                const err = await response.text();
-                alert("Error: " + err);
+                setSaveError(await parseFetchError(response));
             }
         } catch {
-            alert("Network error. Is the backend running?");
+            setSaveError("Could not connect to the server. Check that the backend is running.");
         } finally {
             setIsLoading(false);
         }
@@ -230,6 +236,11 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                     </div>
 
                     <form onSubmit={handleSave}>
+                        {saveError && (
+                            <div className="alert alert-danger py-2 small mb-4" role="alert">
+                                {saveError}
+                            </div>
+                        )}
                         <div className="mb-4">
                             <label className="form-label fw-bold text-secondary small">Select Patient</label>
                             <select
@@ -255,13 +266,14 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                                 value={selectedDoctorId}
                                 onChange={(e) => {
                                     setSelectedDoctorId(e.target.value);
-                                    setVisitTime(""); // Reset godziny przy zmianie lekarza
+                                    setVisitTime("");
+                                    setSaveError(null);
                                 }}
                                 required
                             >
                                 <option value="">Choose...</option>
                                 {doctors.map(d => (
-                                    <option key={d.id} value={d.id}>Dr. {d.firstName} {d.lastName}</option>
+                                    <option key={d.id} value={d.id}>{formatDoctorName(d.firstName, d.lastName)}</option>
                                 ))}
                             </select>
                         </div>
@@ -276,7 +288,8 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                                     min={today}
                                     onChange={(e) => {
                                         setVisitDate(e.target.value);
-                                        setVisitTime(""); // Reset godziny przy zmianie daty
+                                        setVisitTime("");
+                                        setSaveError(null);
                                     }}
                                     required
                                 />

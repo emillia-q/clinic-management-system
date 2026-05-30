@@ -2,8 +2,8 @@ export interface AddressDto {
     city: string;
     street: string;
     houseNo: string;
+    apartmentNo?: string;
     flatNumber?: string;
-    postalCode: string;
 }
 
 export interface PatientDto {
