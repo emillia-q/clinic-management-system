@@ -135,13 +135,13 @@ Shared UI components (use instead of copying code):
 
 ## API and environment variables
 
-Create a `.env` file in the `frontend/` directory:
+Copy `frontend/.env_template` to `frontend/.env`:
 
 ```
 VITE_API_URL=http://localhost:8080/api/v1
 ```
 
-The port in **`VITE_API_URL`** must match **`APP_PORT`** in the root backend `.env`. After changing the port, restart the dev server (`npm run dev`).
+The port in **`VITE_API_URL`** must match **`APP_PORT`** in the root `.env`. After changing the port, restart the dev server (`npm run dev`).
 
 ---
 

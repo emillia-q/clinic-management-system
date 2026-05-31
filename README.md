@@ -54,8 +54,8 @@ The application is a full-stack web system with a containerized PostgreSQL datab
 ## 🚀 Quick Start
 1. Copy `.env_template` to `.env` and fill in database credentials.
 2. Start the database: `docker-compose up -d`
-3. Run the backend from `backend/` (Spring Boot, port from `.env`).
-4. Run the frontend from `frontend/`: `npm install && npm run dev`
+3. Run the backend from **IntelliJ** (Spring Boot) - paste variables from `.env` into the Run Configuration **Environment variables** field.
+4. Copy `frontend/.env_template` to `frontend/.env` - set `VITE_API_URL` so the port matches `APP_PORT` from the root `.env`, then run `npm install && npm run dev`.
 5. Open Swagger UI at `http://localhost:8080/swagger-ui.html` to explore the API.
 
 ---
