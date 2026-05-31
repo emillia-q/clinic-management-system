@@ -46,7 +46,6 @@ services:
   - type: web
     name: clinic-frontend
     runtime: static
-    plan: free
     rootDir: frontend
     buildCommand: npm install && VITE_API_URL="$BACKEND_URL/api/v1" npm run build
     staticPublishPath: dist
