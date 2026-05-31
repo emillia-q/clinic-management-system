@@ -1,0 +1,58 @@
+# Deploy: Render Dashboard -> New -> Blueprint -> connect this repo
+# Docs: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: clinic-db
+    databaseName: clinic
+    user: clinic
+    plan: free
+
+services:
+  - type: web
+    name: clinic-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /swagger-ui/index.html
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: clinic-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: clinic-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: clinic-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: clinic-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: clinic-db
+          property: password
+      - key: DB_JDBC_PARAMS
+        value: ?sslmode=require
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+
+  - type: web
+    name: clinic-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && VITE_API_URL="$BACKEND_URL/api/v1" npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: clinic-backend
+          envVarKey: RENDER_EXTERNAL_URL
