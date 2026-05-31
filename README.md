@@ -11,7 +11,7 @@
 The project started as a **group prototype**.  
 The goal was to model a real clinic's daily operations: receptionists registering patients and booking appointments, doctors conducting visits and ordering tests and laboratory staff processing results - all in one cohesive system instead of scattered spreadsheets and paper records.
 
-Before implementation, the team prepared **UML class diagrams** and an **ERD** to define entities, relationships, and role-based workflows.
+Before implementation, the team prepared **UML class diagrams**, an **ERD** and **screen flow diagrams** to define entities, relationships, user journeys and role-based workflows.
 
 ---
 
@@ -23,18 +23,18 @@ Receptionists manage the patient registry and schedule visits with a chosen doct
 ---
 
 ## 📐 Architecture & Tech Stack
-The application is a full-stack web system with a containerized PostgreSQL database for consistent local development.
+The application is a full-stack web system with a containerized PostgreSQL database for consistent local development. The full stack was also deployed on **Render** as a deployment experiment.
 
 ### Technology Stack
 * **Backend:** **Java 21** with **Spring Boot 3.2** (REST API, Spring Security, Spring Data JPA).
 * **Frontend:** **React 19** with **TypeScript** and **Vite**.
 * **Database:** **PostgreSQL 16** relational database.
-* **DevOps:** **Docker Compose** (PostgreSQL + pgAdmin).
+* **DevOps:** **Docker Compose** (PostgreSQL + pgAdmin) for local development; **Render** for hosted deployment (`clinic-db`, `clinic-backend`, `clinic-frontend`).
 * **API Docs:** **OpenAPI / Swagger UI** for interactive endpoint exploration.
 
 ### Architecture Highlights
 * **Strict layered backend:** Entity -> Repository -> Service -> DTO -> Controller - entities are never exposed directly to the client.
-* **Feature-first frontend:** domain modules (`patients`, `visits`, `lab`, `staff`, ...) with shared UI components and a centralized Axios client.
+* **Feature-first frontend:** domain modules (`patients`, `visits`, `lab`, `staff`, ...) with shared UI components; all API calls go through one shared HTTP client that automatically attaches the JWT from `localStorage` to every request.
 * **Role-based security:** Spring Security enforces per-role API access; the React app renders role-specific dashboards after login.
 
 ---
