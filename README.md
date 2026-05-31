@@ -3,8 +3,7 @@
 
 ## 📺 Video Preview
 <div align="center">
-  <!-- TODO: add demo -->
-  <video src=""></video>
+  <video src="https://github.com/emillia-q/clinic-management-system/blob/master/assets/clinic_demo.mp4"></video>
 </div>
 
 ## 🏢 Project Origins
