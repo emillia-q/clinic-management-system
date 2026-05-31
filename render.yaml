@@ -12,8 +12,9 @@ services:
     name: clinic-backend
     runtime: docker
     plan: free
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /v3/api-docs
     envVars:
       - key: DB_HOST
