@@ -1,9 +1,11 @@
+
+
 # 🏥 Clinic Management System
 ## Web application for managing patients, visits and laboratory workflows in a medical clinic.
 
 ## 📺 Video Preview
 <div align="center">
-  <video src="https://github.com/emillia-q/clinic-management-system/blob/master/assets/clinic_demo.mp4"></video>
+  <video src="https://github.com/user-attachments/assets/9734f12e-e233-4eb4-be79-dc1411397eb2"></video>
 </div>
 
 ## 🏢 Project Origins
