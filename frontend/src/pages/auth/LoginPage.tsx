@@ -20,9 +20,29 @@ export const LoginPage = ({onLoginSuccess}: LoginPageProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [loginError, setLoginError] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setLoginError(null);
+        setPasswordError(null);
+
+        let hasError = false;
+
+        if (!login || login.trim() === "") {
+            setLoginError("Username is required.");
+            hasError = true;
+        }
+
+        if (!password || password.trim() === "") {
+            setPasswordError("Password is required.");
+            hasError = true;
+        }
+
+        if (hasError) return;
+
         setIsLoading(true);
 
         try {
@@ -72,44 +92,58 @@ export const LoginPage = ({onLoginSuccess}: LoginPageProps) => {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin}>
-                    <div className="mb-3">
+                <form onSubmit={handleLogin} noValidate>
+                    <div className="mb-3 text-start">
                         <label className="form-label small fw-bold text-secondary text-uppercase">Username</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-white border-end-0">
+                            <span className={`input-group-text bg-white border-end-0 ${loginError ? 'border-danger text-danger' : ''}`}>
                                 <i className="fa-solid fa-user text-muted small"></i>
                             </span>
                             <input
                                 type="text"
-                                className="form-control border-start-0 ps-0"
+                                className={`form-control border-start-0 ps-0 ${loginError ? 'is-invalid border-danger' : ''}`}
                                 placeholder="Enter username"
                                 value={login}
-                                onChange={(e) => setLogin(e.target.value)}
-                                required
+                                onChange={(e) => {
+                                    setLogin(e.target.value);
+                                    if (e.target.value.trim() !== "") setLoginError(null);
+                                }}
                             />
                         </div>
+                        {loginError && (
+                            <div className="text-danger fw-bold small mt-1" style={{ fontSize: '0.8rem' }}>
+                                {loginError}
+                            </div>
+                        )}
                     </div>
 
-                    <div className="mb-4">
+                    <div className="mb-4 text-start">
                         <label className="form-label small fw-bold text-secondary text-uppercase">Password</label>
                         <div className="input-group">
-                            <span className="input-group-text bg-white border-end-0">
+                            <span className={`input-group-text bg-white border-end-0 ${passwordError ? 'border-danger text-danger' : ''}`}>
                                 <i className="fa-solid fa-lock text-muted small"></i>
                             </span>
                             <input
                                 type="password"
-                                className="form-control border-start-0 ps-0"
+                                className={`form-control border-start-0 ps-0 ${passwordError ? 'is-invalid border-danger' : ''}`}
                                 placeholder="••••••••"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    if (e.target.value.trim() !== "") setPasswordError(null);
+                                }}
                             />
                         </div>
+                        {passwordError && (
+                            <div className="text-danger fw-bold small mt-1" style={{ fontSize: '0.8rem' }}>
+                                {passwordError}
+                            </div>
+                        )}
                     </div>
 
                     <button
                         type="submit"
-                        className="btn btn-primary w-100 fw-bold py-2 shadow-sm"
+                        className="btn btn-primary w-100 fw-bold py-2 shadow-sm text-uppercase"
                         disabled={isLoading}
                     >
                         {isLoading ? (

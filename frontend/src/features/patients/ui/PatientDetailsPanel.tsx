@@ -190,7 +190,7 @@ export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: Patien
                             <button className="btn btn-success fw-bold py-2 shadow-sm" onClick={() => void handleSave()}>
                                 <i className="fa-solid fa-check me-2"></i>Save Changes
                             </button>
-                            <button className="btn btn-outline-secondary btn-sm" onClick={() => {
+                            <button className="btn btn-outline-secondary btn-sm py-2" onClick={() => {
                                 setIsEditing(false);
                                 setSaveError(null);
                             }}>
@@ -198,21 +198,22 @@ export const PatientDetails = ({patient, onClose, onRefresh, onSchedule}: Patien
                             </button>
                         </div>
                     ) : (
-                        <div className="d-grid">
+                        <div className="d-grid gap-2">
                             <button
-                                className="btn btn-outline-dark fw-bold py-2 shadow-sm mb-2"
+                                className="btn btn-primary fw-bold py-2 shadow-sm"
                                 onClick={() => onSchedule(patient.id)}
                             >
-                                Schedule a New Visit
+                                <i className="fa-solid fa-calendar-plus me-2"></i>Schedule a New Visit
                             </button>
-                            <div className="text-end">
-                                <button className="btn p-0 border-0" onClick={() => {
+                            <button
+                                className="btn btn-outline-primary fw-bold py-2 shadow-sm"
+                                onClick={() => {
                                     setIsEditing(true);
                                     setSaveError(null);
-                                }}>
-                                    <i className="fa-solid fa-pen-to-square fs-4 text-dark shadow-hover"></i>
-                                </button>
-                            </div>
+                                }}
+                            >
+                                <i className="fa-solid fa-user-pen me-2"></i>Edit Patient
+                            </button>
                         </div>
                     )}
                 </div>

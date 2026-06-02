@@ -58,13 +58,11 @@ export const TechnicianDashboardPage = () => {
 
     return (
         <div className={DASHBOARD_PAGE_CLASS}>
-            {/*Search by patient*/}
             <div className="row mb-4 align-items-end">
                 <SearchExamType onSearch={handleSearch}/>
             </div>
 
             <div className="row g-4">
-                {/*List of pending exams:*/}
                 <div className={(selectedExam) ? "col-md-8" : "col-md-12"}
                      style={SPLIT_PANEL_TRANSITION_STYLE}>
                     <ExamList
@@ -75,7 +73,6 @@ export const TechnicianDashboardPage = () => {
                     />
                 </div>
 
-                {/*Exam details:*/}
                 <div className="col-md-4">
                     {selectedExam && (
                         <ExamDetails

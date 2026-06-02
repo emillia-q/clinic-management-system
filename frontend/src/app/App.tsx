@@ -14,6 +14,9 @@ import {Toaster} from 'react-hot-toast';
 import {TechnicianDashboardPage} from '../pages/lab/TechnicianDashboardPage';
 import {ManagerDashboardPage} from '../pages/lab/ManagerDashboardPage';
 import type {VisitDto} from '../features/visits/types/visit.types';
+import CurrentVisitPage from '../pages/doctor/CurrentVisitPage';
+import {DoctorPatientHistoryPage} from '../pages/doctor/PatientHistoryPage';
+import type {PatientDto} from '../features/patients/types/patient.types';
 
 type UserRole = 'Administrator' | 'Doctor' | 'Receptionist' | 'LabTechnician' | 'LabManager';
 
@@ -45,6 +48,8 @@ function App() {
     const [requiresPasswordChange, setRequiresPasswordChange] = useState(false);
     const [preferredVisitDate, setPreferredVisitDate] = useState<string>('');
     const [editingVisit, setEditingVisit] = useState<VisitDto | null>(null);
+    const [doctorSubView, setDoctorSubView] = useState<'LIST' | 'CURRENT_VISIT' | 'ORDER_EXAM' | 'HISTORY'>('LIST');
+    const [activePatientData, setActivePatientData] = useState<PatientDto | null>(null);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -59,6 +64,8 @@ function App() {
         setDoctorSelectedVisitId(null);
         setOrderExamVisitId(null);
         setEditingVisit(null);
+        setDoctorSubView('LIST');
+        setActivePatientData(null);
     };
 
     const handleLoginSuccess = (loggedRole: UserRole, passwdChangeRequired: boolean) => {
@@ -70,6 +77,7 @@ function App() {
             setCurrentView('ADMIN');
         } else {
             setCurrentView('VISITS');
+            setDoctorSubView('LIST');
         }
     };
 
@@ -79,6 +87,7 @@ function App() {
             setCurrentView('ADMIN');
         } else {
             setCurrentView('VISITS');
+            setDoctorSubView('LIST');
         }
     };
 
@@ -107,6 +116,8 @@ function App() {
                     setDoctorSelectedVisitId(null);
                     setOrderExamVisitId(null);
                     setEditingVisit(null);
+                    setDoctorSubView('LIST');
+                    setActivePatientData(null);
                 }}
                 currentView={role === 'Administrator' ? 'ADMIN' : currentView}
             />
@@ -153,23 +164,64 @@ function App() {
                             <DoctorPatientsPage/>
                         )}
 
-                        {currentView === 'VISITS' && (
-                            orderExamVisitId ? (
-                                <OrderExamPage
-                                    visitId={orderExamVisitId}
-                                    onBack={() => setOrderExamVisitId(null)}
-                                />
-                            ) : (
-                                <DoctorVisitsPage
-                                    selectedVisitId={doctorSelectedVisitId}
-                                    onSelectedVisitIdChange={setDoctorSelectedVisitId}
-                                    onOrderExam={(visitId) => {
-                                        setDoctorSelectedVisitId(visitId);
-                                        setOrderExamVisitId(visitId);
-                                    }}
-                                />
-                            )
-                        )}
+                        {currentView === 'VISITS' && (() => {
+                            switch (doctorSubView) {
+                                case 'HISTORY':
+                                    return (
+                                        <DoctorPatientHistoryPage
+                                            patient={activePatientData!}
+                                            onBack={() => setDoctorSubView('CURRENT_VISIT')}
+                                        />
+                                    );
+
+                                case 'ORDER_EXAM':
+                                    return (
+                                        <OrderExamPage
+                                            visitId={orderExamVisitId || doctorSelectedVisitId!}
+                                            onBack={() => {
+                                                setOrderExamVisitId(null);
+                                                setDoctorSubView('CURRENT_VISIT');
+                                            }}
+                                        />
+                                    );
+
+                                case 'CURRENT_VISIT':
+                                    return (
+                                        <CurrentVisitPage
+                                            visitId={doctorSelectedVisitId!}
+                                            onBack={() => {
+                                                setDoctorSelectedVisitId(null);
+                                                setOrderExamVisitId(null);
+                                                setDoctorSubView('LIST');
+                                            }}
+                                            onOrderExam={() => {
+                                                setOrderExamVisitId(doctorSelectedVisitId);
+                                                setDoctorSubView('ORDER_EXAM');
+                                            }}
+                                            onViewHistory={(patientObj) => {
+                                                setActivePatientData(patientObj);
+                                                setDoctorSubView('HISTORY');
+                                            }}
+                                        />
+                                    );
+
+                                case 'LIST':
+                                default:
+                                    return (
+                                        <DoctorVisitsPage
+                                            onOrderExam={(visitId) => {
+                                                setDoctorSelectedVisitId(visitId);
+                                                setOrderExamVisitId(visitId);
+                                                setDoctorSubView('ORDER_EXAM');
+                                            }}
+                                            onStartVisit={(visitId) => {
+                                                setDoctorSelectedVisitId(visitId);
+                                                setDoctorSubView('CURRENT_VISIT');
+                                            }}
+                                        />
+                                    );
+                            }
+                        })()}
                     </>
                 ) : role === 'LabTechnician' ? (
                     <TechnicianDashboardPage/>
