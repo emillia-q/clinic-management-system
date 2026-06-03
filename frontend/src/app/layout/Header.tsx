@@ -18,10 +18,7 @@ export const Header = ({ userRole, onLogout, onViewChange, currentView }: Header
     if (storedFirstName || storedLastName) {
         displayFormattedName = `${storedFirstName || ''} ${storedLastName || ''}`.trim();
     } else if (storedLogin) {
-        displayFormattedName = storedLogin
-            .split('.')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
+        displayFormattedName = storedLogin;
     }
 
     return (
