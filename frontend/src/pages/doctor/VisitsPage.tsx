@@ -19,7 +19,6 @@ interface Visit {
 }
 
 interface DoctorVisitsPageProps {
-    onOrderExam: (visitId: number) => void;
     onStartVisit: (visitId: number) => void;
 }
 
@@ -33,7 +32,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const DoctorVisitsPage = ({ onOrderExam, onStartVisit }: DoctorVisitsPageProps) => {
+export const DoctorVisitsPage = ({ onStartVisit }: DoctorVisitsPageProps) => {
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [visits, setVisits] = useState<Visit[]>([]);
     const [activeTab, setActiveTab] = useState<string>('All');
@@ -303,15 +302,15 @@ export const DoctorVisitsPage = ({ onOrderExam, onStartVisit }: DoctorVisitsPage
                                     {isInProgress(selectedVisit.status) && (
                                         <>
                                             <button
-                                                className="btn btn-white text-dark border-2 fw-bold py-2 text-uppercase"
-                                                style={{ backgroundColor: '#fff', border: `2px solid ${flatlyDark}`, borderRadius: '4px' }}
-                                                onClick={() => onOrderExam(selectedVisit.id)}
-                                            >
-                                                <i className="fa-solid fa-microscope me-2"></i> Order New Exam
-                                            </button>
-                                            <button
                                                 className="btn text-white fw-bold py-2 text-uppercase"
                                                 style={{ backgroundColor: flatlyDark, borderRadius: '4px' }}
+                                                onClick={() => onStartVisit(selectedVisit.id)}
+                                            >
+                                                <i className="fa-solid fa-play me-2"></i> Resume Visit
+                                            </button>
+                                            <button
+                                                className="btn btn-outline-secondary fw-bold py-2 text-uppercase"
+                                                style={{ borderRadius: '4px', fontSize: '0.85rem' }}
                                                 onClick={handleFinishVisit}
                                             >
                                                 <i className="fa-solid fa-check me-2"></i> Finish Visit

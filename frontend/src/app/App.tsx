@@ -168,11 +168,6 @@ function App() {
                             <>
                                 {doctorSubView === 'LIST' && (
                                     <DoctorVisitsPage
-                                        onOrderExam={(visitId) => {
-                                            setDoctorSelectedVisitId(visitId);
-                                            setOrderExamVisitId(visitId);
-                                            setDoctorSubView('ORDER_EXAM');
-                                        }}
                                         onStartVisit={(visitId) => {
                                             setDoctorSelectedVisitId(visitId);
                                             setDoctorSubView('CURRENT_VISIT');
