@@ -29,7 +29,8 @@ interface VisitsPageProps {
 export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [visits, setVisits] = useState<VisitDto[]>([]);
-    const [activeTab, setActiveTab] = useState<string>('Registered');
+
+    const [activeTab, setActiveTab] = useState<string>('All');
     const [isLoading, setIsLoading] = useState(true);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [selectedVisit, setSelectedVisit] = useState<VisitDto | null>(null);
@@ -38,7 +39,7 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
     const [doctors, setDoctors] = useState<DoctorDto[]>([]);
     const [selectedDoctors, setSelectedDoctors] = useState<string[]>([]);
 
-    const tabs = ['Registered', 'Cancelled', 'In progress', 'Finished'];
+    const tabs = ['All', 'Registered', 'Cancelled', 'In progress', 'Finished'];
     const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1";
 
     const fetchData = useCallback(async () => {
@@ -76,8 +77,10 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
     const filteredVisits = visits.filter(v => {
         if (!v.appointmentDate) return false;
 
-        const matchesStatus = v.status.toLowerCase() === activeTab.toLowerCase();
-        if (!matchesStatus) return false;
+        if (activeTab !== 'All') {
+            const matchesStatus = v.status.toLowerCase() === activeTab.toLowerCase();
+            if (!matchesStatus) return false;
+        }
 
         if (selectedDoctors.length > 0) {
             const cleanDocName = stripDoctorPrefix(v.doctorName || "").toLowerCase();
@@ -130,8 +133,18 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
         }
     };
 
+    const isSearchEmpty = appliedSearchQuery.trim().length === 0;
+
     return (
         <div className={DASHBOARD_PAGE_CLASS}>
+            <style>{`
+                .custom-searchfield-container .text-danger,
+                .custom-searchfield-container .fa-xmark,
+                .custom-searchfield-container button {
+                    display: ${isSearchEmpty ? 'none !important' : 'inline-block !important'};
+                }
+            `}</style>
+
             <div className="mb-4">
                 <DateStripline
                     selectedDate={selectedDate}
@@ -143,18 +156,19 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
             </div>
 
             <div className="d-flex flex-wrap align-items-end gap-4 mb-5 text-start">
-                <SearchField
-                    label="Search Patient / PESEL"
-                    placeholder="Enter name or PESEL..."
-                    className=""
-                    wrapperStyle={SEARCH_FIELD_WRAPPER_STYLE}
-                    onSearch={(query) => {
-                        setAppliedSearchQuery(query ?? "");
-                        setSelectedVisit(null);
-                    }}
-                />
+                <div className="custom-searchfield-container">
+                    <SearchField
+                        label="Search Patient / PESEL"
+                        placeholder="Enter name or PESEL..."
+                        className=""
+                        wrapperStyle={SEARCH_FIELD_WRAPPER_STYLE}
+                        onSearch={(query) => {
+                            setAppliedSearchQuery(query ?? "");
+                            setSelectedVisit(null);
+                        }}
+                    />
+                </div>
 
-                {/* Lekkie, nowoczesne tagi-przyciski lekarzy umieszczone obok */}
                 <div className="flex-grow-1">
                     <label className={`${FORM_LABEL_CLASS} d-block`}>
                         Filter by Doctors
@@ -170,14 +184,13 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
                                     style={{ cursor: 'pointer', userSelect: 'none' }}
                                     onClick={() => handleDoctorCheckboxChange(fullName)}
                                 >
-                                    {/* AUTORSKI SPERSONALIZOWANY CHECKBOX - BIAŁY W ŚRODKU, CIEMNIEJSZA RAMKA */}
                                     <div
                                         className="d-flex align-items-center justify-content-center me-2"
                                         style={{
                                             width: '18px',
                                             height: '18px',
                                             backgroundColor: '#ffffff',
-                                            border: isChecked ? '2px solid #0d6efd' : '2px solid #6c757d', // Ciemniejsza ramka w stanie spoczynku
+                                            border: isChecked ? '2px solid #0d6efd' : '2px solid #6c757d',
                                             borderRadius: '4px',
                                             transition: 'all 0.1s ease-in-out',
                                             color: '#0d6efd',
@@ -187,15 +200,13 @@ export const VisitsPage = ({onNewVisit}: VisitsPageProps) => {
                                         {isChecked && <i className="fa-solid fa-check fw-bold"></i>}
                                     </div>
 
-                                    {/* CZYSTY TEKST BEZ ŻADNYCH CHUJOWYCH RAMEK WOKÓŁ NAZWISKA */}
                                     <span className={`fw-semibold ${isChecked ? 'text-primary' : 'text-dark'}`} style={{ fontSize: '0.95rem' }}>
-                {formatDoctorName(doc.firstName, doc.lastName)}
-            </span>
+                                        {formatDoctorName(doc.firstName, doc.lastName)}
+                                    </span>
                                 </div>
                             );
                         })}
 
-                        {/* Przycisk resetu lekarzy */}
                         {selectedDoctors.length > 0 && (
                             <button
                                 className="btn btn-link btn-sm text-danger fw-bold text-decoration-none ms-2 p-0 small"

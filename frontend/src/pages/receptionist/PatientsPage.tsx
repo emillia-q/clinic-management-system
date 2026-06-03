@@ -28,7 +28,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
             setAllPatients(response.data);
             setPatients(filterPatientsByQuery(response.data, searchQuery));
         } catch (error) {
-            const errorDetails = (error as {response: {data: InvalidParametersErrorDetails}}).response.data;
+            const errorDetails = (error as { response: { data: InvalidParametersErrorDetails } }).response.data;
             let fullErrorMessage: string = "";
             if (errorDetails.errors) {
                 const fieldErrors = Object.entries(errorDetails.errors)
@@ -61,6 +61,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
 
     const handleSelectPatient = async (patientFromList: PatientDto) => {
         setIsAddingNew(false);
+
         try {
             const response = await patientsApi.get(`/${patientFromList.id}`);
             setSelectedPatient(response.data);
@@ -75,6 +76,7 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
             try {
                 const response = await patientsApi.get(`/${selectedPatient.id}`);
                 setSelectedPatient(response.data);
+
             } catch (error) {
                 console.error("Error refreshing patient details:", error);
             }
@@ -98,7 +100,6 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
                         selectedPatientId={selectedPatient?.id}
                     />
                 </div>
-
                 <div className="col-md-4">
                     {selectedPatient && (
                         <PatientDetails
@@ -119,4 +120,5 @@ export const PatientsPage = ({onScheduleVisit}: PatientsPageProps) => {
             </div>
         </div>
     );
-};
+}; 
+

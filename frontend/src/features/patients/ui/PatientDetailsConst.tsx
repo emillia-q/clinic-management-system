@@ -6,13 +6,11 @@ interface PatientDetailsProps {
 }
 
 export const PatientDetailsConst = ({patient, onClose}: PatientDetailsProps) => {
-    // If no patient is selected, render nothing
     if (!patient) return null;
 
     return (
         <div //className="card shadow-sm border-0 h-100 position-sticky" style={{ top: "20px" }}
         >
-            {/* Header with Close Button */}
             <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center pt-3 px-3">
                 <h5 className="mb-0 fw-bold text-primary">Patient Profile</h5>
                 <button
@@ -37,7 +35,6 @@ export const PatientDetailsConst = ({patient, onClose}: PatientDetailsProps) => 
                     </div>
                 </div>
 
-                {/* Patient Information List */}
                 <div className="mt-2 pt-3 border-top overflow-auto" style={{maxHeight: '60vh'}}>
 
                     <div className="mb-2 d-flex align-items-baseline">

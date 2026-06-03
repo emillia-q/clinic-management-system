@@ -14,12 +14,12 @@ export interface SearchFieldProps {
 }
 
 export const SearchField = ({
-    placeholder,
-    onSearch,
-    label,
-    className = SEARCH_FIELD_CLASS,
-    wrapperStyle,
-}: SearchFieldProps) => {
+                                placeholder,
+                                onSearch,
+                                label,
+                                className = SEARCH_FIELD_CLASS,
+                                wrapperStyle,
+                            }: SearchFieldProps) => {
     const [localQuery, setLocalQuery] = useState('');
 
     const handleSearchSubmit = () => {
@@ -37,6 +37,8 @@ export const SearchField = ({
         setLocalQuery('');
         onSearch(null);
     };
+
+    const isSearchActive = localQuery.trim().length > 0;
 
     return (
         <div className={className} style={wrapperStyle}>
@@ -63,22 +65,28 @@ export const SearchField = ({
                     type="button"
                     onClick={handleSearchSubmit}
                     aria-label="Search"
-                    style={{borderRadius: 0}}
+                    style={{
+                        borderTopRightRadius: isSearchActive ? 0 : UI_BORDER_RADIUS,
+                        borderBottomRightRadius: isSearchActive ? 0 : UI_BORDER_RADIUS,
+                    }}
                 >
                     <i className="fa-solid fa-magnifying-glass"></i>
                 </button>
-                <button
-                    className="btn btn-white border border-start-0 text-danger"
-                    type="button"
-                    onClick={handleClearSearch}
-                    aria-label="Clear search"
-                    style={{
-                        borderTopRightRadius: UI_BORDER_RADIUS,
-                        borderBottomRightRadius: UI_BORDER_RADIUS,
-                    }}
-                >
-                    <i className="fa-solid fa-xmark"></i>
-                </button>
+
+                {isSearchActive && (
+                    <button
+                        className="btn btn-white border border-start-0 text-danger"
+                        type="button"
+                        onClick={handleClearSearch}
+                        aria-label="Clear search"
+                        style={{
+                            borderTopRightRadius: UI_BORDER_RADIUS,
+                            borderBottomRightRadius: UI_BORDER_RADIUS,
+                        }}
+                    >
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                )}
             </div>
         </div>
     );

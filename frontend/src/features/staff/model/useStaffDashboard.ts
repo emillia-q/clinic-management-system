@@ -23,7 +23,7 @@ export const useStaffDashboard = () => {
     }, [activeTab]);
 
     const handleSearch = (query?: string | null) => {
-        const nextQuery = query ?? searchQuery;
+        const nextQuery = query ?? "";
         setSearchQuery(nextQuery);
         void loadStaff(nextQuery);
     };

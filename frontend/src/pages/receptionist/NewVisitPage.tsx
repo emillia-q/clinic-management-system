@@ -38,11 +38,9 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
     const [saveError, setSaveError] = useState<string | null>(null);
     const today = new Date().toISOString().split('T')[0];
 
-    // ZMODYFIKOWANA FUNKCJA: Filtruje zajęte sloty per lekarz i dzień
     const generateTimeSlots = () => {
         const slots: string[] = [];
 
-        // 1. Generowanie pełnej puli godzin działania kliniki
         for (let hour = 7; hour <= 19; hour++) {
             for (const min of ["00", "15", "30", "45"]) {
                 if (hour === 19 && min !== "00") break;
@@ -51,15 +49,12 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
             }
         }
 
-        // 2. Jeśli nie wybrano lekarza lub daty, zwracamy wszystkie godziny
         if (!selectedDoctorId || !visitDate) {
             return slots;
         }
 
-        // Znajdujemy obiekt wybranego lekarza w stanie "doctors", żeby mieć dostęp do jego imienia i nazwiska
         const currentSelectedDoctor = doctors.find(d => d.id.toString() === selectedDoctorId.toString());
 
-        // 3. Szukamy godzin, które u tego lekarza w tym dniu są już zajęte
         const occupiedTimes = allVisits
             .filter(v => {
                 if (!v.appointmentDate) return false;
@@ -69,7 +64,6 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
 
                 const vDocId = v.doctorId;
 
-                // PORÓWNANIE PO ID (konwertujemy obie strony na Number dla bezpieczeństwa)
                 let isSameDoctor = false;
                 if (vDocId && selectedDoctorId) {
                     isSameDoctor = Number(vDocId) === Number(selectedDoctorId);
@@ -81,18 +75,15 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
                     isSameDoctor = visitDocNameClean === selectedDocNameClean;
                 }
 
-                // Zabezpieczenie statusu (odsiewamy wizyty anulowane i odwołane)
                 const vStatus = (v.status || "").toLowerCase();
                 const isNotCancelled = vStatus !== 'cancelled' && vStatus !== 'canceled';
 
-                // Tryb edycji: nie blokujemy godziny tej wizyty, którą aktualnie modyfikujemy
                 const isNotCurrentVisit = visitToEdit ? v.id !== visitToEdit.id : true;
 
                 return isSameDate && isSameDoctor && isNotCancelled && isNotCurrentVisit;
             })
             .map(v => v.appointmentDate.split('T')[1].substring(0, 5));
 
-        // 4. Zwracamy wyłącznie wolne terminy
         return slots.filter(slot => !occupiedTimes.includes(slot));
     };
     useEffect(() => {
@@ -109,7 +100,6 @@ export const NewVisitPage = ({onBack, initialPatientId, visitToEdit, preferredDa
 
                 const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1";
 
-                // Dodaliśmy fetch `${baseUrl}/visits` do pobierania bazy wizyt
                 const [patRes, docRes, visitsRes] = await Promise.all([
                     fetch(`${baseUrl}/patients`, { headers }),
                     fetch(`${baseUrl}/staff?type=Doctor`, { headers }),
