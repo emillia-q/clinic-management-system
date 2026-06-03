@@ -14,6 +14,11 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
     const [notes, setNotes] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const [notesError, setNotesError] = useState<string | null>(null);
+
+    const flatlyDark = "#2C3E50";
+    const flatlyLight = "#ECF0F1";
+
     useEffect(() => {
         if (examType === 'Laboratory') {
             setExamName('L43');
@@ -24,6 +29,17 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!notes || notes.trim() === "") {
+            setNotesError(
+                examType === 'Laboratory'
+                    ? "Doctor notes are required to place the order."
+                    : "Exam results are required to submit."
+            );
+            return;
+        }
+
+        setNotesError(null);
         setIsLoading(true);
         try {
             await orderExam(examType, { visitId: Number(visitId), examName, notes });
@@ -32,8 +48,8 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
                 {
                     duration: 4000,
                     style: {
-                        borderRadius: '0',
-                        border: '1px solid #000',
+                        borderRadius: '4px',
+                        border: `1px solid ${flatlyDark}`,
                         color: '#000',
                     },
                 }
@@ -78,72 +94,98 @@ export const OrderExamPage = ({ visitId, onBack }: OrderExamPageProps) => {
     };
 
     return (
-        <div className="container d-flex justify-content-center py-5">
-            <div className="card border-0" style={{ maxWidth: '600px', width: '100%', backgroundColor: '#fff' }}>
-                <div className="card-body">
-                    <div className="d-flex align-items-center mb-5">
-                        <button className="btn btn-link text-dark p-0 me-3" onClick={onBack}>
-                            <i className="fa-solid fa-arrow-left fs-3"></i>
+        <div className="min-vh-100 bg-white d-flex align-items-center justify-content-center font-sans position-relative">
+            <div className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-6 p-5 rounded shadow-sm position-relative" style={{ backgroundColor: flatlyLight }}>
+
+                        <button
+                            onClick={onBack}
+                            className="btn btn-link p-0 fs-3 text-decoration-none position-absolute start-0 top-0 mt-4 ms-4"
+                            style={{ color: flatlyDark }}
+                        >
+                            &larr;
                         </button>
-                        <h2 className="fw-bold mb-0 mx-auto">
-                            {examType === 'Laboratory' ? 'Order a New Exam' : 'Submit Exam Results'}
-                        </h2>
+
+                        <div className="text-center mb-5 pt-2">
+                            <h2 className="fw-bold mb-1" style={{ color: flatlyDark }}>
+                                {examType === 'Laboratory' ? 'Order a New Exam' : 'Submit Exam Results'}
+                            </h2>
+                            {visitId && (
+                                <h5 className="text-muted fw-semibold">
+                                    Visit ID: {visitId}
+                                </h5>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="px-2 text-start" noValidate>
+                            <div className="mb-4">
+                                <label className="form-label fw-bold fs-5" style={{ color: flatlyDark }}>Exam Type</label>
+                                <select
+                                    className="form-select border-2 py-2"
+                                    style={{ borderRadius: '4px', borderColor: flatlyDark }}
+                                    value={examType}
+                                    onChange={(e) => setExamType(e.target.value)}
+                                >
+                                    <option value="Laboratory">Laboratory</option>
+                                    <option value="Physical">Physical</option>
+                                </select>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="form-label fw-bold fs-5" style={{ color: flatlyDark }}>Exam Name</label>
+                                <select
+                                    className="form-select border-2 py-2"
+                                    style={{ borderRadius: '4px', borderColor: flatlyDark }}
+                                    value={examName}
+                                    onChange={(e) => setExamName(e.target.value)}
+                                >
+                                    {renderExamOptions()}
+                                </select>
+                            </div>
+
+                            <div className="mb-5">
+                                <label className="form-label fw-bold fs-5" style={{ color: flatlyDark }}>
+                                    {examType === 'Laboratory' ? 'Doctor Notes' : 'Exam Results'} <span className="text-danger">*</span>
+                                </label>
+                                <textarea
+                                    className={`form-control border-2 ${notesError ? 'is-invalid border-danger' : ''}`}
+                                    style={{ borderRadius: '4px', resize: 'none', borderColor: notesError ? undefined : flatlyDark }}
+                                    rows={6}
+                                    value={notes}
+                                    onChange={(e) => {
+                                        setNotes(e.target.value);
+                                        if (e.target.value.trim() !== "") {
+                                            setNotesError(null);
+                                        }
+                                    }}
+                                />
+                                {notesError && (
+                                    <div className="invalid-feedback fw-bold mt-1">
+                                        {notesError}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="d-grid">
+                                <button
+                                    type="submit"
+                                    className="btn py-3 fw-bold text-uppercase text-white d-flex align-items-center justify-content-center"
+                                    style={{ backgroundColor: flatlyDark, borderRadius: '4px', border: 'none' }}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            {examType === 'Laboratory' ? "Ordering..." : "Submitting..."}
+                                        </>
+                                    ) : (
+                                        examType === 'Laboratory' ? "Order" : "Submit"
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4 text-start">
-                            <label className="form-label fw-bold small">Exam Type</label>
-                            <select
-                                className="form-select"
-                                style={{ borderRadius: '0', border: '1px solid #000' }}
-                                value={examType}
-                                onChange={(e) => setExamType(e.target.value)}
-                            >
-                                <option value="Laboratory">Laboratory</option>
-                                <option value="Physical">Physical</option>
-                            </select>
-                        </div>
-
-                        <div className="mb-4 text-start">
-                            <label className="form-label fw-bold small">Exam Name</label>
-                            <select
-                                className="form-select"
-                                style={{ borderRadius: '0', border: '1px solid #000' }}
-                                value={examName}
-                                onChange={(e) => setExamName(e.target.value)}
-                            >
-                                {renderExamOptions()}
-                            </select>
-                        </div>
-
-                        <div className="mb-4 text-start">
-                            <label className="form-label fw-bold small">
-                                {examType === 'Laboratory' ? 'Doctor Notes' : 'Exam Results'}
-                            </label>
-                            <textarea
-                                className="form-control"
-                                style={{ borderRadius: '0', border: '2px solid #000', resize: 'none' }}
-                                rows={8}
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        <div className="text-center mt-5">
-                            <button
-                                type="submit"
-                                className="btn btn-outline-dark px-5 py-2 fw-bold text-uppercase"
-                                style={{ borderRadius: '0', border: '1px solid #000' }}
-                                disabled={isLoading}
-                            >
-                                {isLoading
-                                    ? (examType === 'Laboratory' ? "Ordering..." : "Submitting...")
-                                    : (examType === 'Laboratory' ? "Order" : "Submit")
-                                }
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>

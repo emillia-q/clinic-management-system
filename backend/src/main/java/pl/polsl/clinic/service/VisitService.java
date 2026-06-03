@@ -201,4 +201,18 @@ public class VisitService {
 		visit.setStatus(newStatus);
 		visitRepository.save(request.updateEntity(visit));
 	}
+
+	@Transactional
+	public void saveVisitProgress(ModifyVisitDoctorRequest request) {
+		Visit visit = visitRepository.findById(request.visitId())
+			.orElseThrow(() -> new ItemNotFoundException(Visit.class, request.visitId()));
+		if (!visit.getStatus().equals(VisitStatus.In_Progress)
+			&& !visit.getStatus().equals(VisitStatus.Registered)) {
+			throw new InvalidParametersException("Only active visits can be updated.");
+		}
+		if (visit.getStatus().equals(VisitStatus.Registered)) {
+			visit.setStatus(VisitStatus.In_Progress);
+		}
+		visitRepository.save(request.updateEntity(visit));
+	}
 }
