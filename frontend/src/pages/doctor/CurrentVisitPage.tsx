@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import type { PatientDto } from "../../features/patients/types/patient.types.ts";
 
 interface CurrentVisitPageProps {
@@ -33,9 +34,52 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
     const [showFinishModal, setShowFinishModal] = useState(false);
     const [showBackModal, setShowBackModal] = useState(false);
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
+    const [isDirty, setIsDirty] = useState(false);
+    const skipAutosaveRef = useRef(true);
 
     const flatlyDark = "#2C3E50";
     const flatlyLight = "#ECF0F1";
+
+    const saveVisitProgress = useCallback(async (description: string, diagnosis: string): Promise<boolean> => {
+        const payload = {
+            visitId,
+            description,
+            diagnosis: diagnosis || "",
+        };
+        try {
+            await api.patch('/visits/save', payload);
+            return true;
+        } catch (saveError) {
+            try {
+                // Fallback: works on backends without /visits/save (uses existing start endpoint)
+                await api.patch('/visits/start', payload);
+                return true;
+            } catch (startError) {
+                console.error("Error saving visit progress:", saveError, startError);
+                if (axios.isAxiosError(startError) && startError.response?.status === 400) {
+                    toast.error("Cannot save notes for this visit status.");
+                } else {
+                    toast.error("Could not save visit notes. Check that the backend is running on port 8080.");
+                }
+                return false;
+            }
+        }
+    }, [visitId]);
+
+    useEffect(() => {
+        skipAutosaveRef.current = true;
+        setIsDirty(false);
+    }, [visitId]);
+
+    useEffect(() => {
+        if (loading || !isDirty) {
+            return;
+        }
+        const timer = window.setTimeout(() => {
+            void saveVisitProgress(visitData.description, visitData.diagnosis);
+        }, 800);
+        return () => window.clearTimeout(timer);
+    }, [visitData.description, visitData.diagnosis, isDirty, loading, saveVisitProgress]);
 
     useEffect(() => {
         const fetchCurrentVisitDetails = async () => {
@@ -80,6 +124,7 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
                     diagnosis: data.diagnosis || "",
                     description: cleanDescription
                 });
+                skipAutosaveRef.current = false;
             } catch (error) {
                 console.error("Error fetching current visit details:", error);
             } finally {
@@ -92,7 +137,14 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
         }
     }, [visitId]);
 
+    const markDirty = () => {
+        if (!skipAutosaveRef.current) {
+            setIsDirty(true);
+        }
+    };
+
     const handleViewOrdersClick = async () => {
+        void saveVisitProgress(visitData.description, visitData.diagnosis);
         try {
             const response = await api.get('/patients');
 
@@ -181,6 +233,7 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
                                     rows={6}
                                     value={visitData.description}
                                     onChange={(e) => {
+                                        markDirty();
                                         setVisitData({...visitData, description: e.target.value});
                                         if (e.target.value.trim() !== "") {
                                             setDescriptionError(null);
@@ -201,7 +254,10 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
                                     className="form-control border-2"
                                     rows={3}
                                     value={visitData.diagnosis}
-                                    onChange={(e) => setVisitData({...visitData, diagnosis: e.target.value})}
+                                    onChange={(e) => {
+                                        markDirty();
+                                        setVisitData({...visitData, diagnosis: e.target.value});
+                                    }}
                                     style={{ borderRadius: '4px', resize: 'none', borderColor: flatlyDark }}
                                 />
                             </div>
@@ -216,7 +272,10 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
                                 </button>
 
                                 <button
-                                    onClick={onOrderExam}
+                                    onClick={async () => {
+                                        await saveVisitProgress(visitData.description, visitData.diagnosis);
+                                        onOrderExam();
+                                    }}
                                     className="btn fw-bold py-2 text-uppercase"
                                     style={{ backgroundColor: 'transparent', color: flatlyDark, border: `2px solid ${flatlyDark}`, borderRadius: '4px' }}
                                 >
@@ -253,7 +312,7 @@ const CurrentVisitPage = ({ visitId, onBack, onOrderExam, onViewHistory }: Curre
                 <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
                     <div className="bg-white p-4 rounded shadow-lg text-center border-0" style={{ maxWidth: '400px', width: '90%' }}>
                         <h4 className="fw-bold mb-3" style={{ color: flatlyDark }}>Discard changes?</h4>
-                        <p className="text-muted mb-4">All unsaved changes in diagnosis and description will be lost.</p>
+                        <p className="text-muted mb-4">Leave this visit? Unsaved notes may be lost if you have not waited for autosave.</p>
                         <div className="d-flex gap-2 justify-content-center">
                             <button onClick={onBack} className="btn px-4 py-2 text-white fw-bold" style={{ backgroundColor: flatlyDark, borderRadius: '4px' }}>YES, DISCARD</button>
                             <button onClick={() => setShowBackModal(false)} className="btn btn-outline-secondary px-4 py-2 fw-bold" style={{ borderRadius: '4px' }}>NO, STAY</button>

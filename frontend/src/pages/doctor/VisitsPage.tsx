@@ -72,8 +72,8 @@ export const DoctorVisitsPage = ({ onOrderExam, onStartVisit }: DoctorVisitsPage
         try {
             await api.patch('/doctors/visits/start', {
                 visitId: selectedVisit.id,
-                description: "",
-                diagnosis: ""
+                description: null,
+                diagnosis: null,
             });
             updateLocalStatus('In progress');
             onStartVisit(selectedVisit.id);

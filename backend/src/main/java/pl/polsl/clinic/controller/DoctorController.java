@@ -275,6 +275,15 @@ public class DoctorController {
 	public void FinishVisit(@RequestBody @NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
 		visitService.ModifyVisitDoctor(request, VisitStatus.Finished);
 	}
+
+	@PatchMapping("visits/save")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@Operation(summary = "Save visit description and diagnosis without changing status")
+	@ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = InvalidParametersErrorDetails.class))})
+	@ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ItemNotFoundErrorDetails.class))})
+	public void SaveVisitProgress(@RequestBody @NonNull @Valid VisitService.ModifyVisitDoctorRequest request) {
+		visitService.saveVisitProgress(request);
+	}
 	//</editor-fold>
 
 

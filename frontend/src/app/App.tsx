@@ -164,31 +164,26 @@ function App() {
                             <DoctorPatientsPage/>
                         )}
 
-                        {currentView === 'VISITS' && (() => {
-                            switch (doctorSubView) {
-                                case 'HISTORY':
-                                    return (
-                                        <DoctorPatientHistoryPage
-                                            patient={activePatientData!}
-                                            onBack={() => setDoctorSubView('CURRENT_VISIT')}
-                                        />
-                                    );
+                        {currentView === 'VISITS' && (
+                            <>
+                                {doctorSubView === 'LIST' && (
+                                    <DoctorVisitsPage
+                                        onOrderExam={(visitId) => {
+                                            setDoctorSelectedVisitId(visitId);
+                                            setOrderExamVisitId(visitId);
+                                            setDoctorSubView('ORDER_EXAM');
+                                        }}
+                                        onStartVisit={(visitId) => {
+                                            setDoctorSelectedVisitId(visitId);
+                                            setDoctorSubView('CURRENT_VISIT');
+                                        }}
+                                    />
+                                )}
 
-                                case 'ORDER_EXAM':
-                                    return (
-                                        <OrderExamPage
-                                            visitId={orderExamVisitId || doctorSelectedVisitId!}
-                                            onBack={() => {
-                                                setOrderExamVisitId(null);
-                                                setDoctorSubView('CURRENT_VISIT');
-                                            }}
-                                        />
-                                    );
-
-                                case 'CURRENT_VISIT':
-                                    return (
+                                {doctorSelectedVisitId !== null && (
+                                    <div className={doctorSubView === 'CURRENT_VISIT' ? undefined : 'd-none'}>
                                         <CurrentVisitPage
-                                            visitId={doctorSelectedVisitId!}
+                                            visitId={doctorSelectedVisitId}
                                             onBack={() => {
                                                 setDoctorSelectedVisitId(null);
                                                 setOrderExamVisitId(null);
@@ -203,25 +198,27 @@ function App() {
                                                 setDoctorSubView('HISTORY');
                                             }}
                                         />
-                                    );
+                                    </div>
+                                )}
 
-                                case 'LIST':
-                                default:
-                                    return (
-                                        <DoctorVisitsPage
-                                            onOrderExam={(visitId) => {
-                                                setDoctorSelectedVisitId(visitId);
-                                                setOrderExamVisitId(visitId);
-                                                setDoctorSubView('ORDER_EXAM');
-                                            }}
-                                            onStartVisit={(visitId) => {
-                                                setDoctorSelectedVisitId(visitId);
-                                                setDoctorSubView('CURRENT_VISIT');
-                                            }}
-                                        />
-                                    );
-                            }
-                        })()}
+                                {doctorSubView === 'HISTORY' && activePatientData && (
+                                    <DoctorPatientHistoryPage
+                                        patient={activePatientData}
+                                        onBack={() => setDoctorSubView('CURRENT_VISIT')}
+                                    />
+                                )}
+
+                                {doctorSubView === 'ORDER_EXAM' && (
+                                    <OrderExamPage
+                                        visitId={orderExamVisitId || doctorSelectedVisitId!}
+                                        onBack={() => {
+                                            setOrderExamVisitId(null);
+                                            setDoctorSubView('CURRENT_VISIT');
+                                        }}
+                                    />
+                                )}
+                            </>
+                        )}
                     </>
                 ) : role === 'LabTechnician' ? (
                     <TechnicianDashboardPage/>
